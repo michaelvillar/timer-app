@@ -17,12 +17,13 @@ class MVClockView: NSView {
   var minutes: CGFloat = 0.0 {
     didSet {
       self.progress = minutes / 60.0
-      self.progressView.progress = progress
     }
   }
   var progress: CGFloat = 0.0 {
     didSet {
       self.layoutSubviews()
+      self.progressView.progress = progress
+      self.arrowView.progress = progress
     }
   }
   
@@ -33,7 +34,9 @@ class MVClockView: NSView {
     self.center(progressView)
     self.addSubview(progressView)
     
-    arrowView = MVClockArrowView()
+    arrowView = MVClockArrowView(center: CGPointMake(75, 75))
+    arrowView.target = self
+    arrowView.action = #selector(handleArrowControl)
     self.layoutSubviews()
     self.addSubview(arrowView)
     
@@ -57,6 +60,11 @@ class MVClockView: NSView {
     var frame = arrowView.frame
     frame.origin = point
     arrowView.frame = frame
+  }
+  
+  func handleArrowControl(object: NSNumber) {
+    let progressValue = CGFloat(object.floatValue)
+    self.minutes = progressValue * 60.0
   }
   
 }
@@ -88,26 +96,88 @@ class MVClockProgressView: NSView {
   
 }
 
-class MVClockArrowView: NSView {
+class MVClockArrowView: NSControl {
   
-  private var startLocation: CGPoint = CGPointZero
+  var progress: CGFloat = 0.0 {
+    didSet {
+      self.needsDisplay = true
+    }
+  }
+  private var center: CGPoint = CGPointZero
   
-  convenience init() {
+  convenience init(center: CGPoint) {
     self.init(frame: NSMakeRect(0, 0, 25, 25))
+    self.center = center
   }
   
   override func drawRect(dirtyRect: NSRect) {
-    NSColor(SRGBRed: 0.2235, green: 0.5686, blue: 0.9882, alpha: 1.0).setFill()
+    NSColor.clearColor().setFill()
     NSRectFill(self.bounds)
+    
+    let path = NSBezierPath()
+    path.moveToPoint(CGPointMake(0, 0))
+    path.lineToPoint(CGPointMake(self.bounds.width / 2, self.bounds.height * 0.8))
+    path.lineToPoint(CGPointMake(self.bounds.width, 0))
+    
+    let cp = CGPointMake(self.bounds.width / 2, self.bounds.height / 2)
+    let angle = -progress * CGFloat(M_PI) * 2
+    let transform = NSAffineTransform()
+    transform.translateXBy(cp.x, yBy: cp.y)
+    transform.rotateByRadians(angle)
+    transform.translateXBy(-cp.x, yBy: -cp.y)
+    
+    path.transformUsingAffineTransform(transform)
+    
+    NSColor(SRGBRed: 0.2235, green: 0.5686, blue: 0.9882, alpha: 1.0).setFill()
+    path.fill()
   }
   
   override func mouseDown(theEvent: NSEvent) {
-    startLocation = theEvent.locationInWindow
+    var isDragging = false
+    var isTracking = true
+    var event: NSEvent = theEvent
+    
+    while (isTracking) {
+      switch (event.type) {
+      case NSEventType.LeftMouseUp:
+        isTracking = false
+        self.handleUp(event)
+        break;
+        
+      case NSEventType.LeftMouseDragged:
+        if (isDragging) {
+          self.handleDragged(event)
+        }
+        else {
+          isDragging = true
+        }
+        break;
+      default:
+        break;
+      }
+      
+      if (isTracking) {
+        let anEvent = self.window?.nextEventMatchingMask(Int(NSEventMask.LeftMouseUpMask.rawValue) | Int(NSEventMask.LeftMouseDraggedMask.rawValue))
+        event = anEvent!
+      }
+    }
   }
   
-  override func mouseDragged(theEvent: NSEvent) {
-    let currentLocation = theEvent.locationInWindow
-    debugPrint("ok", currentLocation)
+  func handleDragged(theEvent: NSEvent) {
+    var location = self.convertPoint(theEvent.locationInWindow, fromView: nil)
+    location = self.convertPoint(location, toView: self.superview)
+    let dx = (location.x - center.x) / center.x
+    let dy = (location.y - center.y) / center.y
+    var angle = atan(dy / dx)
+    if (dx < 0) {
+      angle = angle - CGFloat(M_PI)
+    }
+    let progress = -(angle - CGFloat(M_PI) / 2) / (CGFloat(M_PI) * 2)
+    let progressNumber = NSNumber(float: Float(progress))
+    self.target?.performSelector(self.action, withObject: progressNumber)
+  }
+  
+  func handleUp(theEvent: NSEvent) {
   }
   
 }
