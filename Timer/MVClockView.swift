@@ -286,12 +286,13 @@ class MVClockProgressView: NSView {
     NSColor(SRGBRed: 0.7255, green: 0.7255, blue: 0.7255, alpha: 0.15).setFill()
     NSBezierPath(ovalInRect: self.bounds).fill()
     
+    drawArc(progress)
+  }
+  
+  private func drawArc(progress: CGFloat) {
+    let cp = NSMakePoint(self.bounds.width / 2, self.bounds.height / 2)
     let windowHasFocus = self.window?.keyWindow ?? false
-    if windowHasFocus {
-      NSColor(SRGBRed: 0.2235, green: 0.5686, blue: 0.9882, alpha: 1.0).setFill()
-    } else {
-      NSColor(SRGBRed: 0.5529, green: 0.6275, blue: 0.7216, alpha: 1.0).setFill()
-    }
+
     let path = NSBezierPath()
     path.moveToPoint(NSMakePoint(self.bounds.width / 2, self.bounds.height))
     path.appendBezierPathWithArcWithCenter(NSMakePoint(self.bounds.width / 2, self.bounds.height / 2),
@@ -299,8 +300,22 @@ class MVClockProgressView: NSView {
                                            startAngle: 90,
                                            endAngle: 90 - (progress > 1 ? 1 : progress) * 360,
                                            clockwise: true)
-    path.lineToPoint(NSMakePoint(self.bounds.width / 2, self.bounds.height / 2))
-    path.fill()
+    path.lineToPoint(cp)
+    path.addClip()
+    
+    let ctx = NSGraphicsContext.currentContext()
+    ctx?.saveGraphicsState()
+    
+    let transform = NSAffineTransform()
+    transform.translateXBy(cp.x, yBy: cp.y)
+    transform.rotateByDegrees(-progress * 360)
+    transform.translateXBy(-cp.x, yBy: -cp.y)
+    transform.concat()
+    
+    let image = NSImage(named: windowHasFocus ? "progress" : "progress-unfocus")
+    image?.drawInRect(self.bounds)
+    
+    ctx?.restoreGraphicsState()
   }
   
   func windowFocusChanged(notification: NSNotification) {
