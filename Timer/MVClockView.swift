@@ -13,10 +13,12 @@ class MVClockView: NSView {
   private var imageView: NSImageView!
   private var progressView: MVClockProgressView!
   private var arrowView: MVClockArrowView!
+  private var minutesLabel: NSTextView!
   
   var minutes: CGFloat = 0.0 {
     didSet {
       self.progress = minutes / 60.0
+      self.updateLabel()
     }
   }
   var progress: CGFloat = 0.0 {
@@ -43,6 +45,13 @@ class MVClockView: NSView {
     imageView = NSImageView(frame: NSMakeRect(16, 15, 118, 118))
     imageView.image = NSImage(named: "clock")
     self.addSubview(imageView)
+    
+    minutesLabel = MVLabel(frame: NSMakeRect(0, self.bounds.height / 2 - 8, 150, 30))
+    minutesLabel.string = "0'"
+    minutesLabel.font = NSFont.systemFontOfSize(35, weight: NSFontWeightMedium)
+    minutesLabel.alignment = NSTextAlignment.Center
+    minutesLabel.textColor = NSColor(SRGBRed: 0.2353, green: 0.2549, blue: 0.2706, alpha: 1.0)
+    self.addSubview(minutesLabel)
   }
   
   private func center(view: NSView) {
@@ -64,7 +73,11 @@ class MVClockView: NSView {
   
   func handleArrowControl(object: NSNumber) {
     let progressValue = CGFloat(object.floatValue)
-    self.minutes = progressValue * 60.0
+    self.minutes = round(progressValue * 60.0)
+  }
+  
+  private func updateLabel() {
+    minutesLabel.string = NSString(format: "%i'", Int(self.minutes)) as String
   }
   
 }

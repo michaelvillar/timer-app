@@ -14,6 +14,7 @@
 		4C30BC101CA7CFBB00C45EBF /* MVTitlebarAccessoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C30BC0E1CA7CFBB00C45EBF /* MVTitlebarAccessoryViewController.swift */; };
 		4C30BC141CA7D73C00C45EBF /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C30BC121CA7D73C00C45EBF /* MainMenu.xib */; };
 		4C30BC161CA7D94500C45EBF /* MVClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C30BC151CA7D94500C45EBF /* MVClockView.swift */; };
+		4C6F0F211CAA3D8600E9A6F7 /* MVLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6F0F201CAA3D8600E9A6F7 /* MVLabel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		4C30BC0E1CA7CFBB00C45EBF /* MVTitlebarAccessoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MVTitlebarAccessoryViewController.swift; sourceTree = "<group>"; };
 		4C30BC131CA7D73C00C45EBF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		4C30BC151CA7D94500C45EBF /* MVClockView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MVClockView.swift; sourceTree = "<group>"; };
+		4C6F0F201CAA3D8600E9A6F7 /* MVLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MVLabel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 				4C30BC0A1CA7C96700C45EBF /* MVMainView.swift */,
 				4C30BC0E1CA7CFBB00C45EBF /* MVTitlebarAccessoryViewController.swift */,
 				4C30BC151CA7D94500C45EBF /* MVClockView.swift */,
+				4C6F0F201CAA3D8600E9A6F7 /* MVLabel.swift */,
 				4C30BBFD1CA7C56500C45EBF /* Assets.xcassets */,
 				4C30BC021CA7C56500C45EBF /* Info.plist */,
 				4C30BC121CA7D73C00C45EBF /* MainMenu.xib */,
@@ -141,6 +144,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C30BC0B1CA7C96700C45EBF /* MVMainView.swift in Sources */,
+				4C6F0F211CAA3D8600E9A6F7 /* MVLabel.swift in Sources */,
 				4C30BC091CA7C81C00C45EBF /* MVWindow.swift in Sources */,
 				4C30BBFC1CA7C56500C45EBF /* AppDelegate.swift in Sources */,
 				4C30BC161CA7D94500C45EBF /* MVClockView.swift in Sources */,
@@ -287,6 +291,7 @@
 				4C30BC071CA7C56500C45EBF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
