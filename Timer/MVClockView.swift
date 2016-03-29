@@ -126,27 +126,16 @@ class MVClockView: NSControl {
   }
   
   override func mouseDown(theEvent: NSEvent) {
-    var event: NSEvent = theEvent
-    var isTracking = true
-    
-    while (isTracking) {
-      switch (event.type) {
-      case NSEventType.LeftMouseUp:
-        isTracking = false
+    if let event = self.window?.nextEventMatchingMask(Int(NSEventMask.LeftMouseUpMask.rawValue) | Int(NSEventMask.LeftMouseDraggedMask.rawValue)) {
+      if event.type == NSEventType.LeftMouseUp {
         let point = self.convertPoint(event.locationInWindow, fromView: nil)
         if self.hitTest(point) == self {
           self.handleClick()
         }
-        break;
-      default:
-        break;
-      }
-      
-      if (isTracking) {
-        let anEvent = self.window?.nextEventMatchingMask(Int(NSEventMask.LeftMouseUpMask.rawValue) | Int(NSEventMask.LeftMouseDraggedMask.rawValue))
-        event = anEvent!
       }
     }
+    
+    super.mouseDown(theEvent)
   }
   
   private func updateTimerTime() {
