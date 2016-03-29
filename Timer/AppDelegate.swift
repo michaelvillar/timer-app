@@ -34,6 +34,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     notification.title = "It's time! 🕘"
     
     NSUserNotificationCenter.defaultUserNotificationCenter().deliverNotification(notification)
+    
+    NSApplication.sharedApplication().requestUserAttention(NSRequestUserAttentionType.CriticalRequest)
   }
   
   func userNotificationCenter(center: NSUserNotificationCenter, shouldPresentNotification notification: NSUserNotification) -> Bool {
