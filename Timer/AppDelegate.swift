@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import AVFoundation
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDelegate {
@@ -42,6 +43,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     NSUserNotificationCenter.defaultUserNotificationCenter().deliverNotification(notification)
     
     NSApplication.sharedApplication().requestUserAttention(NSRequestUserAttentionType.CriticalRequest)
+    
+    let soundURL = NSBundle.mainBundle().URLForResource("alert-sound", withExtension: "caf")
+    var soundID: SystemSoundID = 0
+    AudioServicesCreateSystemSoundID(soundURL!, &soundID)
+    AudioServicesPlaySystemSound(soundID)
   }
   
   func userNotificationCenter(center: NSUserNotificationCenter, shouldPresentNotification notification: NSUserNotification) -> Bool {
