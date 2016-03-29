@@ -8,17 +8,31 @@
 
 import Cocoa
 
-class MVClockView: NSView {
+class MVClockView: NSControl {
   
+  private var clickGesture: NSClickGestureRecognizer!
   private var imageView: NSImageView!
   private var progressView: MVClockProgressView!
   private var arrowView: MVClockArrowView!
+  private var timerTimeLabel: NSTextView!
   private var minutesLabel: NSTextView!
+  private var secondsLabel: NSTextView!
+  private var timerTime: NSDate? {
+    didSet {
+      self.updateTimeLabel()
+    }
+  }
+  private var timer: NSTimer?
   
+  var seconds: CGFloat = 0.0 {
+    didSet {
+      self.minutes = floor(seconds / 60)
+      self.progress = seconds / 60.0 / 60.0
+    }
+  }
   var minutes: CGFloat = 0.0 {
     didSet {
-      self.progress = minutes / 60.0
-      self.updateLabel()
+      self.updateLabels()
     }
   }
   var progress: CGFloat = 0.0 {
@@ -39,19 +53,35 @@ class MVClockView: NSView {
     arrowView = MVClockArrowView(center: CGPointMake(75, 75))
     arrowView.target = self
     arrowView.action = #selector(handleArrowControl)
+    arrowView.actionMouseUp = #selector(handleArrowControlMouseUp)
     self.layoutSubviews()
     self.addSubview(arrowView)
     
-    imageView = NSImageView(frame: NSMakeRect(16, 15, 118, 118))
+    imageView = MVClockImageView(frame: NSMakeRect(16, 15, 118, 118))
     imageView.image = NSImage(named: "clock")
     self.addSubview(imageView)
     
-    minutesLabel = MVLabel(frame: NSMakeRect(0, self.bounds.height / 2 - 8, 150, 30))
+    timerTimeLabel = MVLabel(frame: NSMakeRect(0, 94, 150, 20))
+    timerTimeLabel.font = NSFont.systemFontOfSize(15, weight: NSFontWeightMedium)
+    timerTimeLabel.alignment = NSTextAlignment.Center
+    timerTimeLabel.textColor = NSColor(SRGBRed: 0.749, green: 0.1412, blue: 0.0118, alpha: 1.0)
+    self.addSubview(timerTimeLabel)
+    
+    minutesLabel = MVLabel(frame: NSMakeRect(0, self.bounds.height / 2 - 7, 150, 30))
     minutesLabel.string = "0'"
     minutesLabel.font = NSFont.systemFontOfSize(35, weight: NSFontWeightMedium)
     minutesLabel.alignment = NSTextAlignment.Center
     minutesLabel.textColor = NSColor(SRGBRed: 0.2353, green: 0.2549, blue: 0.2706, alpha: 1.0)
     self.addSubview(minutesLabel)
+    
+    secondsLabel = MVLabel(frame: NSMakeRect(0, 38, 150, 20))
+    secondsLabel.font = NSFont.systemFontOfSize(15, weight: NSFontWeightMedium)
+    secondsLabel.alignment = NSTextAlignment.Center
+    secondsLabel.textColor = NSColor(SRGBRed: 0.6353, green: 0.6667, blue: 0.6863, alpha: 1.0)
+    self.addSubview(secondsLabel)
+    
+    self.updateLabels()
+    self.updateTimeLabel()
   }
   
   private func center(view: NSView) {
@@ -73,11 +103,90 @@ class MVClockView: NSView {
   
   func handleArrowControl(object: NSNumber) {
     let progressValue = CGFloat(object.floatValue)
-    self.minutes = round(progressValue * 60.0)
+    self.seconds = round(progressValue * 60.0) * 60.0
+    self.updateTimerTime()
+    
+    self.timer?.invalidate()
+    self.timer = nil
   }
   
-  private func updateLabel() {
+  func handleArrowControlMouseUp() {
+    self.updateTimerTime()
+    self.start()
+  }
+  
+  func handleClick() {
+    if self.timer == nil && self.seconds > 0 {
+      self.updateTimerTime()
+      self.start()
+    } else {
+      self.timer?.invalidate()
+      self.timer = nil
+    }
+  }
+  
+  override func mouseDown(theEvent: NSEvent) {
+    var event: NSEvent = theEvent
+    var isTracking = true
+    
+    while (isTracking) {
+      switch (event.type) {
+      case NSEventType.LeftMouseUp:
+        isTracking = false
+        let point = self.convertPoint(event.locationInWindow, fromView: nil)
+        if self.hitTest(point) == self {
+          self.handleClick()
+        }
+        break;
+      default:
+        break;
+      }
+      
+      if (isTracking) {
+        let anEvent = self.window?.nextEventMatchingMask(Int(NSEventMask.LeftMouseUpMask.rawValue) | Int(NSEventMask.LeftMouseDraggedMask.rawValue))
+        event = anEvent!
+      }
+    }
+  }
+  
+  private func updateTimerTime() {
+    self.timerTime = NSDate(timeIntervalSinceNow: Double(self.seconds))
+  }
+  
+  private func updateLabels() {
     minutesLabel.string = NSString(format: "%i'", Int(self.minutes)) as String
+    secondsLabel.string = NSString(format: "%i\"", Int(self.seconds % 60)) as String
+  }
+  
+  private func updateTimeLabel() {
+    let formatter = NSDateFormatter()
+    formatter.dateFormat = "HH:mm"
+    timerTimeLabel.string = formatter.stringFromDate(self.timerTime ?? NSDate())
+  }
+  
+  private func start() {
+    self.timer?.invalidate()
+    self.timer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(tick), userInfo: nil, repeats: true)
+  }
+  
+  func tick() {
+    self.seconds = self.seconds - 1
+    if self.seconds <= 0 {
+      self.timer?.invalidate()
+      self.timer = nil
+      debugPrint("finish!")
+    }
+  }
+  
+  override func hitTest(aPoint: NSPoint) -> NSView? {
+    let view = super.hitTest(aPoint)
+    if view == arrowView {
+      return view
+    }
+    if NSPointInRect(aPoint, self.bounds) {
+      return self
+    }
+    return nil
   }
   
 }
@@ -95,6 +204,9 @@ class MVClockProgressView: NSView {
   }
   
   override func drawRect(dirtyRect: NSRect) {
+    NSColor(SRGBRed: 0.7255, green: 0.7255, blue: 0.7255, alpha: 0.15).setFill()
+    NSBezierPath(ovalInRect: self.bounds).fill()
+    
     NSColor(SRGBRed: 0.2235, green: 0.5686, blue: 0.9882, alpha: 1.0).setFill()
     let path = NSBezierPath()
     path.moveToPoint(NSMakePoint(self.bounds.width / 2, self.bounds.height))
@@ -116,6 +228,7 @@ class MVClockArrowView: NSControl {
       self.needsDisplay = true
     }
   }
+  var actionMouseUp: Selector?
   private var center: CGPoint = CGPointZero
   
   convenience init(center: CGPoint) {
@@ -191,6 +304,17 @@ class MVClockArrowView: NSControl {
   }
   
   func handleUp(theEvent: NSEvent) {
+    if let selector = self.actionMouseUp {
+      self.target?.performSelector(selector)
+    }
+  }
+  
+}
+
+class MVClockImageView: NSImageView {
+ 
+  override func hitTest(aPoint: NSPoint) -> NSView? {
+    return nil
   }
   
 }
