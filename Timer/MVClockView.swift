@@ -58,7 +58,6 @@ class MVClockView: NSControl {
     self.addSubview(arrowView)
     
     imageView = MVClockImageView(frame: NSMakeRect(16, 15, 118, 118))
-    imageView.image = NSImage(named: "clock")
     self.addSubview(imageView)
     
     timerTimeLabel = MVLabel(frame: NSMakeRect(0, 94, 150, 20))
@@ -82,6 +81,25 @@ class MVClockView: NSControl {
     
     self.updateLabels()
     self.updateTimeLabel()
+    self.updateClockImageView()
+    
+    let nc = NSNotificationCenter.defaultCenter()
+    nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSWindowDidBecomeKeyNotification, object: nil)
+    nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSWindowDidResignKeyNotification, object: nil)
+  }
+  
+  deinit {
+    let nc = NSNotificationCenter.defaultCenter()
+    nc.removeObserver(self)
+  }
+  
+  func windowFocusChanged(notification: NSNotification) {
+    self.updateClockImageView()
+  }
+  
+  private func updateClockImageView() {
+    let windowHasFocus = self.window?.keyWindow ?? false
+    imageView.image = NSImage(named: windowHasFocus ? "clock" : "clock-unfocus")
   }
   
   private func center(view: NSView) {
@@ -190,13 +208,27 @@ class MVClockProgressView: NSView {
   
   convenience init() {
     self.init(frame: NSMakeRect(0, 0, 116, 116))
+    
+    let nc = NSNotificationCenter.defaultCenter()
+    nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSWindowDidBecomeKeyNotification, object: nil)
+    nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSWindowDidResignKeyNotification, object: nil)
+  }
+  
+  deinit {
+    let nc = NSNotificationCenter.defaultCenter()
+    nc.removeObserver(self)
   }
   
   override func drawRect(dirtyRect: NSRect) {
     NSColor(SRGBRed: 0.7255, green: 0.7255, blue: 0.7255, alpha: 0.15).setFill()
     NSBezierPath(ovalInRect: self.bounds).fill()
     
-    NSColor(SRGBRed: 0.2235, green: 0.5686, blue: 0.9882, alpha: 1.0).setFill()
+    let windowHasFocus = self.window?.keyWindow ?? false
+    if windowHasFocus {
+      NSColor(SRGBRed: 0.2235, green: 0.5686, blue: 0.9882, alpha: 1.0).setFill()
+    } else {
+      NSColor(SRGBRed: 0.5529, green: 0.6275, blue: 0.7216, alpha: 1.0).setFill()
+    }
     let path = NSBezierPath()
     path.moveToPoint(NSMakePoint(self.bounds.width / 2, self.bounds.height))
     path.appendBezierPathWithArcWithCenter(NSMakePoint(self.bounds.width / 2, self.bounds.height / 2),
@@ -206,6 +238,10 @@ class MVClockProgressView: NSView {
                                            clockwise: true)
     path.lineToPoint(NSMakePoint(self.bounds.width / 2, self.bounds.height / 2))
     path.fill()
+  }
+  
+  func windowFocusChanged(notification: NSNotification) {
+    self.needsDisplay = true
   }
   
 }
@@ -223,6 +259,15 @@ class MVClockArrowView: NSControl {
   convenience init(center: CGPoint) {
     self.init(frame: NSMakeRect(0, 0, 25, 25))
     self.center = center
+    
+    let nc = NSNotificationCenter.defaultCenter()
+    nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSWindowDidBecomeKeyNotification, object: nil)
+    nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSWindowDidResignKeyNotification, object: nil)
+  }
+  
+  deinit {
+    let nc = NSNotificationCenter.defaultCenter()
+    nc.removeObserver(self)
   }
   
   override func drawRect(dirtyRect: NSRect) {
@@ -243,7 +288,12 @@ class MVClockArrowView: NSControl {
     
     path.transformUsingAffineTransform(transform)
     
-    NSColor(SRGBRed: 0.2235, green: 0.5686, blue: 0.9882, alpha: 1.0).setFill()
+    let windowHasFocus = self.window?.keyWindow ?? false
+    if windowHasFocus {
+      NSColor(SRGBRed: 0.2235, green: 0.5686, blue: 0.9882, alpha: 1.0).setFill()
+    } else {
+      NSColor(SRGBRed: 0.5529, green: 0.6275, blue: 0.7216, alpha: 1.0).setFill()
+    }
     path.fill()
   }
   
@@ -296,6 +346,10 @@ class MVClockArrowView: NSControl {
     if let selector = self.actionMouseUp {
       self.target?.performSelector(selector)
     }
+  }
+  
+  func windowFocusChanged(notification: NSNotification) {
+    self.needsDisplay = true
   }
   
 }
