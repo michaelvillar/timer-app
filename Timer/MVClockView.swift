@@ -29,7 +29,7 @@ class MVClockView: NSControl {
   var seconds: CGFloat = 0.0 {
     didSet {
       self.minutes = floor(seconds / 60)
-      self.progress = seconds / 60.0 / 60.0
+      self.progress = invertProgressToScale(seconds / 60.0 / 60.0)
     }
   }
   var minutes: CGFloat = 0.0 {
@@ -90,7 +90,7 @@ class MVClockView: NSControl {
     self.addSubview(secondsLabel)
     
     let secondsLabelSuffix = "'"
-    let secondsLabelSize = minutesLabelSuffix.sizeWithAttributes([
+    let secondsLabelSize = secondsLabelSuffix.sizeWithAttributes([
       NSFontAttributeName: secondsLabel.font!
     ])
     secondsSuffixWidth = secondsLabelSize.width
@@ -136,8 +136,15 @@ class MVClockView: NSControl {
   }
   
   func handleArrowControl(object: NSNumber) {
-    let progressValue = CGFloat(object.floatValue)
-    self.seconds = round(progressValue * 60.0) * 60.0
+    var progressValue = CGFloat(object.floatValue)
+    progressValue = convertProgressToScale(progressValue)
+    var seconds: CGFloat = round(progressValue * 60.0 * 60.0)
+    if seconds <= 300 {
+      seconds = seconds - seconds % 10
+    } else {
+      seconds = seconds - seconds % 60
+    }
+    self.seconds = seconds
     self.updateTimerTime()
     
     self.timer?.invalidate()
@@ -221,6 +228,32 @@ class MVClockView: NSControl {
       return self
     }
     return nil
+  }
+  
+  private let scaleOriginal: CGFloat = 6
+  private let scaleActual: CGFloat = 3
+  
+  private func convertProgressToScale(progress: CGFloat) -> CGFloat {
+    if self.minutes <= 60 {
+      if progress <= scaleOriginal / 60 {
+        return progress / (scaleOriginal / scaleActual)
+      } else {
+        return (progress * 60 - scaleOriginal + scaleActual) / (60 - scaleActual)
+      }
+    }
+    return progress
+  }
+  
+  private func invertProgressToScale(progress: CGFloat) -> CGFloat {
+    if self.minutes <= 60 {
+      if progress <= scaleActual / 60 {
+        return progress * (scaleOriginal / scaleActual)
+      } else {
+        return (progress * (60 - scaleActual) - scaleActual + scaleOriginal) / 60
+        
+      }
+    }
+    return progress
   }
   
 }
