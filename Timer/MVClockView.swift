@@ -16,7 +16,9 @@ class MVClockView: NSControl {
   private var arrowView: MVClockArrowView!
   private var timerTimeLabel: NSTextView!
   private var minutesLabel: NSTextView!
+  private var minutesLabelSuffixWidth: CGFloat = 0.0
   private var secondsLabel: NSTextView!
+  private var secondsSuffixWidth: CGFloat = 0.0
   private var timerTime: NSDate? {
     didSet {
       self.updateTimeLabel()
@@ -66,18 +68,32 @@ class MVClockView: NSControl {
     timerTimeLabel.textColor = NSColor(SRGBRed: 0.749, green: 0.1412, blue: 0.0118, alpha: 1.0)
     self.addSubview(timerTimeLabel)
     
-    minutesLabel = MVLabel(frame: NSMakeRect(0, self.bounds.height / 2 - 7, 150, 30))
-    minutesLabel.string = "0'"
+    minutesLabel = MVLabel(frame: NSMakeRect(0, 57, 150, 30))
+    minutesLabel.string = ""
     minutesLabel.font = NSFont.systemFontOfSize(35, weight: NSFontWeightMedium)
     minutesLabel.alignment = NSTextAlignment.Center
     minutesLabel.textColor = NSColor(SRGBRed: 0.2353, green: 0.2549, blue: 0.2706, alpha: 1.0)
     self.addSubview(minutesLabel)
+
+    minutesLabel.sizeToFit()
     
+    let minutesLabelSuffix = "'"
+    let minutesLabelSize = minutesLabelSuffix.sizeWithAttributes([
+      NSFontAttributeName: minutesLabel.font!
+    ])
+    minutesLabelSuffixWidth = minutesLabelSize.width
+
     secondsLabel = MVLabel(frame: NSMakeRect(0, 38, 150, 20))
     secondsLabel.font = NSFont.systemFontOfSize(15, weight: NSFontWeightMedium)
     secondsLabel.alignment = NSTextAlignment.Center
     secondsLabel.textColor = NSColor(SRGBRed: 0.6353, green: 0.6667, blue: 0.6863, alpha: 1.0)
     self.addSubview(secondsLabel)
+    
+    let secondsLabelSuffix = "'"
+    let secondsLabelSize = minutesLabelSuffix.sizeWithAttributes([
+      NSFontAttributeName: secondsLabel.font!
+    ])
+    secondsSuffixWidth = secondsLabelSize.width
     
     self.updateLabels()
     self.updateTimeLabel()
@@ -104,8 +120,8 @@ class MVClockView: NSControl {
   
   private func center(view: NSView) {
     var frame = view.frame
-    frame.origin.x = (self.bounds.width - frame.size.width) / 2
-    frame.origin.y = (self.bounds.height - frame.size.height) / 2
+    frame.origin.x = round((self.bounds.width - frame.size.width) / 2)
+    frame.origin.y = round((self.bounds.height - frame.size.height) / 2)
     view.frame = frame
   }
   
@@ -162,7 +178,18 @@ class MVClockView: NSControl {
   
   private func updateLabels() {
     minutesLabel.string = NSString(format: "%i'", Int(self.minutes)) as String
+    minutesLabel.sizeToFit()
+    
+    var frame = minutesLabel.frame
+    frame.origin.x = round((self.bounds.width - (frame.size.width - minutesLabelSuffixWidth)) / 2)
+    minutesLabel.frame = frame
+    
     secondsLabel.string = NSString(format: "%i\"", Int(self.seconds % 60)) as String
+    secondsLabel.sizeToFit()
+    
+    frame = secondsLabel.frame
+    frame.origin.x = round((self.bounds.width - (frame.size.width - secondsSuffixWidth)) / 2)
+    secondsLabel.frame = frame
   }
   
   private func updateTimeLabel() {
