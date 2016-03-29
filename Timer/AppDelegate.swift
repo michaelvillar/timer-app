@@ -9,7 +9,7 @@
 import Cocoa
 
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDelegate {
   
   var window: MVWindow!
   var mainView: MVMainView!
@@ -19,22 +19,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     self.mainView = MVMainView(frame: NSZeroRect)
     
     self.clockView = MVClockView()
+    self.clockView.target = self
+    self.clockView.action = #selector(handleClockTimer)
     self.mainView.addSubview(clockView)
     
     window = MVWindow(mainView: mainView)
     window.makeKeyAndOrderFront(self)
     
-//    NSTimer.scheduledTimerWithTimeInterval(0.05, target: self, selector: #selector(handleTimer), userInfo: nil, repeats: true)
+    NSUserNotificationCenter.defaultUserNotificationCenter().delegate = self
+  }
+
+  func handleClockTimer(clockView: MVClockView) {
+    let notification = NSUserNotification()
+    notification.title = "It's time! 🕘"
+    
+    NSUserNotificationCenter.defaultUserNotificationCenter().deliverNotification(notification)
   }
   
-  func applicationWillTerminate(aNotification: NSNotification) {
-    // Insert code here to tear down your application
+  func userNotificationCenter(center: NSUserNotificationCenter, shouldPresentNotification notification: NSUserNotification) -> Bool {
+    return true
   }
-  
-  func handleTimer(timer: NSTimer) {
-    self.clockView.minutes += 0.3
-  }
-  
-  
+
 }
 

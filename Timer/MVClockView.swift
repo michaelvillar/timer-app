@@ -181,7 +181,7 @@ class MVClockView: NSControl {
     if self.seconds <= 0 {
       self.timer?.invalidate()
       self.timer = nil
-      debugPrint("finish!")
+      self.target?.performSelector(self.action, withObject: self)
     }
   }
   
