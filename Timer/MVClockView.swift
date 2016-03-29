@@ -206,6 +206,9 @@ class MVClockView: NSControl {
   }
   
   private func start() {
+    if self.seconds <= 0 {
+      return
+    }
     self.timer?.invalidate()
     self.timer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(tick), userInfo: nil, repeats: true)
   }
@@ -397,7 +400,15 @@ class MVClockArrowView: NSControl {
     if (dx < 0) {
       angle = angle - CGFloat(M_PI)
     }
-    let progress = -(angle - CGFloat(M_PI) / 2) / (CGFloat(M_PI) * 2)
+    var progress = (self.progress - self.progress % 1) + -(angle - CGFloat(M_PI) / 2) / (CGFloat(M_PI) * 2)
+    if self.progress - progress > 0.25 {
+      progress += 1
+    } else if progress - self.progress > 0.75 {
+      progress -= 1
+    }
+    if progress < 0 {
+      progress = 0
+    }
     let progressNumber = NSNumber(float: Float(progress))
     self.target?.performSelector(self.action, withObject: progressNumber)
   }
