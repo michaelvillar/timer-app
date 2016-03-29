@@ -25,8 +25,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     
     window = MVWindow(mainView: mainView)
     window.makeKeyAndOrderFront(self)
+    window.releasedWhenClosed = false
     
     NSUserNotificationCenter.defaultUserNotificationCenter().delegate = self
+  }
+  
+  func applicationShouldHandleReopen(sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+    self.window.makeKeyAndOrderFront(self)
+    return true
   }
 
   func handleClockTimer(clockView: MVClockView) {
