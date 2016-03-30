@@ -385,7 +385,8 @@ class MVClockArrowView: NSControl {
     
     let windowHasFocus = self.window?.keyWindow ?? false
     if windowHasFocus {
-      NSColor(SRGBRed: 0.2235, green: 0.5686, blue: 0.9882, alpha: 1.0).setFill()
+      let ratio: CGFloat = 0.5
+      NSColor(SRGBRed: 0.1734 + ratio * (0.2235 - 0.1734), green: 0.5284 + ratio * (0.5686 - 0.5284), blue: 0.9448 + ratio * (0.9882 - 0.9448), alpha: 1.0).setFill()
     } else {
       NSColor(SRGBRed: 0.5529, green: 0.6275, blue: 0.7216, alpha: 1.0).setFill()
     }
