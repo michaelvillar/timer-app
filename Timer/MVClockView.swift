@@ -17,6 +17,7 @@ class MVClockView: NSControl {
   private var timerTimeLabel: NSTextView!
   private var minutesLabel: NSTextView!
   private var minutesLabelSuffixWidth: CGFloat = 0.0
+  private var minutesLabelSecondsSuffixWidth: CGFloat = 0.0
   private var secondsLabel: NSTextView!
   private var secondsSuffixWidth: CGFloat = 0.0
   private var timerTime: NSDate? {
@@ -74,14 +75,18 @@ class MVClockView: NSControl {
     minutesLabel.alignment = NSTextAlignment.Center
     minutesLabel.textColor = NSColor(SRGBRed: 0.2353, green: 0.2549, blue: 0.2706, alpha: 1.0)
     self.addSubview(minutesLabel)
-
-    minutesLabel.sizeToFit()
     
     let minutesLabelSuffix = "'"
     let minutesLabelSize = minutesLabelSuffix.sizeWithAttributes([
       NSFontAttributeName: minutesLabel.font!
     ])
     minutesLabelSuffixWidth = minutesLabelSize.width
+    
+    let minutesLabelSecondsSuffix = "\""
+    let minutesLabelSecondsSize = minutesLabelSecondsSuffix.sizeWithAttributes([
+      NSFontAttributeName: minutesLabel.font!
+    ])
+    minutesLabelSecondsSuffixWidth = minutesLabelSecondsSize.width
 
     secondsLabel = MVLabel(frame: NSMakeRect(0, 38, 150, 20))
     secondsLabel.font = NSFont.systemFontOfSize(15, weight: NSFontWeightMedium)
@@ -184,19 +189,31 @@ class MVClockView: NSControl {
   }
   
   private func updateLabels() {
-    minutesLabel.string = NSString(format: "%i'", Int(self.minutes)) as String
+    var suffixWidth: CGFloat = 0
+    if (self.seconds < 60) {
+      minutesLabel.string = NSString(format: "%i\"", Int(self.seconds)) as String
+      suffixWidth = minutesLabelSecondsSuffixWidth
+    } else {
+      minutesLabel.string = NSString(format: "%i'", Int(self.minutes)) as String
+      suffixWidth = minutesLabelSuffixWidth
+    }
     minutesLabel.sizeToFit()
     
     var frame = minutesLabel.frame
-    frame.origin.x = round((self.bounds.width - (frame.size.width - minutesLabelSuffixWidth)) / 2)
+    frame.origin.x = round((self.bounds.width - (frame.size.width - suffixWidth)) / 2)
     minutesLabel.frame = frame
     
-    secondsLabel.string = NSString(format: "%i\"", Int(self.seconds % 60)) as String
-    secondsLabel.sizeToFit()
-    
-    frame = secondsLabel.frame
-    frame.origin.x = round((self.bounds.width - (frame.size.width - secondsSuffixWidth)) / 2)
-    secondsLabel.frame = frame
+    if (self.seconds < 60) {
+      secondsLabel.string = ""
+    }
+    else {
+      secondsLabel.string = NSString(format: "%i\"", Int(self.seconds % 60)) as String
+      secondsLabel.sizeToFit()
+      
+      frame = secondsLabel.frame
+      frame.origin.x = round((self.bounds.width - (frame.size.width - secondsSuffixWidth)) / 2)
+      secondsLabel.frame = frame
+    }
   }
   
   private func updateTimeLabel() {
