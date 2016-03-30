@@ -1,11 +1,3 @@
-//
-//  MVClockView.swift
-//  Timer
-//
-//  Created by Michael Villar on 3/27/16.
-//  Copyright © 2016 Michael Villar. All rights reserved.
-//
-
 import Cocoa
 
 class MVClockView: NSControl {
