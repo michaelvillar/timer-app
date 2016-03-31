@@ -115,6 +115,8 @@ class MVClockView: NSControl {
   deinit {
     let nc = NSNotificationCenter.defaultCenter()
     nc.removeObserver(self)
+    
+    arrowView.target = nil
   }
   
   func windowFocusChanged(notification: NSNotification) {
@@ -159,8 +161,7 @@ class MVClockView: NSControl {
     self.seconds = seconds
     self.updateTimerTime()
     
-    self.timer?.invalidate()
-    self.timer = nil
+    self.stop()
     
     self.paused = false
   }
@@ -176,8 +177,7 @@ class MVClockView: NSControl {
       self.start()
     } else {
       self.paused = true
-      self.timer?.invalidate()
-      self.timer = nil
+      self.stop()
     }
   }
   
@@ -249,15 +249,19 @@ class MVClockView: NSControl {
       return
     }
     self.paused = false
-    self.timer?.invalidate()
+    self.stop()
     self.timer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(tick), userInfo: nil, repeats: true)
+  }
+  
+  func stop() {
+    self.timer?.invalidate()
+    self.timer = nil
   }
   
   func tick() {
     self.seconds = self.seconds - 1
     if self.seconds <= 0 {
-      self.timer?.invalidate()
-      self.timer = nil
+      self.stop()
       self.target?.performSelector(self.action, withObject: self)
     }
   }

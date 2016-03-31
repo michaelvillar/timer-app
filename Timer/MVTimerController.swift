@@ -34,6 +34,11 @@ class MVTimerController: NSWindowController {
     }
   }
   
+  deinit {
+    self.clockView.target = nil
+    self.clockView.stop()
+  }
+  
   func handleClockTimer(clockView: MVClockView) {
     let notification = NSUserNotification()
     notification.title = "It's time! 🕘"
