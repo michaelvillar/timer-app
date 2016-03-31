@@ -1,49 +1,59 @@
 import Cocoa
-import AVFoundation
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDelegate {
   
-  var window: MVWindow!
-  var mainView: MVMainView!
-  var clockView: MVClockView!
+  private var controllers: [MVTimerController] = []
 
   func applicationDidFinishLaunching(aNotification: NSNotification) {
-    self.mainView = MVMainView(frame: NSZeroRect)
-    
-    self.clockView = MVClockView()
-    self.clockView.target = self
-    self.clockView.action = #selector(handleClockTimer)
-    self.mainView.addSubview(clockView)
-    
-    window = MVWindow(mainView: mainView)
-    window.makeKeyAndOrderFront(self)
-    window.releasedWhenClosed = false
+    let controller = MVTimerController()
+    controllers.append(controller)
     
     NSUserNotificationCenter.defaultUserNotificationCenter().delegate = self
+    
+    let nc = NSNotificationCenter.defaultCenter()
+    nc.addObserver(self, selector: #selector(handleClose), name: NSWindowWillCloseNotification, object: nil)
   }
   
   func applicationShouldHandleReopen(sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-    self.window.makeKeyAndOrderFront(self)
+    for controller in controllers {
+      controller.window?.makeKeyAndOrderFront(self)
+    }
     return true
   }
 
-  func handleClockTimer(clockView: MVClockView) {
-    let notification = NSUserNotification()
-    notification.title = "It's time! 🕘"
-    
-    NSUserNotificationCenter.defaultUserNotificationCenter().deliverNotification(notification)
-    
-    NSApplication.sharedApplication().requestUserAttention(NSRequestUserAttentionType.CriticalRequest)
-    
-    let soundURL = NSBundle.mainBundle().URLForResource("alert-sound", withExtension: "caf")
-    var soundID: SystemSoundID = 0
-    AudioServicesCreateSystemSoundID(soundURL!, &soundID)
-    AudioServicesPlaySystemSound(soundID)
-  }
-  
   func userNotificationCenter(center: NSUserNotificationCenter, shouldPresentNotification notification: NSUserNotification) -> Bool {
     return true
+  }
+  
+  func newDocument(sender: AnyObject?) {
+    let lastController = self.controllers.last
+    let controller = MVTimerController(closeToWindow: lastController?.window)
+    controllers.append(controller)
+  }
+  
+  func handleClose(notification: NSNotification) {
+    if controllers.count <= 1 {
+      return
+    }
+    if let window = notification.object as? NSWindow {
+      let controller = self.controllerForWindow(window)
+      if controller != nil {
+        let index = controllers.indexOf(controller!)
+        if index != nil {
+          controllers.removeAtIndex(index!)
+        }
+      }
+    }
+  }
+  
+  private func controllerForWindow(window: NSWindow) -> MVTimerController? {
+    for controller in controllers {
+      if controller.window == window {
+        return controller
+      }
+    }
+    return nil
   }
 
 }
