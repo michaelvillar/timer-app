@@ -4,6 +4,7 @@ class MVClockView: NSControl {
   
   private var clickGesture: NSClickGestureRecognizer!
   private var imageView: NSImageView!
+  private var pauseIconImageView: NSImageView!
   private var progressView: MVClockProgressView!
   private var arrowView: MVClockArrowView!
   private var timerTimeLabel: NSTextView!
@@ -18,6 +19,11 @@ class MVClockView: NSControl {
     }
   }
   private var timer: NSTimer?
+  private var paused: Bool = false {
+    didSet {
+      self.layoutPauseViews()
+    }
+  }
   
   var seconds: CGFloat = 0.0 {
     didSet {
@@ -54,6 +60,11 @@ class MVClockView: NSControl {
     
     imageView = MVClockImageView(frame: NSMakeRect(16, 15, 118, 118))
     self.addSubview(imageView)
+    
+    pauseIconImageView = NSImageView(frame: NSMakeRect(70, 99, 10, 12))
+    pauseIconImageView.image = NSImage(named: "icon-pause")
+    pauseIconImageView.alphaValue = 0.0
+    self.addSubview(pauseIconImageView)
     
     timerTimeLabel = MVLabel(frame: NSMakeRect(0, 94, 150, 20))
     timerTimeLabel.font = NSFont.systemFontOfSize(15, weight: NSFontWeightMedium)
@@ -110,9 +121,13 @@ class MVClockView: NSControl {
     self.updateClockImageView()
   }
   
-  private func updateClockImageView() {
+  private func updateClockImageView(highlighted highlighted: Bool = false) {
     let windowHasFocus = self.window?.keyWindow ?? false
-    imageView.image = NSImage(named: windowHasFocus ? "clock" : "clock-unfocus")
+    var image = windowHasFocus ? "clock" : "clock-unfocus"
+    if highlighted {
+      image = "clock-highlighted"
+    }
+    imageView.image = NSImage(named: image)
   }
   
   private func center(view: NSView) {
@@ -146,6 +161,8 @@ class MVClockView: NSControl {
     
     self.timer?.invalidate()
     self.timer = nil
+    
+    self.paused = false
   }
   
   func handleArrowControlMouseUp() {
@@ -158,12 +175,24 @@ class MVClockView: NSControl {
       self.updateTimerTime()
       self.start()
     } else {
+      self.paused = true
       self.timer?.invalidate()
       self.timer = nil
     }
   }
   
+  private func layoutPauseViews() {
+    let showPauseIcon = paused && self.timer != nil
+    NSAnimationContext.runAnimationGroup({ (ctx) in
+      ctx.duration = 0.2
+      ctx.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+      self.pauseIconImageView.animator().alphaValue = showPauseIcon ? 1 : 0
+      self.timerTimeLabel.animator().alphaValue = showPauseIcon ? 0 : 1
+    }, completionHandler: nil)
+  }
+  
   override func mouseDown(theEvent: NSEvent) {
+    self.updateClockImageView(highlighted: true)
     if let event = self.window?.nextEventMatchingMask(Int(NSEventMask.LeftMouseUpMask.rawValue) | Int(NSEventMask.LeftMouseDraggedMask.rawValue)) {
       if event.type == NSEventType.LeftMouseUp {
         let point = self.convertPoint(event.locationInWindow, fromView: nil)
@@ -172,6 +201,7 @@ class MVClockView: NSControl {
         }
       }
     }
+    self.updateClockImageView()
     
     super.mouseDown(theEvent)
   }
@@ -218,6 +248,7 @@ class MVClockView: NSControl {
     if self.seconds <= 0 {
       return
     }
+    self.paused = false
     self.timer?.invalidate()
     self.timer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(tick), userInfo: nil, repeats: true)
   }
