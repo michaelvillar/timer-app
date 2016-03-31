@@ -267,7 +267,8 @@ class MVClockView: NSControl {
     if view == arrowView {
       return view
     }
-    if NSPointInRect(aPoint, self.bounds) {
+    let path = NSBezierPath(ovalInRect: NSMakeRect(21, 21, 108, 108))
+    if path.containsPoint(aPoint) && self.seconds > 0 {
       return self
     }
     return nil
