@@ -6,7 +6,7 @@ Drag the blue arrow to set a timer. Release to start! Click to pause.
 
 When the time is up, a notification will show up with a nice sound.
 
-Supports for multiple timers with `CMD+N`
+Create new timers with `CMD+N`
 
 <img src="/screenshots/timer.png?raw=tru" width="262">
 
