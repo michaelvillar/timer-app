@@ -250,7 +250,7 @@ class MVClockView: NSControl {
     }
     self.paused = false
     self.stop()
-    self.timer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(tick), userInfo: nil, repeats: true)
+    self.timer = NSTimer.scheduledTimerWithTimeInterval(0.1, target: self, selector: #selector(tick), userInfo: nil, repeats: true)
   }
   
   func stop() {
@@ -259,7 +259,10 @@ class MVClockView: NSControl {
   }
   
   func tick() {
-    self.seconds = self.seconds - 1
+    if (self.timerTime == nil) {
+      return;
+    }
+    self.seconds = fmax(0, ceil(CGFloat(self.timerTime!.timeIntervalSinceNow ?? 0)))
     if self.seconds <= 0 {
       self.stop()
       self.target?.performSelector(self.action, withObject: self)
