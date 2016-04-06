@@ -11,3 +11,5 @@ Create new timers with `CMD+N`
 <img src="/screenshots/timer.png?raw=tru" width="262">
 
 Inspired by the **great** [Minutes widget](http://minutes.en.softonic.com/mac) from Nitram-nunca I've been using for years. But it wasn't maintained anymore (non-retina) + it was the only widget in my dashboard :)
+
+Timer requires OS X 10.11 or later.
