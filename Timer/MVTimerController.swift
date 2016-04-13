@@ -13,19 +13,19 @@ class MVTimerController: NSWindowController {
     window.releasedWhenClosed = false
 
     self.init(window: window)
-    
+
     self.mainView = mainView
     self.clockView = MVClockView()
     self.clockView.target = self
     self.clockView.action = #selector(handleClockTimer)
     self.mainView.addSubview(clockView)
-    
-    window.makeKeyAndOrderFront(self)    
+
+    window.makeKeyAndOrderFront(self)
   }
-  
+
   convenience init(closeToWindow: NSWindow?) {
     self.init()
-    
+
     if closeToWindow != nil {
       var point = closeToWindow!.frame.origin
       point.x += CGFloat(Int(arc4random_uniform(UInt32(80))) - 40)
@@ -33,25 +33,25 @@ class MVTimerController: NSWindowController {
       self.window?.setFrameOrigin(point)
     }
   }
-  
+
   deinit {
     self.clockView.target = nil
     self.clockView.stop()
   }
-  
+
   func handleClockTimer(clockView: MVClockView) {
     let notification = NSUserNotification()
     notification.title = "It's time! 🕘"
-    
+
     NSUserNotificationCenter.defaultUserNotificationCenter().deliverNotification(notification)
-    
+
     NSApplication.sharedApplication().requestUserAttention(NSRequestUserAttentionType.CriticalRequest)
-    
+
     let soundURL = NSBundle.mainBundle().URLForResource("alert-sound", withExtension: "caf")
     var soundID: SystemSoundID = 0
     AudioServicesCreateSystemSoundID(soundURL!, &soundID)
     AudioServicesPlaySystemSound(soundID)
   }
-  
+
 
 }
