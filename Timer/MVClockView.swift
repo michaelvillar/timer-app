@@ -218,6 +218,38 @@ class MVClockView: NSControl {
     super.mouseDown(theEvent)
   }
   
+  override func keyUp(theEvent: NSEvent) {
+    let char = theEvent.characters
+    if let number = Int(char ?? "") {
+      let newSeconds = floor(self.seconds / 60) * 600 + (self.seconds % 60) + CGFloat(number) * 60
+      if (newSeconds < 999*60) {
+        self.paused = false
+        self.stop()
+        self.seconds = newSeconds
+        self.updateTimerTime()
+      }
+    } else if theEvent.keyCode == 53 {
+      // Escape
+      self.paused = false
+      self.stop()
+      self.seconds = 0
+      self.updateTimerTime()
+    } else if theEvent.keyCode == 51 {
+      // Backspace
+      self.paused = false
+      self.stop()
+      if self.seconds <= 60 * 10 {
+        self.seconds = 0
+      } else {
+        self.seconds = floor(floor(self.seconds / 60) / 10) * 60 + (self.seconds % 60)
+      }
+      self.updateTimerTime()
+    } else if theEvent.keyCode == 36 || theEvent.keyCode == 49 {
+      // Enter or Space
+      self.handleClick();
+    }
+  }
+  
   private func updateTimerTime() {
     self.timerTime = NSDate(timeIntervalSinceNow: Double(self.seconds))
   }

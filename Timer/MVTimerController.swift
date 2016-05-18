@@ -53,5 +53,8 @@ class MVTimerController: NSWindowController {
     AudioServicesPlaySystemSound(soundID)
   }
   
+  override func keyUp(theEvent: NSEvent) {
+    self.clockView.keyUp(theEvent)
+  }
 
 }
