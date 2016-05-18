@@ -67,14 +67,22 @@ class MVClockView: NSControl {
     self.addSubview(pauseIconImageView)
     
     timerTimeLabel = MVLabel(frame: NSMakeRect(0, 94, 150, 20))
-    timerTimeLabel.font = NSFont.systemFontOfSize(15, weight: NSFontWeightMedium)
+    if #available(OSX 10.11, *) {
+      timerTimeLabel.font = NSFont.systemFontOfSize(15, weight: NSFontWeightMedium)
+    } else {
+      timerTimeLabel.font = NSFont(name: "HelveticaNeue-Medium", size: 15)
+    }
     timerTimeLabel.alignment = NSTextAlignment.Center
     timerTimeLabel.textColor = NSColor(SRGBRed: 0.749, green: 0.1412, blue: 0.0118, alpha: 1.0)
     self.addSubview(timerTimeLabel)
     
     minutesLabel = MVLabel(frame: NSMakeRect(0, 57, 150, 30))
     minutesLabel.string = ""
-    minutesLabel.font = NSFont.systemFontOfSize(35, weight: NSFontWeightMedium)
+    if #available(OSX 10.11, *) {
+      minutesLabel.font = NSFont.systemFontOfSize(35, weight: NSFontWeightMedium)
+    } else {
+      minutesLabel.font = NSFont(name: "HelveticaNeue-Medium", size: 35)
+    }
     minutesLabel.alignment = NSTextAlignment.Center
     minutesLabel.textColor = NSColor(SRGBRed: 0.2353, green: 0.2549, blue: 0.2706, alpha: 1.0)
     self.addSubview(minutesLabel)
@@ -92,7 +100,11 @@ class MVClockView: NSControl {
     minutesLabelSecondsSuffixWidth = minutesLabelSecondsSize.width
 
     secondsLabel = MVLabel(frame: NSMakeRect(0, 38, 150, 20))
-    secondsLabel.font = NSFont.systemFontOfSize(15, weight: NSFontWeightMedium)
+    if #available(OSX 10.11, *) {
+      secondsLabel.font = NSFont.systemFontOfSize(15, weight: NSFontWeightMedium)
+    } else {
+      secondsLabel.font = NSFont(name: "HelveticaNeue-Medium", size: 15)
+    }
     secondsLabel.alignment = NSTextAlignment.Center
     secondsLabel.textColor = NSColor(SRGBRed: 0.6353, green: 0.6667, blue: 0.6863, alpha: 1.0)
     self.addSubview(secondsLabel)
