@@ -68,7 +68,7 @@ class MVClockView: NSControl {
     
     timerTimeLabel = MVLabel(frame: NSMakeRect(0, 94, 150, 20))
     if #available(OSX 10.11, *) {
-      timerTimeLabel.font = NSFont.systemFontOfSize(15, weight: NSFontWeightMedium)
+      timerTimeLabel.font = NSFont.monospacedDigitSystemFontOfSize(15, weight: NSFontWeightMedium)
     } else {
       timerTimeLabel.font = NSFont(name: "HelveticaNeue-Medium", size: 15)
     }
@@ -79,7 +79,7 @@ class MVClockView: NSControl {
     minutesLabel = MVLabel(frame: NSMakeRect(0, 57, 150, 30))
     minutesLabel.string = ""
     if #available(OSX 10.11, *) {
-      minutesLabel.font = NSFont.systemFontOfSize(35, weight: NSFontWeightMedium)
+      minutesLabel.font = NSFont.monospacedDigitSystemFontOfSize(35, weight: NSFontWeightMedium)
     } else {
       minutesLabel.font = NSFont(name: "HelveticaNeue-Medium", size: 35)
     }
@@ -101,7 +101,7 @@ class MVClockView: NSControl {
 
     secondsLabel = MVLabel(frame: NSMakeRect(0, 38, 150, 20))
     if #available(OSX 10.11, *) {
-      secondsLabel.font = NSFont.systemFontOfSize(15, weight: NSFontWeightMedium)
+      secondsLabel.font = NSFont.monospacedDigitSystemFontOfSize(15, weight: NSFontWeightMedium)
     } else {
       secondsLabel.font = NSFont(name: "HelveticaNeue-Medium", size: 15)
     }
