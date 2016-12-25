@@ -10,7 +10,7 @@ class MVTimerController: NSWindowController {
     let mainView = MVMainView(frame: NSZeroRect)
 
     let window = MVWindow(mainView: mainView)
-    window.releasedWhenClosed = false
+    window.isReleasedWhenClosed = false
 
     self.init(window: window)
     
@@ -39,22 +39,22 @@ class MVTimerController: NSWindowController {
     self.clockView.stop()
   }
   
-  func handleClockTimer(clockView: MVClockView) {
+  func handleClockTimer(_ clockView: MVClockView) {
     let notification = NSUserNotification()
     notification.title = "It's time! 🕘"
     
-    NSUserNotificationCenter.defaultUserNotificationCenter().deliverNotification(notification)
+    NSUserNotificationCenter.default.deliver(notification)
     
-    NSApplication.sharedApplication().requestUserAttention(NSRequestUserAttentionType.CriticalRequest)
+    NSApplication.shared().requestUserAttention(NSRequestUserAttentionType.criticalRequest)
     
-    let soundURL = NSBundle.mainBundle().URLForResource("alert-sound", withExtension: "caf")
+    let soundURL = Bundle.main.url(forResource: "alert-sound", withExtension: "caf")
     var soundID: SystemSoundID = 0
-    AudioServicesCreateSystemSoundID(soundURL!, &soundID)
+    AudioServicesCreateSystemSoundID(soundURL! as CFURL, &soundID)
     AudioServicesPlaySystemSound(soundID)
   }
   
-  override func keyUp(theEvent: NSEvent) {
-    self.clockView.keyUp(theEvent)
+  override func keyUp(with theEvent: NSEvent) {
+    self.clockView.keyUp(with: theEvent)
   }
 
 }
