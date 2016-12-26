@@ -7,7 +7,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
   
   private var staysOnTop = false {
     didSet {
-      controllers.forEach { controller in
+      for controller in controllers {
         if staysOnTop {
           controller.window?.level = Int(CGWindowLevelForKey(CGWindowLevelKey.maximumWindow))
         } else {
@@ -60,12 +60,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
   }
   
   func toggleStaysOnTop(_ sender: AnyObject?) {
-    self.staysOnTop = !self.staysOnTop
+    staysOnTop = !staysOnTop
   }
   
   override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
     if menuItem.action == #selector(toggleStaysOnTop(_:)) {
-      if self.staysOnTop {
+      if staysOnTop {
         menuItem.state = NSOnState
       } else {
         menuItem.state = NSOffState
