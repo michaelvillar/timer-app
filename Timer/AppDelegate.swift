@@ -5,49 +5,49 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
   
   private var controllers: [MVTimerController] = []
 
-  func applicationDidFinishLaunching(aNotification: NSNotification) {
+  func applicationDidFinishLaunching(_ aNotification: Notification) {
     let controller = MVTimerController()
     controllers.append(controller)
     
-    NSUserNotificationCenter.defaultUserNotificationCenter().delegate = self
+    NSUserNotificationCenter.default.delegate = self
     
-    let nc = NSNotificationCenter.defaultCenter()
-    nc.addObserver(self, selector: #selector(handleClose), name: NSWindowWillCloseNotification, object: nil)
+    let nc = NotificationCenter.default
+    nc.addObserver(self, selector: #selector(handleClose), name: NSNotification.Name.NSWindowWillClose, object: nil)
   }
   
-  func applicationShouldHandleReopen(sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+  func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
     for controller in controllers {
       controller.window?.makeKeyAndOrderFront(self)
     }
     return true
   }
 
-  func userNotificationCenter(center: NSUserNotificationCenter, shouldPresentNotification notification: NSUserNotification) -> Bool {
+  func userNotificationCenter(_ center: NSUserNotificationCenter, shouldPresent notification: NSUserNotification) -> Bool {
     return true
   }
   
-  func newDocument(sender: AnyObject?) {
+  func newDocument(_ sender: AnyObject?) {
     let lastController = self.controllers.last
     let controller = MVTimerController(closeToWindow: lastController?.window)
     controllers.append(controller)
   }
   
-  func handleClose(notification: NSNotification) {
+  func handleClose(_ notification: Notification) {
     if controllers.count <= 1 {
       return
     }
     if let window = notification.object as? NSWindow {
       let controller = self.controllerForWindow(window)
       if controller != nil {
-        let index = controllers.indexOf(controller!)
+        let index = controllers.index(of: controller!)
         if index != nil {
-          controllers.removeAtIndex(index!)
+          controllers.remove(at: index!)
         }
       }
     }
   }
   
-  private func controllerForWindow(window: NSWindow) -> MVTimerController? {
+  private func controllerForWindow(_ window: NSWindow) -> MVTimerController? {
     for controller in controllers {
       if controller.window == window {
         return controller
