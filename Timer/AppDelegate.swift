@@ -4,6 +4,18 @@ import Cocoa
 class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDelegate {
   
   private var controllers: [MVTimerController] = []
+  
+  private var staysOnTop = false {
+    didSet {
+      controllers.forEach { controller in
+        if staysOnTop {
+          controller.window?.level = Int(CGWindowLevelForKey(CGWindowLevelKey.maximumWindow))
+        } else {
+          controller.window?.level = Int(CGWindowLevelForKey(CGWindowLevelKey.normalWindow))
+        }
+      }
+    }
+  }
 
   func applicationDidFinishLaunching(_ aNotification: Notification) {
     let controller = MVTimerController()
@@ -45,6 +57,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         }
       }
     }
+  }
+  
+  func toggleStaysOnTop(_ sender: AnyObject?) {
+    self.staysOnTop = !self.staysOnTop
+  }
+  
+  override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+    if menuItem.action == #selector(toggleStaysOnTop(_:)) {
+      if self.staysOnTop {
+        menuItem.state = NSOnState
+      } else {
+        menuItem.state = NSOffState
+      }
+    }
+    
+    return true
   }
   
   private func controllerForWindow(_ window: NSWindow) -> MVTimerController? {
