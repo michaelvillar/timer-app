@@ -594,7 +594,7 @@
                             <menuItem title="Stay on Top" id="xWs-MF-SWd">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="toggleStaysOnTop:" target="-1" id="Rv1-4R-JAW"/>
+                                    <binding destination="lVF-Ft-Uh4" name="value" keyPath="values.staysOnTop" id="SGY-mW-GLl"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="eu3-7i-yIM"/>
@@ -621,5 +621,6 @@
                 </menuItem>
             </items>
         </menu>
+        <userDefaultsController representsSharedInstance="YES" id="lVF-Ft-Uh4"/>
     </objects>
 </document>

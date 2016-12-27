@@ -16,6 +16,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
       }
     }
   }
+  
+  override init() {
+    super.init()
+    self.registerDefaults()
+  }
 
   func applicationDidFinishLaunching(_ aNotification: Notification) {
     let controller = MVTimerController()
@@ -25,6 +30,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     
     let nc = NotificationCenter.default
     nc.addObserver(self, selector: #selector(handleClose), name: NSNotification.Name.NSWindowWillClose, object: nil)
+    nc.addObserver(self, selector: #selector(handleUserDefaultsChange), name: UserDefaults.didChangeNotification, object: nil)
+    
+    staysOnTop = UserDefaults.standard.bool(forKey: MVUserDefaultsKeys.staysOnTop)
   }
   
   func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
@@ -59,20 +67,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     }
   }
   
-  func toggleStaysOnTop(_ sender: AnyObject?) {
-    staysOnTop = !staysOnTop
+  func handleUserDefaultsChange(_ notification: Notification) {
+    staysOnTop = UserDefaults.standard.bool(forKey: MVUserDefaultsKeys.staysOnTop)
   }
   
-  override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
-    if menuItem.action == #selector(toggleStaysOnTop(_:)) {
-      if staysOnTop {
-        menuItem.state = NSOnState
-      } else {
-        menuItem.state = NSOffState
-      }
-    }
-    
-    return true
+  private func registerDefaults() {
+    UserDefaults.standard.register(defaults: [MVUserDefaultsKeys.staysOnTop: false])
   }
   
   private func controllerForWindow(_ window: NSWindow) -> MVTimerController? {
