@@ -8,11 +8,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
   private var staysOnTop = false {
     didSet {
       for controller in controllers {
-        if staysOnTop {
-          controller.window?.level = Int(CGWindowLevelForKey(CGWindowLevelKey.maximumWindow))
-        } else {
-          controller.window?.level = Int(CGWindowLevelForKey(CGWindowLevelKey.normalWindow))
-        }
+        controller.window?.level = self.windowLevel(forStaysOnTop: staysOnTop)
       }
     }
   }
@@ -49,6 +45,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
   func newDocument(_ sender: AnyObject?) {
     let lastController = self.controllers.last
     let controller = MVTimerController(closeToWindow: lastController?.window)
+    controller.window?.level = self.windowLevel(forStaysOnTop: staysOnTop)
     controllers.append(controller)
   }
   
@@ -69,6 +66,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
   
   func handleUserDefaultsChange(_ notification: Notification) {
     staysOnTop = UserDefaults.standard.bool(forKey: MVUserDefaultsKeys.staysOnTop)
+  }
+  
+  private func windowLevel(forStaysOnTop staysOnTop: Bool) -> Int {
+    if staysOnTop {
+      return Int(CGWindowLevelForKey(CGWindowLevelKey.floatingWindow))
+    } else {
+      return Int(CGWindowLevelForKey(CGWindowLevelKey.normalWindow))
+    }
   }
   
   private func registerDefaults() {
