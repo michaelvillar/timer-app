@@ -226,7 +226,7 @@ class MVClockView: NSControl {
     if let number = Int(theEvent.characters ?? "") {
       var newSeconds:CGFloat
       if self.inputSeconds {
-        if currentSeconds < 10 {
+        if currentSeconds < 6 || currentMinutes == 0 {
           newSeconds = currentMinutes * 60 + currentSeconds * 10 + CGFloat(number)
         } else {
           newSeconds = self.seconds
