@@ -57,4 +57,7 @@ class MVTimerController: NSWindowController {
     self.clockView.keyUp(with: theEvent)
   }
 
+  override func keyDown(with event: NSEvent) {
+  }
+
 }
