@@ -13,6 +13,7 @@ class MVClockView: NSControl {
   private var minutesLabelSecondsSuffixWidth: CGFloat = 0.0
   private var secondsLabel: NSTextView!
   private var secondsSuffixWidth: CGFloat = 0.0
+  private var inputSeconds: Bool = false
   private var timerTime: Date? {
     didSet {
       self.updateTimeLabel()
@@ -219,32 +220,47 @@ class MVClockView: NSControl {
   }
   
   override func keyUp(with theEvent: NSEvent) {
-    let char = theEvent.characters
-    if let number = Int(char ?? "") {
-      let newSeconds = floor(self.seconds / 60) * 600 + (self.seconds.truncatingRemainder(dividingBy: 60)) + CGFloat(number) * 60
+    let key = theEvent.keyCode
+    let currentSeconds = self.seconds.truncatingRemainder(dividingBy: 60)
+    let currentMinutes = floor(self.seconds / 60)
+    if let number = Int(theEvent.characters ?? "") {
+      var newSeconds:CGFloat
+      if self.inputSeconds {
+        if currentSeconds < 6 || currentMinutes == 0 {
+          newSeconds = currentMinutes * 60 + currentSeconds * 10 + CGFloat(number)
+        } else {
+          newSeconds = self.seconds
+        }
+      } else {
+        newSeconds = currentMinutes * 600 + currentSeconds + CGFloat(number) * 60
+      }
       if (newSeconds < 999*60) {
         self.paused = false
         self.stop()
         self.seconds = newSeconds
         self.updateTimerTime()
       }
-    } else if theEvent.keyCode == 53 {
+    } else if key == 47 || key == 65 {
+      // Period or Decimal
+      self.inputSeconds = !self.inputSeconds
+    } else if key == 53 {
       // Escape
       self.paused = false
       self.stop()
       self.seconds = 0
       self.updateTimerTime()
-    } else if theEvent.keyCode == 51 {
+      self.inputSeconds = false
+    } else if key == 51 {
       // Backspace
       self.paused = false
       self.stop()
-      if self.seconds <= 60 * 10 {
-        self.seconds = 0
+      if self.inputSeconds {
+        self.seconds = currentMinutes * 60 + floor(currentSeconds / 10)
       } else {
-        self.seconds = floor(floor(self.seconds / 60) / 10) * 60 + (self.seconds.truncatingRemainder(dividingBy: 60))
+        self.seconds = floor(currentMinutes / 10) * 60 + currentSeconds
       }
       self.updateTimerTime()
-    } else if theEvent.keyCode == 36 || theEvent.keyCode == 49 {
+    } else if key == 36 || key == 49 {
       // Enter or Space
       self.handleClick();
     }
