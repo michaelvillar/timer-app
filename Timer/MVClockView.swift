@@ -14,6 +14,7 @@ class MVClockView: NSControl {
   private var secondsLabel: NSTextView!
   private var secondsSuffixWidth: CGFloat = 0.0
   private var inputSeconds: Bool = false
+  private let docktile: NSDockTile = NSApp.dockTile
   private var timerTime: Date? {
     didSet {
       self.updateTimeLabel()
@@ -272,12 +273,18 @@ class MVClockView: NSControl {
   
   private func updateLabels() {
     var suffixWidth: CGFloat = 0
+    var badgeSeconds: Int = Int(self.seconds)
+    
     if (self.seconds < 60) {
       minutesLabel.string = NSString(format: "%i\"", Int(self.seconds)) as String
       suffixWidth = minutesLabelSecondsSuffixWidth
     } else {
       minutesLabel.string = NSString(format: "%i'", Int(self.minutes)) as String
       suffixWidth = minutesLabelSuffixWidth
+      badgeSeconds = Int(self.seconds.truncatingRemainder(dividingBy: 60));
+    }
+    if (self.timer != nil){
+      self.docktile.badgeLabel = NSString(format:"%02d:%02d", Int(self.minutes), badgeSeconds) as String
     }
     minutesLabel.sizeToFit()
     
@@ -316,6 +323,10 @@ class MVClockView: NSControl {
   func stop() {
     self.timer?.invalidate()
     self.timer = nil
+
+    if (!self.paused){
+      self.docktile.badgeLabel = ""
+    }
   }
   
   func tick() {
