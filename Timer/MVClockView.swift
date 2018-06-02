@@ -19,6 +19,7 @@ class MVClockView: NSControl {
       self.updateTimeLabel()
     }
   }
+  private var currentTimeTimer: Foundation.Timer?
   private var timer: Foundation.Timer?
   private var paused: Bool = false {
     didSet {
@@ -75,6 +76,7 @@ class MVClockView: NSControl {
     }
     timerTimeLabel.alignment = NSTextAlignment.center
     timerTimeLabel.textColor = NSColor(srgbRed: 0.749, green: 0.1412, blue: 0.0118, alpha: 1.0)
+    currentTimeTimer = Foundation.Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(maintainCurrentTime), userInfo: nil, repeats: true)
     self.addSubview(timerTimeLabel)
     
     minutesLabel = MVLabel(frame: NSMakeRect(0, 57, 150, 30))
@@ -327,6 +329,13 @@ class MVClockView: NSControl {
       self.stop()
       _ = self.target?.perform(self.action, with: self)
     }
+  }
+  
+  func maintainCurrentTime(){
+    if(self.timer != nil){
+      return;
+    }
+    self.timerTime = Date()
   }
   
   override func hitTest(_ aPoint: NSPoint) -> NSView? {
