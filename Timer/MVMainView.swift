@@ -2,12 +2,24 @@ import Cocoa
 
 class MVMainView: NSView {
   
+  private var contextMenu: NSMenu?
+  override var menu: NSMenu?{
+    get{return self.contextMenu}
+    set{}
+  }
+  
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
+    
+    self.contextMenu = NSMenu(title: "Menu")
+    self.contextMenu!.addItem(withTitle:"Show in dock", action: #selector(self.addBadgeToDock), keyEquivalent:"")
     
     let nc = NotificationCenter.default
     nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSNotification.Name.NSWindowDidBecomeKey, object: nil)
     nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSNotification.Name.NSWindowDidResignKey, object: nil)
+  }
+  
+  func addBadgeToDock(){
   }
   
   required init?(coder: NSCoder) {
