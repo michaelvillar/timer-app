@@ -5,6 +5,7 @@ class MVMainView: NSView {
   var controller : MVTimerController?
   private let appDelegate: AppDelegate  = NSApplication.shared().delegate as! AppDelegate
   private var contextMenu: NSMenu?
+  public  var menuItem : NSMenuItem?
   override var menu: NSMenu?{
     get{return self.contextMenu}
     set{}
@@ -14,7 +15,8 @@ class MVMainView: NSView {
     super.init(frame: frameRect)
     
     self.contextMenu = NSMenu(title: "Menu")
-    self.contextMenu?.addItem(withTitle:"Show in dock", action: #selector(self.addBadgeToDock), keyEquivalent:"")
+    menuItem = NSMenuItem(title:"Show in Dock", action:#selector(self.addBadgeToDock), keyEquivalent:"")
+    self.contextMenu?.addItem(menuItem!)
     
     let nc = NotificationCenter.default
     nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSNotification.Name.NSWindowDidBecomeKey, object: nil)
