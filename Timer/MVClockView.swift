@@ -14,7 +14,12 @@ class MVClockView: NSControl {
   private var secondsLabel: NSTextView!
   private var secondsSuffixWidth: CGFloat = 0.0
   private var inputSeconds: Bool = false
-  private let docktile: NSDockTile = NSApp.dockTile
+  private let docktile: NSDockTile = NSApplication.shared().dockTile
+  public  var inDock : Bool = false{
+    didSet{
+      self.updateLabels()
+    }
+  }
   private var timerTime: Date? {
     didSet {
       self.updateTimeLabel()
@@ -275,7 +280,6 @@ class MVClockView: NSControl {
   
   private func updateLabels() {
     var suffixWidth: CGFloat = 0
-    var badgeSeconds: Int = Int(self.seconds)
     
     if (self.seconds < 60) {
       minutesLabel.string = NSString(format: "%i\"", Int(self.seconds)) as String
@@ -283,10 +287,6 @@ class MVClockView: NSControl {
     } else {
       minutesLabel.string = NSString(format: "%i'", Int(self.minutes)) as String
       suffixWidth = minutesLabelSuffixWidth
-      badgeSeconds = Int(self.seconds.truncatingRemainder(dividingBy: 60));
-    }
-    if (self.timer != nil){
-      self.docktile.badgeLabel = NSString(format:"%02d:%02d", Int(self.minutes), badgeSeconds) as String
     }
     minutesLabel.sizeToFit()
     
@@ -305,6 +305,21 @@ class MVClockView: NSControl {
       frame.origin.x = round((self.bounds.width - (frame.size.width - secondsSuffixWidth)) / 2)
       secondsLabel.frame = frame
     }
+    self.updateBadge()
+  }
+  
+  private func updateBadge() {
+    
+    if self.inDock {
+      if (self.timer != nil || self.paused) {
+        let badgeSeconds = Int(self.seconds.truncatingRemainder(dividingBy: 60))
+        let badgeMinutes = Int(self.minutes)
+        self.docktile.badgeLabel = NSString(format:"%02d:%02d", badgeMinutes, badgeSeconds) as String
+      } else {
+        self.docktile.badgeLabel = ""
+      }
+    }
+  
   }
   
   private func updateTimeLabel() {
@@ -326,7 +341,7 @@ class MVClockView: NSControl {
     self.timer?.invalidate()
     self.timer = nil
 
-    if (!self.paused){
+    if (self.inDock && !self.paused){
       self.docktile.badgeLabel = ""
     }
   }

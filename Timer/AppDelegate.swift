@@ -4,6 +4,7 @@ import Cocoa
 class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDelegate {
   
   private var controllers: [MVTimerController] = []
+  private var currentlyInDock : MVTimerController?;
   
   private var staysOnTop = false {
     didSet {
@@ -21,6 +22,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
   func applicationDidFinishLaunching(_ aNotification: Notification) {
     let controller = MVTimerController()
     controllers.append(controller)
+    self.addBadgeToDock(controller: controller)
     
     NSUserNotificationCenter.default.delegate = self
     
@@ -40,6 +42,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
 
   func userNotificationCenter(_ center: NSUserNotificationCenter, shouldPresent notification: NSUserNotification) -> Bool {
     return true
+  }
+  
+  func addBadgeToDock(controller: MVTimerController){
+    if currentlyInDock != nil {
+      currentlyInDock!.showInDock(false)
+    }
+    currentlyInDock = controller
+    controller.showInDock(true)
   }
   
   func newDocument(_ sender: AnyObject?) {
