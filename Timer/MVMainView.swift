@@ -2,8 +2,21 @@ import Cocoa
 
 class MVMainView: NSView {
   
+  var controller : MVTimerController?
+  private let appDelegate: AppDelegate  = NSApplication.shared().delegate as! AppDelegate
+  private var contextMenu: NSMenu?
+  public  var menuItem : NSMenuItem?
+  override var menu: NSMenu?{
+    get{return self.contextMenu}
+    set{}
+  }
+  
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
+    
+    self.contextMenu = NSMenu(title: "Menu")
+    menuItem = NSMenuItem(title:"Show in Dock", action:#selector(self.addBadgeToDock), keyEquivalent:"")
+    self.contextMenu?.addItem(menuItem!)
     
     let nc = NotificationCenter.default
     nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSNotification.Name.NSWindowDidBecomeKey, object: nil)
@@ -12,6 +25,10 @@ class MVMainView: NSView {
   
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+  
+  func addBadgeToDock(){
+    appDelegate.addBadgeToDock(controller: self.controller!)
   }
   
   deinit {

@@ -15,6 +15,7 @@ class MVTimerController: NSWindowController {
     self.init(window: window)
     
     self.mainView = mainView
+    self.mainView.controller = self
     self.clockView = MVClockView()
     self.clockView.target = self
     self.clockView.action = #selector(handleClockTimer)
@@ -37,6 +38,15 @@ class MVTimerController: NSWindowController {
   deinit {
     self.clockView.target = nil
     self.clockView.stop()
+  }
+  
+  func showInDock(_ state: Bool){
+    self.clockView.inDock = state
+    if state{
+      self.mainView.menuItem?.state = NSOnState
+    } else {
+      self.mainView.menuItem?.state = NSOffState
+    }
   }
   
   func handleClockTimer(_ clockView: MVClockView) {
