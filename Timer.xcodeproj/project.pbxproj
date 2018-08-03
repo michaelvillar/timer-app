@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		41B080C62114CE2700EEE7E8 /* Keycodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B080C52114CE2700EEE7E8 /* Keycodes.swift */; };
 		4C30BBFC1CA7C56500C45EBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C30BBFB1CA7C56500C45EBF /* AppDelegate.swift */; };
 		4C30BBFE1CA7C56500C45EBF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C30BBFD1CA7C56500C45EBF /* Assets.xcassets */; };
 		4C30BC091CA7C81C00C45EBF /* MVWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C30BC081CA7C81C00C45EBF /* MVWindow.swift */; };
@@ -21,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		41B080C52114CE2700EEE7E8 /* Keycodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keycodes.swift; sourceTree = "<group>"; };
 		4C30BBF81CA7C56500C45EBF /* Timer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Timer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C30BBFB1CA7C56500C45EBF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4C30BBFD1CA7C56500C45EBF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 				4C30BC021CA7C56500C45EBF /* Info.plist */,
 				4C30BC121CA7D73C00C45EBF /* MainMenu.xib */,
 				4C6F0F291CAA79EB00E9A6F7 /* alert-sound.caf */,
+				41B080C52114CE2700EEE7E8 /* Keycodes.swift */,
 			);
 			path = Timer;
 			sourceTree = "<group>";
@@ -160,6 +163,7 @@
 				4C6F0F211CAA3D8600E9A6F7 /* MVLabel.swift in Sources */,
 				4C6F0F2C1CACF4B500E9A6F7 /* MVTimerController.swift in Sources */,
 				4C30BC091CA7C81C00C45EBF /* MVWindow.swift in Sources */,
+				41B080C62114CE2700EEE7E8 /* Keycodes.swift in Sources */,
 				4C30BBFC1CA7C56500C45EBF /* AppDelegate.swift in Sources */,
 				4C30BC161CA7D94500C45EBF /* MVClockView.swift in Sources */,
 				4C30BC101CA7CFBB00C45EBF /* MVTitlebarAccessoryViewController.swift in Sources */,
