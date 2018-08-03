@@ -161,7 +161,7 @@ class MVClockView: NSControl {
   }
   
   private func layoutSubviews() {
-    let angle = -progress * CGFloat(M_PI) * 2 + CGFloat(M_PI) / 2
+    let angle = -progress * .pi * 2 + .pi / 2
     let x = self.bounds.width / 2 + cos(angle) * progressView.bounds.width / 2
     let y = self.bounds.height / 2 + sin(angle) * progressView.bounds.height / 2
     let point: NSPoint = NSMakePoint(x - arrowView.bounds.width / 2, y - arrowView.bounds.height / 2)
@@ -501,7 +501,7 @@ class MVClockArrowView: NSControl {
     path.line(to: CGPoint(x: self.bounds.width, y: 0))
     
     let cp = CGPoint(x: self.bounds.width / 2, y: self.bounds.height / 2)
-    let angle = -progress * CGFloat(M_PI) * 2
+    let angle = -progress * .pi * 2
     var transform = AffineTransform.identity
     transform.translate(x: cp.x, y: cp.y)
     transform.rotate(byRadians: angle)
@@ -557,9 +557,9 @@ class MVClockArrowView: NSControl {
     let dy = (location.y - center.y) / center.y
     var angle = atan(dy / dx)
     if (dx < 0) {
-      angle = angle - CGFloat(M_PI)
+      angle = angle - .pi
     }
-    var progress = (self.progress - self.progress.truncatingRemainder(dividingBy: 1)) + -(angle - CGFloat(M_PI) / 2) / (CGFloat(M_PI) * 2)
+    var progress = (self.progress - self.progress.truncatingRemainder(dividingBy: 1)) + -(angle - .pi / 2) / (.pi * 2)
     if self.progress - progress > 0.25 {
       progress += 1
     } else if progress - self.progress > 0.75 {
