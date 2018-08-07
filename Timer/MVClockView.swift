@@ -248,17 +248,17 @@ class MVClockView: NSControl {
         self.seconds = newSeconds
         self.updateTimerTime()
       }
-    } else if key == 47 || key == 65 {
+    } else if (key == Keycode.period || key == Keycode.keypadDecimal) {
       // Period or Decimal
       self.inputSeconds = !self.inputSeconds
-    } else if key == 53 {
+    } else if (key == Keycode.escape) {
       // Escape
       self.paused = false
       self.stop()
       self.seconds = 0
       self.updateTimerTime()
       self.inputSeconds = false
-    } else if key == 51 {
+    } else if (key == Keycode.delete || key == Keycode.forwardDelete) {
       // Backspace
       self.paused = false
       self.stop()
@@ -268,8 +268,8 @@ class MVClockView: NSControl {
         self.seconds = floor(currentMinutes / 10) * 60 + currentSeconds
       }
       self.updateTimerTime()
-    } else if key == 36 || key == 49 {
-      // Enter or Space
+    } else if (key == Keycode.returnKey || key == Keycode.space || key == Keycode.keypadEnter) {
+      // "Enter" or "Space" or "Keypad Enter"
       self.handleClick();
     }
   }
