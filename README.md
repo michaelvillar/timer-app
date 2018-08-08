@@ -15,3 +15,10 @@ Install as a [cask](https://caskroom.github.io) via `brew cask install michaelvi
 Inspired by the **great** [Minutes widget](http://minutes.en.softonic.com/mac) from Nitram-nunca I've been using for years. But it wasn't maintained anymore (non-retina) + it was the only widget in my dashboard :)
 
 Timer requires OS X 10.11 or later.
+
+## Build
+
+```
+xcodebuild -quiet clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+open build/Release/
+```
