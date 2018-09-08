@@ -52,7 +52,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     controller.showInDock(true)
   }
   
-  func newDocument(_ sender: AnyObject?) {
+  @objc func newDocument(_ sender: AnyObject?) {
     let lastController = self.controllers.last
     let controller = MVTimerController(closeToWindow: lastController?.window)
     controller.window?.level = NSWindow.Level(rawValue: self.windowLevel(forStaysOnTop: staysOnTop))
