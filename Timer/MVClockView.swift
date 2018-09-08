@@ -76,7 +76,7 @@ class MVClockView: NSControl {
     
     timerTimeLabel = MVLabel(frame: NSMakeRect(0, 94, 150, 20))
     if #available(OSX 10.11, *) {
-      timerTimeLabel.font = NSFont.systemFont(ofSize: 15, weight: NSFont.Weight.medium)
+      timerTimeLabel.font = NSFont.systemFont(ofSize: 15, weight: .medium)
     } else {
       timerTimeLabel.font = NSFont(name: "HelveticaNeue-Medium", size: 15)
     }
@@ -88,7 +88,7 @@ class MVClockView: NSControl {
     minutesLabel = MVLabel(frame: NSMakeRect(0, 57, 150, 30))
     minutesLabel.string = ""
     if #available(OSX 10.11, *) {
-      minutesLabel.font = NSFont.systemFont(ofSize: 35, weight: NSFont.Weight.medium)
+      minutesLabel.font = NSFont.systemFont(ofSize: 35, weight: .medium)
     } else {
       minutesLabel.font = NSFont(name: "HelveticaNeue-Medium", size: 35)
     }
@@ -110,7 +110,7 @@ class MVClockView: NSControl {
 
     secondsLabel = MVLabel(frame: NSMakeRect(0, 38, 150, 20))
     if #available(OSX 10.11, *) {
-      secondsLabel.font = NSFont.systemFont(ofSize: 15, weight: NSFont.Weight.medium)
+      secondsLabel.font = NSFont.systemFont(ofSize: 15, weight: .medium)
     } else {
       secondsLabel.font = NSFont(name: "HelveticaNeue-Medium", size: 15)
     }
@@ -214,7 +214,7 @@ class MVClockView: NSControl {
   
   override func mouseDown(with theEvent: NSEvent) {
     self.updateClockImageView(highlighted: true)
-    if let event = self.window?.nextEvent(matching: [NSEvent.EventTypeMask.leftMouseUp, NSEvent.EventTypeMask.leftMouseDragged]) {
+    if let event = self.window?.nextEvent(matching: [.leftMouseUp, .leftMouseDragged]) {
       if event.type == NSEvent.EventType.leftMouseUp {
         let point = self.convert(event.locationInWindow, from: nil)
         if self.hitTest(point) == self {
@@ -544,7 +544,7 @@ class MVClockArrowView: NSControl {
       }
       
       if (isTracking) {
-        let anEvent = self.window?.nextEvent(matching: [NSEvent.EventTypeMask.leftMouseUp, NSEvent.EventTypeMask.leftMouseDragged])
+        let anEvent = self.window?.nextEvent(matching: [.leftMouseUp, .leftMouseDragged])
         event = anEvent!
       }
     }

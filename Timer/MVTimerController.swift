@@ -55,7 +55,7 @@ class MVTimerController: NSWindowController {
     
     NSUserNotificationCenter.default.deliver(notification)
     
-    NSApplication.shared.requestUserAttention(NSApplication.RequestUserAttentionType.criticalRequest)
+    NSApplication.shared.requestUserAttention(.criticalRequest)
     
     let soundURL = Bundle.main.url(forResource: "alert-sound", withExtension: "caf")
     var soundID: SystemSoundID = 0
