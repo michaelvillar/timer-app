@@ -215,7 +215,7 @@ class MVClockView: NSControl {
   override func mouseDown(with theEvent: NSEvent) {
     self.updateClockImageView(highlighted: true)
     if let event = self.window?.nextEvent(matching: [.leftMouseUp, .leftMouseDragged]) {
-      if event.type == NSEvent.EventType.leftMouseUp {
+      if event.type == .leftMouseUp {
         let point = self.convert(event.locationInWindow, from: nil)
         if self.hitTest(point) == self {
           self.handleClick()
@@ -526,12 +526,12 @@ class MVClockArrowView: NSControl {
     
     while (isTracking) {
       switch (event.type) {
-      case NSEvent.EventType.leftMouseUp:
+      case .leftMouseUp:
         isTracking = false
         self.handleUp(event)
         break;
         
-      case NSEvent.EventType.leftMouseDragged:
+      case .leftMouseDragged:
         if (isDragging) {
           self.handleDragged(event)
         }

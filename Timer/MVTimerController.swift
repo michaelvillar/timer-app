@@ -43,9 +43,9 @@ class MVTimerController: NSWindowController {
   func showInDock(_ state: Bool){
     self.clockView.inDock = state
     if state{
-      self.mainView.menuItem?.state = NSControl.StateValue.on
+      self.mainView.menuItem?.state = .on
     } else {
-      self.mainView.menuItem?.state = NSControl.StateValue.off
+      self.mainView.menuItem?.state = .off
     }
   }
   
