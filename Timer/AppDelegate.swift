@@ -64,11 +64,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
       return
     }
     if let window = notification.object as? NSWindow {
-      let controller = self.controllerForWindow(window)
-      if controller != nil {
-        let index = controllers.index(of: controller!)
-        if index != nil {
-          controllers.remove(at: index!)
+      if let controller = self.controllerForWindow(window) {
+        if let index = controllers.index(of: controller) {
+          controllers.remove(at: index)
         }
       }
     }
