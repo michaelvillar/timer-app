@@ -43,19 +43,19 @@ class MVTimerController: NSWindowController {
   func showInDock(_ state: Bool){
     self.clockView.inDock = state
     if state{
-      self.mainView.menuItem?.state = NSOnState
+      self.mainView.menuItem?.state = NSControl.StateValue.on
     } else {
-      self.mainView.menuItem?.state = NSOffState
+      self.mainView.menuItem?.state = NSControl.StateValue.off
     }
   }
   
-  func handleClockTimer(_ clockView: MVClockView) {
+  @objc func handleClockTimer(_ clockView: MVClockView) {
     let notification = NSUserNotification()
     notification.title = "It's time! 🕘"
     
     NSUserNotificationCenter.default.deliver(notification)
     
-    NSApplication.shared().requestUserAttention(NSRequestUserAttentionType.criticalRequest)
+    NSApplication.shared.requestUserAttention(NSApplication.RequestUserAttentionType.criticalRequest)
     
     let soundURL = Bundle.main.url(forResource: "alert-sound", withExtension: "caf")
     var soundID: SystemSoundID = 0

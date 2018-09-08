@@ -14,7 +14,7 @@ class MVClockView: NSControl {
   private var secondsLabel: NSTextView!
   private var secondsSuffixWidth: CGFloat = 0.0
   private var inputSeconds: Bool = false
-  private let docktile: NSDockTile = NSApplication.shared().dockTile
+  private let docktile: NSDockTile = NSApplication.shared.dockTile
   public  var inDock : Bool = false{
     didSet{
       self.updateLabels()
@@ -70,13 +70,13 @@ class MVClockView: NSControl {
     self.addSubview(imageView)
     
     pauseIconImageView = NSImageView(frame: NSMakeRect(70, 99, 10, 12))
-    pauseIconImageView.image = NSImage(named: "icon-pause")
+    pauseIconImageView.image = NSImage(named: NSImage.Name(rawValue: "icon-pause"))
     pauseIconImageView.alphaValue = 0.0
     self.addSubview(pauseIconImageView)
     
     timerTimeLabel = MVLabel(frame: NSMakeRect(0, 94, 150, 20))
     if #available(OSX 10.11, *) {
-      timerTimeLabel.font = NSFont.systemFont(ofSize: 15, weight: NSFontWeightMedium)
+      timerTimeLabel.font = NSFont.systemFont(ofSize: 15, weight: NSFont.Weight.medium)
     } else {
       timerTimeLabel.font = NSFont(name: "HelveticaNeue-Medium", size: 15)
     }
@@ -88,7 +88,7 @@ class MVClockView: NSControl {
     minutesLabel = MVLabel(frame: NSMakeRect(0, 57, 150, 30))
     minutesLabel.string = ""
     if #available(OSX 10.11, *) {
-      minutesLabel.font = NSFont.systemFont(ofSize: 35, weight: NSFontWeightMedium)
+      minutesLabel.font = NSFont.systemFont(ofSize: 35, weight: NSFont.Weight.medium)
     } else {
       minutesLabel.font = NSFont(name: "HelveticaNeue-Medium", size: 35)
     }
@@ -98,19 +98,19 @@ class MVClockView: NSControl {
     
     let minutesLabelSuffix = "'"
     let minutesLabelSize = minutesLabelSuffix.size(withAttributes: [
-      NSFontAttributeName: minutesLabel.font!
+      NSAttributedStringKey.font: minutesLabel.font!
     ])
     minutesLabelSuffixWidth = minutesLabelSize.width
     
     let minutesLabelSecondsSuffix = "\""
     let minutesLabelSecondsSize = minutesLabelSecondsSuffix.size(withAttributes: [
-      NSFontAttributeName: minutesLabel.font!
+      NSAttributedStringKey.font: minutesLabel.font!
     ])
     minutesLabelSecondsSuffixWidth = minutesLabelSecondsSize.width
 
     secondsLabel = MVLabel(frame: NSMakeRect(0, 38, 150, 20))
     if #available(OSX 10.11, *) {
-      secondsLabel.font = NSFont.systemFont(ofSize: 15, weight: NSFontWeightMedium)
+      secondsLabel.font = NSFont.systemFont(ofSize: 15, weight: NSFont.Weight.medium)
     } else {
       secondsLabel.font = NSFont(name: "HelveticaNeue-Medium", size: 15)
     }
@@ -120,7 +120,7 @@ class MVClockView: NSControl {
     
     let secondsLabelSuffix = "'"
     let secondsLabelSize = secondsLabelSuffix.size(withAttributes: [
-      NSFontAttributeName: secondsLabel.font!
+      NSAttributedStringKey.font: secondsLabel.font!
     ])
     secondsSuffixWidth = secondsLabelSize.width
     
@@ -129,8 +129,8 @@ class MVClockView: NSControl {
     self.updateClockImageView()
     
     let nc = NotificationCenter.default
-    nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSNotification.Name.NSWindowDidBecomeKey, object: nil)
-    nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSNotification.Name.NSWindowDidResignKey, object: nil)
+    nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSWindow.didBecomeKeyNotification, object: nil)
+    nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSWindow.didResignKeyNotification, object: nil)
   }
   
   deinit {
@@ -140,7 +140,7 @@ class MVClockView: NSControl {
     arrowView.target = nil
   }
   
-  func windowFocusChanged(_ notification: Notification) {
+  @objc func windowFocusChanged(_ notification: Notification) {
     self.updateClockImageView()
   }
   
@@ -150,7 +150,7 @@ class MVClockView: NSControl {
     if highlighted {
       image = "clock-highlighted"
     }
-    imageView.image = NSImage(named: image)
+    imageView.image = NSImage(named: NSImage.Name(rawValue: image))
   }
   
   private func center(_ view: NSView) {
@@ -170,7 +170,7 @@ class MVClockView: NSControl {
     arrowView.frame = frame
   }
   
-  func handleArrowControl(_ object: NSNumber) {
+  @objc func handleArrowControl(_ object: NSNumber) {
     var progressValue = CGFloat(object.floatValue)
     progressValue = convertProgressToScale(progressValue)
     var seconds: CGFloat = round(progressValue * 60.0 * 60.0)
@@ -187,7 +187,7 @@ class MVClockView: NSControl {
     self.paused = false
   }
   
-  func handleArrowControlMouseUp() {
+  @objc func handleArrowControlMouseUp() {
     self.updateTimerTime()
     self.start()
   }
@@ -214,8 +214,8 @@ class MVClockView: NSControl {
   
   override func mouseDown(with theEvent: NSEvent) {
     self.updateClockImageView(highlighted: true)
-    if let event = self.window?.nextEvent(matching: [.leftMouseUp, .leftMouseDragged]) {
-      if event.type == NSEventType.leftMouseUp {
+    if let event = self.window?.nextEvent(matching: [NSEvent.EventTypeMask.leftMouseUp, NSEvent.EventTypeMask.leftMouseDragged]) {
+      if event.type == NSEvent.EventType.leftMouseUp {
         let point = self.convert(event.locationInWindow, from: nil)
         if self.hitTest(point) == self {
           self.handleClick()
@@ -346,7 +346,7 @@ class MVClockView: NSControl {
     }
   }
   
-  func tick() {
+  @objc func tick() {
     if (self.timerTime == nil) {
       return;
     }
@@ -357,7 +357,7 @@ class MVClockView: NSControl {
     }
   }
   
-  func maintainCurrentTime(){
+  @objc func maintainCurrentTime(){
     if(self.timer != nil){
       return;
     }
@@ -416,8 +416,8 @@ class MVClockProgressView: NSView {
     self.init(frame: NSMakeRect(0, 0, 116, 116))
     
     let nc = NotificationCenter.default
-    nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSNotification.Name.NSWindowDidBecomeKey, object: nil)
-    nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSNotification.Name.NSWindowDidResignKey, object: nil)
+    nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSWindow.didBecomeKeyNotification, object: nil)
+    nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSWindow.didResignKeyNotification, object: nil)
   }
   
   deinit {
@@ -446,7 +446,7 @@ class MVClockProgressView: NSView {
     path.line(to: cp)
     path.addClip()
     
-    let ctx = NSGraphicsContext.current()
+    let ctx = NSGraphicsContext.current
     ctx?.saveGraphicsState()
     
     var transform = AffineTransform.identity
@@ -455,13 +455,13 @@ class MVClockProgressView: NSView {
     transform.translate(x: -cp.x, y: -cp.y)
     (transform as NSAffineTransform).concat()
     
-    let image = NSImage(named: windowHasFocus ? "progress" : "progress-unfocus")
+    let image = NSImage(named: windowHasFocus ? NSImage.Name(rawValue: "progress") : NSImage.Name(rawValue: "progress-unfocus"))
     image?.draw(in: self.bounds)
     
     ctx?.restoreGraphicsState()
   }
   
-  func windowFocusChanged(_ notification: Notification) {
+  @objc func windowFocusChanged(_ notification: Notification) {
     self.needsDisplay = true
   }
   
@@ -482,8 +482,8 @@ class MVClockArrowView: NSControl {
     self.center = center
     
     let nc = NotificationCenter.default
-    nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSNotification.Name.NSWindowDidBecomeKey, object: nil)
-    nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSNotification.Name.NSWindowDidResignKey, object: nil)
+    nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSWindow.didBecomeKeyNotification, object: nil)
+    nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSWindow.didResignKeyNotification, object: nil)
   }
   
   deinit {
@@ -493,7 +493,7 @@ class MVClockArrowView: NSControl {
   
   override func draw(_ dirtyRect: NSRect) {
     NSColor.clear.setFill()
-    NSRectFill(self.bounds)
+    self.bounds.fill()
     
     let path = NSBezierPath()
     path.move(to: CGPoint(x: 0, y: 0))
@@ -526,12 +526,12 @@ class MVClockArrowView: NSControl {
     
     while (isTracking) {
       switch (event.type) {
-      case NSEventType.leftMouseUp:
+      case NSEvent.EventType.leftMouseUp:
         isTracking = false
         self.handleUp(event)
         break;
         
-      case NSEventType.leftMouseDragged:
+      case NSEvent.EventType.leftMouseDragged:
         if (isDragging) {
           self.handleDragged(event)
         }
@@ -544,7 +544,7 @@ class MVClockArrowView: NSControl {
       }
       
       if (isTracking) {
-        let anEvent = self.window?.nextEvent(matching: [.leftMouseUp, .leftMouseDragged])
+        let anEvent = self.window?.nextEvent(matching: [NSEvent.EventTypeMask.leftMouseUp, NSEvent.EventTypeMask.leftMouseDragged])
         event = anEvent!
       }
     }
@@ -578,7 +578,7 @@ class MVClockArrowView: NSControl {
     }
   }
   
-  func windowFocusChanged(_ notification: Notification) {
+  @objc func windowFocusChanged(_ notification: Notification) {
     self.needsDisplay = true
   }
   

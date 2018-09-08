@@ -9,7 +9,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
   private var staysOnTop = false {
     didSet {
       for controller in controllers {
-        controller.window?.level = self.windowLevel(forStaysOnTop: staysOnTop)
+        controller.window?.level = NSWindow.Level(rawValue: self.windowLevel(forStaysOnTop: staysOnTop))
       }
     }
   }
@@ -27,7 +27,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     NSUserNotificationCenter.default.delegate = self
     
     let nc = NotificationCenter.default
-    nc.addObserver(self, selector: #selector(handleClose), name: NSNotification.Name.NSWindowWillClose, object: nil)
+    nc.addObserver(self, selector: #selector(handleClose), name: NSWindow.willCloseNotification, object: nil)
     nc.addObserver(self, selector: #selector(handleUserDefaultsChange), name: UserDefaults.didChangeNotification, object: nil)
     
     staysOnTop = UserDefaults.standard.bool(forKey: MVUserDefaultsKeys.staysOnTop)
@@ -55,11 +55,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
   func newDocument(_ sender: AnyObject?) {
     let lastController = self.controllers.last
     let controller = MVTimerController(closeToWindow: lastController?.window)
-    controller.window?.level = self.windowLevel(forStaysOnTop: staysOnTop)
+    controller.window?.level = NSWindow.Level(rawValue: self.windowLevel(forStaysOnTop: staysOnTop))
     controllers.append(controller)
   }
   
-  func handleClose(_ notification: Notification) {
+  @objc func handleClose(_ notification: Notification) {
     if controllers.count <= 1 {
       return
     }
@@ -74,7 +74,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     }
   }
   
-  func handleUserDefaultsChange(_ notification: Notification) {
+  @objc func handleUserDefaultsChange(_ notification: Notification) {
     staysOnTop = UserDefaults.standard.bool(forKey: MVUserDefaultsKeys.staysOnTop)
   }
   
