@@ -17,6 +17,9 @@ class MVClockView: NSControl {
   private let docktile: NSDockTile = NSApplication.shared.dockTile
   public  var inDock : Bool = false{
     didSet{
+      if !inDock {
+        self.removeBadge()
+      }
       self.updateLabels()
     }
   }
@@ -316,10 +319,13 @@ class MVClockView: NSControl {
         let badgeMinutes = Int(self.minutes)
         self.docktile.badgeLabel = NSString(format:"%02d:%02d", badgeMinutes, badgeSeconds) as String
       } else {
-        self.docktile.badgeLabel = ""
+        self.removeBadge()
       }
     }
+  }
   
+  private func removeBadge() {
+    self.docktile.badgeLabel = ""
   }
   
   private func updateTimeLabel() {
@@ -342,7 +348,7 @@ class MVClockView: NSControl {
     self.timer = nil
 
     if (self.inDock && !self.paused){
-      self.docktile.badgeLabel = ""
+      self.removeBadge()
     }
   }
   
