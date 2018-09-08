@@ -21,6 +21,8 @@ class MVTimerController: NSWindowController {
     self.clockView.action = #selector(handleClockTimer)
     self.mainView.addSubview(clockView)
     
+    self.windowFrameAutosaveName = NSWindow.FrameAutosaveName("TimerWindowAutosaveFrame")
+    
     window.makeKeyAndOrderFront(self)    
   }
   

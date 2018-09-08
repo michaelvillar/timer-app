@@ -60,9 +60,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
   }
   
   @objc func handleClose(_ notification: Notification) {
-    if controllers.count <= 1 {
-      return
-    }
     if let window = notification.object as? NSWindow {
       if let controller = self.controllerForWindow(window) {
         if let index = controllers.index(of: controller) {
