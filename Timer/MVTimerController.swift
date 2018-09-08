@@ -10,7 +10,7 @@ class MVTimerController: NSWindowController {
     let mainView = MVMainView(frame: NSZeroRect)
 
     let window = MVWindow(mainView: mainView)
-    window.isReleasedWhenClosed = false
+    //window.isReleasedWhenClosed = false
 
     self.init(window: window)
     
