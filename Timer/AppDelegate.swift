@@ -4,7 +4,7 @@ import Cocoa
 class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDelegate {
   
   private var controllers: [MVTimerController] = []
-  private var currentlyInDock : MVTimerController?;
+  private var currentlyInDock : MVTimerController?
   
   private var staysOnTop = false {
     didSet {
@@ -61,6 +61,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
   @objc func handleClose(_ notification: Notification) {
     if let window = notification.object as? NSWindow,
       let controller = window.windowController as? MVTimerController,
+      controller != currentlyInDock,
       let index = controllers.index(of: controller) {
           controllers.remove(at: index)
     }
