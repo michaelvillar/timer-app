@@ -3,7 +3,7 @@ import Cocoa
 class MVMainView: NSView {
   
   var controller : MVTimerController?
-  private let appDelegate: AppDelegate  = NSApplication.shared().delegate as! AppDelegate
+  private let appDelegate: AppDelegate  = NSApplication.shared.delegate as! AppDelegate
   private var contextMenu: NSMenu?
   public  var menuItem : NSMenuItem?
   override var menu: NSMenu?{
@@ -19,15 +19,15 @@ class MVMainView: NSView {
     self.contextMenu?.addItem(menuItem!)
     
     let nc = NotificationCenter.default
-    nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSNotification.Name.NSWindowDidBecomeKey, object: nil)
-    nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSNotification.Name.NSWindowDidResignKey, object: nil)
+    nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSWindow.didBecomeKeyNotification, object: nil)
+    nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSWindow.didResignKeyNotification, object: nil)
   }
   
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
   
-  func addBadgeToDock(){
+  @objc func addBadgeToDock(){
     appDelegate.addBadgeToDock(controller: self.controller!)
   }
   
@@ -53,7 +53,7 @@ class MVMainView: NSView {
     gradient?.draw(in: path, angle: -90)
   }
   
-  func windowFocusChanged(_ notification: Notification) {
+  @objc func windowFocusChanged(_ notification: Notification) {
     self.needsDisplay = true
   }
   
