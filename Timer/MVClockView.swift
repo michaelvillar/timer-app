@@ -335,7 +335,7 @@ class MVClockView: NSControl {
     if #available(OSX 10.11, *) {
       return NSFont.systemFont(ofSize: fontSize, weight: .medium)
     } else {
-      return  NSFont.labelFont(ofSize: fontSize)
+      return NSFont.labelFont(ofSize: fontSize)
     }
   }
   
