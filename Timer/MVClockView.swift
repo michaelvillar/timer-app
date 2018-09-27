@@ -324,7 +324,7 @@ class MVClockView: NSControl {
   
   private func updateTimeLabel() {
     let formatter = DateFormatter()
-    formatter.dateFormat = "HH:mm"
+    formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "jj:mm", options: 0, locale: Locale.current)
     timerTimeLabel.string = formatter.string(from: self.timerTime ?? Date())
   }
   
