@@ -15,7 +15,7 @@ class MVMainView: NSView {
     super.init(frame: frameRect)
     
     self.contextMenu = NSMenu(title: "Menu")
-    menuItem = NSMenuItem(title:"Show in Dock", action:#selector(self.addBadgeToDock), keyEquivalent:"")
+    menuItem = NSMenuItem(title:"Show in Dock", action:#selector(self.toggleShowInDock), keyEquivalent:"")
     self.contextMenu?.addItem(menuItem!)
     
     let nc = NotificationCenter.default
@@ -27,8 +27,12 @@ class MVMainView: NSView {
     fatalError("init(coder:) has not been implemented")
   }
   
-  @objc func addBadgeToDock(){
-    appDelegate.addBadgeToDock(controller: self.controller!)
+  @objc func toggleShowInDock() {
+    if menuItem?.state == .on {
+      appDelegate.removeBadgeFromDock()
+    } else {
+      appDelegate.addBadgeToDock(controller: self.controller!)
+    }
   }
   
   deinit {
