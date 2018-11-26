@@ -2,7 +2,7 @@ import Cocoa
 
 class MVMainView: NSView {
   
-  var controller : MVTimerController?
+  weak var controller : MVTimerController?
   private let appDelegate: AppDelegate  = NSApplication.shared.delegate as! AppDelegate
   private var contextMenu: NSMenu?
   public  var menuItem : NSMenuItem?

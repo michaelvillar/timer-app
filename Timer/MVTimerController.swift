@@ -10,7 +10,6 @@ class MVTimerController: NSWindowController {
     let mainView = MVMainView(frame: NSZeroRect)
 
     let window = MVWindow(mainView: mainView)
-    window.isReleasedWhenClosed = false
 
     self.init(window: window)
     
@@ -20,6 +19,8 @@ class MVTimerController: NSWindowController {
     self.clockView.target = self
     self.clockView.action = #selector(handleClockTimer)
     self.mainView.addSubview(clockView)
+    
+    self.windowFrameAutosaveName = NSWindow.FrameAutosaveName("TimerWindowAutosaveFrame")
     
     window.makeKeyAndOrderFront(self)    
   }

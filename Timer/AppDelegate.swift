@@ -4,12 +4,12 @@ import Cocoa
 class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDelegate {
   
   private var controllers: [MVTimerController] = []
-  private var currentlyInDock : MVTimerController?;
+  private var currentlyInDock : MVTimerController?
   
   private var staysOnTop = false {
     didSet {
-      for controller in controllers {
-        controller.window?.level = self.windowLevel()
+      for window in NSApplication.shared.windows {
+        window.level = self.windowLevel()
       }
     }
   }
@@ -34,8 +34,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
   }
   
   func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-    for controller in controllers {
-      controller.window?.makeKeyAndOrderFront(self)
+    for window in NSApplication.shared.windows {
+      window.makeKeyAndOrderFront(self)
     }
     return true
   }
@@ -53,22 +53,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
   }
   
   @objc func newDocument(_ sender: AnyObject?) {
-    let lastController = self.controllers.last
-    let controller = MVTimerController(closeToWindow: lastController?.window)
+    let controller = MVTimerController(closeToWindow: NSApplication.shared.keyWindow)
     controller.window?.level = self.windowLevel()
     controllers.append(controller)
   }
   
   @objc func handleClose(_ notification: Notification) {
-    if controllers.count <= 1 {
-      return
-    }
-    if let window = notification.object as? NSWindow {
-      if let controller = self.controllerForWindow(window) {
-        if let index = controllers.index(of: controller) {
+    if let window = notification.object as? NSWindow,
+      let controller = window.windowController as? MVTimerController,
+      controller != currentlyInDock,
+      let index = controllers.index(of: controller) {
           controllers.remove(at: index)
-        }
-      }
     }
   }
   
@@ -82,15 +77,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
   
   private func registerDefaults() {
     UserDefaults.standard.register(defaults: [MVUserDefaultsKeys.staysOnTop: false])
-  }
-  
-  private func controllerForWindow(_ window: NSWindow) -> MVTimerController? {
-    for controller in controllers {
-      if controller.window == window {
-        return controller
-      }
-    }
-    return nil
   }
 
 }
