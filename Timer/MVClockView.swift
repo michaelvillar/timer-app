@@ -374,8 +374,9 @@ class MVClockView: NSControl {
     
     self.paused = false
     self.stop()
-    self.timer = Foundation.Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(tick), userInfo: nil, repeats: true)
-    self.timer?.tolerance = 0.03 // improve battery life
+    
+    // Ensure that each countdown tick occurs just past the exact seconds boundary (so system delays won't affect the value displayed)
+    self.timer = Timer.scheduledTimer(timeInterval: 0.97, target: self, selector: #selector(firstTick), userInfo: nil, repeats: false)
   }
   
   func stop() {
@@ -387,10 +388,16 @@ class MVClockView: NSControl {
     }
   }
   
+  @objc func firstTick() {
+    self.tick()
+    self.timer = Foundation.Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(tick), userInfo: nil, repeats: true)
+    self.timer?.tolerance = 0.03 // improve battery life
+  }
+  
   @objc func tick() {
     guard let timerTime = self.timerTime  else { return }
     
-    self.seconds = fmax(0, ceil(CGFloat(timerTime.timeIntervalSinceNow)))
+    self.seconds = fmax(0, floor(CGFloat(timerTime.timeIntervalSinceNow)))
     if self.seconds <= 0 {
       self.stop()
       _ = self.target?.perform(self.action, with: self)
