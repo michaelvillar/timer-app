@@ -45,11 +45,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
   }
   
   func addBadgeToDock(controller: MVTimerController){
-    if currentlyInDock != nil {
-      currentlyInDock!.showInDock(false)
+    if currentlyInDock != controller {
+      self.removeBadgeFromDock()
     }
     currentlyInDock = controller
     controller.showInDock(true)
+  }
+  
+  func removeBadgeFromDock() {
+    if currentlyInDock != nil {
+      currentlyInDock!.showInDock(false)
+    }
   }
   
   @objc func newDocument(_ sender: AnyObject?) {
