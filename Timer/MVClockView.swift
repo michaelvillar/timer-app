@@ -8,6 +8,7 @@ class MVClockView: NSControl {
   private var progressView: MVClockProgressView!
   private var arrowView: MVClockArrowView!
   private var timerTimeLabel: NSTextView!
+  private var timerTimeLabelFontSize: CGFloat = 15
   private var minutesLabel: NSTextView!
   private var minutesLabelSuffixWidth: CGFloat = 0.0
   private var minutesLabelSecondsSuffixWidth: CGFloat = 0.0
@@ -75,11 +76,7 @@ class MVClockView: NSControl {
     self.addSubview(pauseIconImageView)
     
     timerTimeLabel = MVLabel(frame: NSMakeRect(0, 94, 150, 20))
-    if #available(OSX 10.11, *) {
-      timerTimeLabel.font = NSFont.systemFont(ofSize: 15, weight: .medium)
-    } else {
-      timerTimeLabel.font = NSFont(name: "HelveticaNeue-Medium", size: 15)
-    }
+    timerTimeLabel.font = timeLabelFont(ofSize: timerTimeLabelFontSize)
     timerTimeLabel.alignment = NSTextAlignment.center
     timerTimeLabel.textColor = NSColor(srgbRed: 0.749, green: 0.1412, blue: 0.0118, alpha: 1.0)
     currentTimeTimer = Foundation.Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(maintainCurrentTime), userInfo: nil, repeats: true)
@@ -325,7 +322,21 @@ class MVClockView: NSControl {
   private func updateTimeLabel() {
     let formatter = DateFormatter()
     formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "jj:mm", options: 0, locale: Locale.current)
-    timerTimeLabel.string = formatter.string(from: self.timerTime ?? Date())
+    let timeString = formatter.string(from: self.timerTime ?? Date())
+    timerTimeLabel.string = timeString
+    
+    // If the local time format includes an " AM" or " PM" suffix, show the suffix with a smaller font
+    if let ampmRange = timeString.range(of: " AM", options:[.caseInsensitive]) ?? timeString.range(of: " PM", options:[.caseInsensitive]) {
+      timerTimeLabel.setFont(timeLabelFont(ofSize: timerTimeLabelFontSize - 3), range: NSRange(ampmRange, in:timeString))
+    }
+  }
+  
+  private func timeLabelFont(ofSize fontSize:CGFloat) -> NSFont {
+    if #available(OSX 10.11, *) {
+      return NSFont.systemFont(ofSize: fontSize, weight: .medium)
+    } else {
+      return NSFont.labelFont(ofSize: fontSize)
+    }
   }
   
   private func start() {
