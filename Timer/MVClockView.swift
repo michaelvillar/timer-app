@@ -29,8 +29,8 @@ class MVClockView: NSControl {
       self.updateTimeLabel()
     }
   }
-  private var currentTimeTimer: Foundation.Timer?
-  private var timer: Foundation.Timer?
+  private var currentTimeTimer: Timer?
+  private var timer: Timer?
   private var paused: Bool = false {
     didSet {
       self.layoutPauseViews()
@@ -55,6 +55,8 @@ class MVClockView: NSControl {
       self.arrowView.progress = progress
     }
   }
+    
+  // MARK: -
   
   convenience init() {
     self.init(frame: NSMakeRect(0, 0, 150, 150))
@@ -83,6 +85,7 @@ class MVClockView: NSControl {
     timerTimeLabel.alignment = NSTextAlignment.center
     timerTimeLabel.textColor = NSColor(srgbRed: 0.749, green: 0.1412, blue: 0.0118, alpha: 1.0)
     currentTimeTimer = Foundation.Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(maintainCurrentTime), userInfo: nil, repeats: true)
+    currentTimeTimer?.tolerance = 0.5 // improve battery life
     self.addSubview(timerTimeLabel)
     
     minutesLabel = MVLabel(frame: NSMakeRect(0, 57, 150, 30))
@@ -346,12 +349,12 @@ class MVClockView: NSControl {
   }
   
   private func start() {
-    if self.seconds <= 0 {
-      return
-    }
+    guard self.seconds > 0  else { return }
+    
     self.paused = false
     self.stop()
-    self.timer = Foundation.Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(tick), userInfo: nil, repeats: true)
+    self.timer = Foundation.Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(tick), userInfo: nil, repeats: true)
+    self.timer?.tolerance = 0.1 // improve battery life
   }
   
   func stop() {
@@ -364,10 +367,9 @@ class MVClockView: NSControl {
   }
   
   @objc func tick() {
-    if (self.timerTime == nil) {
-      return;
-    }
-    self.seconds = fmax(0, ceil(CGFloat(self.timerTime!.timeIntervalSinceNow)))
+    guard let timerTime = self.timerTime  else { return }
+    
+    self.seconds = fmax(0, ceil(CGFloat(timerTime.timeIntervalSinceNow)))
     if self.seconds <= 0 {
       self.stop()
       _ = self.target?.perform(self.action, with: self)
@@ -375,10 +377,12 @@ class MVClockView: NSControl {
   }
   
   @objc func maintainCurrentTime(){
-    if(self.timer != nil){
-      return;
+    guard self.timer == nil  else { return } // don't set if the main timer is counting down
+    
+    let time = Date()
+    if Calendar.current.component(.second, from: time) == 0 { // only need to set when minute changes
+      self.timerTime = time
     }
-    self.timerTime = Date()
   }
   
   override func hitTest(_ aPoint: NSPoint) -> NSView? {
