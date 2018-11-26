@@ -21,12 +21,25 @@ class MVClockView: NSControl {
       if !inDock {
         self.removeBadge()
       }
-      self.updateLabels()
+      self.updateBadge()
+    }
+  }
+  public var windowIsVisible:Bool = false {
+    didSet {
+      if windowIsVisible {
+        self.startClockTimer()
+        self.updateAllViews() // Update the UI with any changes that may have happened while it was hidden
+      }
+      else { // window is no longer visible
+        self.stopClockTimer()
+      }
     }
   }
   private var timerTime: Date? {
     didSet {
-      self.updateTimeLabel()
+      if windowIsVisible {
+        self.updateTimeLabel()
+      }
     }
   }
   private var currentTimeTimer: Timer?
@@ -45,14 +58,17 @@ class MVClockView: NSControl {
   }
   var minutes: CGFloat = 0.0 {
     didSet {
-      self.updateLabels()
+      if windowIsVisible {
+        self.updateLabels()
+      }
+      self.updateBadge() // Update the dock badge even when the window is hidden
     }
   }
   var progress: CGFloat = 0.0 {
     didSet {
-      self.layoutSubviews()
-      self.progressView.progress = progress
-      self.arrowView.progress = progress
+      if windowIsVisible {
+        self.layoutSubviews()
+      }
     }
   }
     
@@ -84,8 +100,6 @@ class MVClockView: NSControl {
     timerTimeLabel.font = timeLabelFont(ofSize: timerTimeLabelFontSize)
     timerTimeLabel.alignment = NSTextAlignment.center
     timerTimeLabel.textColor = NSColor(srgbRed: 0.749, green: 0.1412, blue: 0.0118, alpha: 1.0)
-    currentTimeTimer = Foundation.Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(maintainCurrentTime), userInfo: nil, repeats: true)
-    currentTimeTimer?.tolerance = 0.5 // improve battery life
     self.addSubview(timerTimeLabel)
     
     minutesLabel = MVLabel(frame: NSMakeRect(0, 57, 150, 30))
@@ -127,10 +141,9 @@ class MVClockView: NSControl {
     ])
     secondsSuffixWidth = secondsLabelSize.width
     
-    self.updateLabels()
-    self.updateTimeLabel()
     self.updateClockImageView()
-    
+    self.updateAllViews()
+
     let nc = NotificationCenter.default
     nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSWindow.didBecomeKeyNotification, object: nil)
     nc.addObserver(self, selector: #selector(windowFocusChanged), name: NSWindow.didResignKeyNotification, object: nil)
@@ -171,6 +184,9 @@ class MVClockView: NSControl {
     var frame = arrowView.frame
     frame.origin = point
     arrowView.frame = frame
+    
+    self.progressView.progress = progress
+    self.arrowView.progress = progress
   }
   
   @objc func handleArrowControl(_ object: NSNumber) {
@@ -277,6 +293,12 @@ class MVClockView: NSControl {
     }
   }
   
+  private func updateAllViews() {
+    self.updateLabels()
+    self.updateTimeLabel()
+    self.layoutSubviews()
+  }
+  
   private func updateTimerTime() {
     self.timerTime = Date(timeIntervalSinceNow: Double(self.seconds))
   }
@@ -308,7 +330,6 @@ class MVClockView: NSControl {
       frame.origin.x = round((self.bounds.width - (frame.size.width - secondsSuffixWidth)) / 2)
       secondsLabel.frame = frame
     }
-    self.updateBadge()
   }
   
   private func updateBadge() {
@@ -374,6 +395,21 @@ class MVClockView: NSControl {
       self.stop()
       _ = self.target?.perform(self.action, with: self)
     }
+  }
+  
+  private func startClockTimer() {
+    guard currentTimeTimer == nil  else { return }
+    
+    if self.timer == nil { // Set the current time right away, unless a timer is running
+      self.timerTime = Date()
+    }
+    currentTimeTimer = Foundation.Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(maintainCurrentTime), userInfo: nil, repeats: true)
+    currentTimeTimer?.tolerance = 0.5 // improve battery life
+  }
+  
+  private func stopClockTimer() {
+    currentTimeTimer?.invalidate()
+    currentTimeTimer = nil
   }
   
   @objc func maintainCurrentTime(){
