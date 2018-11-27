@@ -2,7 +2,6 @@ import Cocoa
 
 class MVClockView: NSControl {
   
-  private var clickGesture: NSClickGestureRecognizer!
   private var imageView: NSImageView!
   private var pauseIconImageView: NSImageView!
   private var progressView: MVClockProgressView!
@@ -212,19 +211,29 @@ class MVClockView: NSControl {
     }, completionHandler: nil)
   }
   
-  override func mouseDown(with theEvent: NSEvent) {
+  
+  var didDrag:Bool = false
+  
+  override func mouseDown(with event: NSEvent) {
+    self.didDrag = false
     self.updateClockImageView(highlighted: true)
-    if let event = self.window?.nextEvent(matching: [.leftMouseUp, .leftMouseDragged]) {
-      if event.type == .leftMouseUp {
-        let point = self.convert(event.locationInWindow, from: nil)
-        if self.hitTest(point) == self {
-          self.handleClick()
-        }
-      }
+
+    self.nextResponder?.mouseDown(with: event) // Allow window to also track the event (so user can drag window)
+  }
+  
+  override func mouseDragged(with event: NSEvent) {
+    if !self.didDrag {
+      self.didDrag = true
+      self.updateClockImageView()
+    }
+  }
+  
+  override func mouseUp(with event: NSEvent) {
+    let point = self.convert(event.locationInWindow, from: nil)
+    if self.hitTest(point) == self && !self.didDrag {
+      self.handleClick()
     }
     self.updateClockImageView()
-    
-    super.mouseDown(with: theEvent)
   }
   
   override func keyUp(with theEvent: NSEvent) {
