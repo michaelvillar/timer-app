@@ -46,6 +46,10 @@ class MVTimerController: NSWindowController {
     self.mainView.menuItem?.state = state ? .on : .off
   }
   
+  func windowVisibilityChanged(_ visible:Bool) {
+    clockView.windowIsVisible = visible
+  }
+  
   @objc func handleClockTimer(_ clockView: MVClockView) {
     let notification = NSUserNotification()
     notification.title = "It's time! 🕘"
