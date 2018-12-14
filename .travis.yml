@@ -1,0 +1,26 @@
+language: objective-c
+osx_image: xcode9.4
+xcode_project: Timer.xcodeproj
+xcode_scheme: Timer
+xcode_destination: platform=macOS
+
+script:
+  - xcodebuild clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+
+before_deploy:
+  - rm -rf "*.zip" || exit 0
+  - pushd "build/Release"
+  - zip -r "../../Timer.app.zip" "Timer.app/"
+  - popd
+
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: Scw++P6zDI6UJBJeflOWSoQ9ICHjwwPacimCsb29L+PCXFusiiZmb7TTji1mAdaRoFk8qbaHSGVxBcSWJEdIshbI4tNwrcEsewoWz2MVuQSkCfcWAVFNbxc9B5ZtwXsNjig6+VgBxwtkdcb6qI2Yu1ZXGU/T+o6YJV5vB3psmXcISI/oFrflhSsK7QzOc3J+IScVIl/C9hX21gzJhs1GSJdGK8/hLzjuL9NdzOYirqmEuhDdvw1CUNEQOn7fiQMwkerjsy0g/D2frE+UT3Q25pG1TvsvNSDdGYIWO+21X3rTG/YV5MomDp8N1B89gbXBr7opvKNts7p1YAhju0riIu6RyYjw85iF3SDuaBkdDIOUGCEiqRDk3atUnolnQ2lX0/lgPRmH7ojo/ht3wDR0fIXHtkxLo1kp+EOcZuzYxI9cEb37L8i4NPFxXzkTrf1y4rbZiRYHmICmoacdH/oshN/NnuNp0FyKzgFrYTqCUvIXpqnIpPzmAZ6FWU9UvTi0AJHWrtFv4HMAsXllmglclJWzlpFbFhE9hcBpaWvwQuGVodlwI1q6PfTbckyACtNB2emIiQntIfZi6lZbwoetabteciUfYhT7BJ9+K4iIe1KsOuXBLz4laUYLUKyUI7NXO8eJwSOKIZ2Li6UlTyt9rC1h5ieIfpnNr5hk7Sf7a70=
+  file_glob: true
+  file:
+    - "Timer.app.zip"
+  on:
+    repo: karbassi/timer-app
+    branch: travis-setup
