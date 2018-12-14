@@ -1,6 +1,6 @@
 # A simple Timer app for Mac
 
-<img src="/screenshots/timer.png?raw=tru" width="262" align="right">
+<img src="/screenshots/timer.png?raw=true" width="262" align="right">
 
 [Download here](https://github.com/michaelvillar/timer-app/releases)
 
@@ -19,6 +19,5 @@ Timer requires macOS 10.11 or later.
 ### Build
 
 ```
-xcodebuild -quiet clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
-open build/Release/
+make
 ```
