@@ -1,0 +1,20 @@
+version: 2
+jobs:
+  build:
+    macos:
+      xcode: "9.4.1" # indicate our selected version of Xcode
+    steps:
+      - checkout
+      - run:
+          name: Clean Application
+          command: xcodebuild clean CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+      - run:
+          name: Build Application
+          command: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+      - run:
+          name: Compress app for storage
+          command: cd build/Release; zip -r ../../app.zip Timer.app
+      - store_artifacts:
+          # store this build output. Read more: https://circleci.com/docs/2.0/artifacts/
+          path: app.zip
+          destination: app
