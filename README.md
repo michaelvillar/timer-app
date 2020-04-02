@@ -21,3 +21,11 @@ Timer requires macOS 10.11 or later.
 ```
 make
 ```
+
+### Keyboard Shortcuts
+
+Enter digits to set minutes. A decimal point specifies seconds so `2.34` is 2 minutes and 34 seconds.
+
+<kbd>backspace</kbd> or <kbd>escape</kbd> to edit.
+<kbd>enter</kbd> to start or pause the timer.
+<kbd>cmd</kbd>+<kbd>n</kbd> to create a new timer.
