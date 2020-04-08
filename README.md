@@ -1,6 +1,6 @@
 # A simple Timer app for Mac
 
-<img src="/screenshots/timer.png?raw=tru" width="262" align="right">
+<img src="/screenshots/timer.png?raw=true" width="262" align="right">
 
 [Download here](https://github.com/michaelvillar/timer-app/releases)
 
@@ -19,6 +19,13 @@ Timer requires macOS 10.11 or later.
 ### Build
 
 ```
-xcodebuild -quiet clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
-open build/Release/
+make
 ```
+
+### Keyboard Shortcuts
+
+Enter digits to set minutes. A decimal point specifies seconds so `2.34` is 2 minutes and 34 seconds.
+
+<kbd>backspace</kbd> or <kbd>escape</kbd> to edit.
+<kbd>enter</kbd> to start or pause the timer.
+<kbd>cmd</kbd>+<kbd>n</kbd> to create a new timer.
