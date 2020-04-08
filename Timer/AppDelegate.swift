@@ -29,6 +29,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     let nc = NotificationCenter.default
     nc.addObserver(self, selector: #selector(handleClose), name: NSWindow.willCloseNotification, object: nil)
     nc.addObserver(self, selector: #selector(handleUserDefaultsChange), name: UserDefaults.didChangeNotification, object: nil)
+    nc.addObserver(self, selector: #selector(handleOcclusionChange), name: NSWindow.didChangeOcclusionStateNotification, object: nil)
     
     staysOnTop = UserDefaults.standard.bool(forKey: MVUserDefaultsKeys.staysOnTop)
   }
@@ -70,6 +71,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
       controller != currentlyInDock,
       let index = controllers.index(of: controller) {
           controllers.remove(at: index)
+    }
+  }
+  
+  @objc func handleOcclusionChange(_ notification: Notification) {
+    if let window = notification.object as? NSWindow,
+      let controller = window.windowController as? MVTimerController
+    {
+      controller.windowVisibilityChanged(window.isVisible)
     }
   }
   
