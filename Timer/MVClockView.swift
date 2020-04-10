@@ -91,7 +91,7 @@ class MVClockView: NSControl {
     self.addSubview(imageView)
     
     pauseIconImageView = NSImageView(frame: NSMakeRect(70, 99, 10, 12))
-    pauseIconImageView.image = NSImage(named: NSImage.Name(rawValue: "icon-pause"))
+    pauseIconImageView.image = NSImage(named: "icon-pause")
     pauseIconImageView.alphaValue = 0.0
     self.addSubview(pauseIconImageView)
     
@@ -114,13 +114,13 @@ class MVClockView: NSControl {
     
     let minutesLabelSuffix = "'"
     let minutesLabelSize = minutesLabelSuffix.size(withAttributes: [
-      NSAttributedStringKey.font: minutesLabel.font!
+      NSAttributedString.Key.font: minutesLabel.font!
     ])
     minutesLabelSuffixWidth = minutesLabelSize.width
     
     let minutesLabelSecondsSuffix = "\""
     let minutesLabelSecondsSize = minutesLabelSecondsSuffix.size(withAttributes: [
-      NSAttributedStringKey.font: minutesLabel.font!
+      NSAttributedString.Key.font: minutesLabel.font!
     ])
     minutesLabelSecondsSuffixWidth = minutesLabelSecondsSize.width
 
@@ -136,7 +136,7 @@ class MVClockView: NSControl {
     
     let secondsLabelSuffix = "'"
     let secondsLabelSize = secondsLabelSuffix.size(withAttributes: [
-      NSAttributedStringKey.font: secondsLabel.font!
+      NSAttributedString.Key.font: secondsLabel.font!
     ])
     secondsSuffixWidth = secondsLabelSize.width
     
@@ -165,7 +165,7 @@ class MVClockView: NSControl {
     if highlighted {
       image = "clock-highlighted"
     }
-    imageView.image = NSImage(named: NSImage.Name(rawValue: image))
+    imageView.image = NSImage(named: image)
   }
   
   private func center(_ view: NSView) {
@@ -224,7 +224,7 @@ class MVClockView: NSControl {
     let showPauseIcon = paused && self.timer != nil
     NSAnimationContext.runAnimationGroup({ (ctx) in
       ctx.duration = 0.2
-      ctx.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+      ctx.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
       self.pauseIconImageView.animator().alphaValue = showPauseIcon ? 1 : 0
       self.timerTimeLabel.animator().alphaValue = showPauseIcon ? 0 : 1
     }, completionHandler: nil)
@@ -528,7 +528,7 @@ class MVClockProgressView: NSView {
     transform.translate(x: -cp.x, y: -cp.y)
     (transform as NSAffineTransform).concat()
     
-    let image = NSImage(named: windowHasFocus ? NSImage.Name(rawValue: "progress") : NSImage.Name(rawValue: "progress-unfocus"))
+    let image = NSImage(named: windowHasFocus ? "progress" : "progress-unfocus")
     image?.draw(in: self.bounds)
     
     ctx?.restoreGraphicsState()
