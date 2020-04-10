@@ -53,24 +53,17 @@ class MVMainView: NSView {
 
   override func draw(_ dirtyRect: NSRect) {
     super.draw(dirtyRect)
-
-    let windowHasFocus = self.window?.isKeyWindow ?? false
-    var topColor = NSColor(srgbRed: 0.949, green: 0.9451, blue: 0.949, alpha: 1.0)
-    var bottomColor = NSColor(srgbRed: 0.8392, green: 0.8314, blue: 0.8392, alpha: 1.0)
-    if !windowHasFocus {
-      topColor = NSColor(srgbRed: 0.9647, green: 0.9647, blue: 0.9647, alpha: 1.0)
-      bottomColor = NSColor(srgbRed: 0.9647, green: 0.9647, blue: 0.9647, alpha: 1.0)
+    
+    if #available(OSX 10.13, *) {
+        NSColor(named: "background-color")?.setFill()
+    } else {
+        NSColor(srgbRed: 0.949, green: 0.945, blue: 0.949, alpha: 1.0).setFill()
+        if isDarkMode {
+            NSColor(srgbRed: 0.145, green: 0.145, blue: 0.145, alpha: 1.0).setFill()
+        }
     }
-
-    if isDarkMode {
-        topColor = NSColor(red: 0.145, green: 0.145, blue: 0.145, alpha: 1.0)
-        bottomColor = topColor
-    }
-
-    let gradient = NSGradient(colors: [topColor, bottomColor])
-    let radius: CGFloat = 4.53
-    let path = NSBezierPath(roundedRect: self.bounds, xRadius: radius, yRadius: radius)
-    gradient?.draw(in: path, angle: -90)
+       
+    dirtyRect.fill()
   }
 
   @objc func windowFocusChanged(_ notification: Notification) {
