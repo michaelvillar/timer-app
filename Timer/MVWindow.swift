@@ -26,34 +26,23 @@ class MVWindow: NSWindow {
     self.titleVisibility = .hidden
     self.titlebarAppearsTransparent = true
     
+    // Create a transparent titlebar accessory to overlay the window (to capture drag events)
     let titleBarController = MVTitlebarAccessoryViewController()
     titleBarController.view.frame = NSMakeRect(0, 0, size, windowFrame.size.height)
     self.addTitlebarAccessoryViewController(titleBarController)
     
-    self.layoutSubviews()
-  }
-  
-  func layoutSubviews() {
-    // Display main view
-    if let themeFrame = self.contentView?.superview as NSView?,
-        let firstSubview = themeFrame.subviews[1] as NSView?,
-        let subSubView = firstSubview.subviews[0] as NSView? {
-          firstSubview.addSubview(self.mainView,
-                                  positioned: .below,
-                                  relativeTo: subSubView)
-    }
+    // Hide some of the default window buttons
+    self.standardWindowButton(.miniaturizeButton)?.isHidden = true
+    self.standardWindowButton(.zoomButton)?.isHidden = true
     
-    // Hide controls
-    let close = self.standardWindowButton(.closeButton)!
-    var closeFrame = close.frame
+    // Adjust the close button
+    let closeButton = self.standardWindowButton(.closeButton)!
+    var closeFrame = closeButton.frame
     closeFrame.origin.y -= 2
-    close.frame = closeFrame
+    closeButton.frame = closeFrame
     
-    let minimize = self.standardWindowButton(.miniaturizeButton)
-    minimize?.isHidden = true
-    
-    let zoom = self.standardWindowButton(.zoomButton)
-    zoom?.isHidden = true
+    // Add the main clock view as a sibling underneath the close button
+    closeButton.superview?.addSubview(self.mainView, positioned: .below, relativeTo: closeButton)
   }
   
 }
