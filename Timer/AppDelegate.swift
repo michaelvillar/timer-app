@@ -69,7 +69,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     if let window = notification.object as? NSWindow,
       let controller = window.windowController as? MVTimerController,
       controller != currentlyInDock,
-      let index = controllers.index(of: controller) {
+      let index = controllers.firstIndex(of: controller) {
           controllers.remove(at: index)
     }
   }

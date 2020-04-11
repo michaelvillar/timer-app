@@ -2,7 +2,7 @@ import Cocoa
 
 class MVClockView: NSControl {
   
-  private var imageView: NSImageView!
+  private var clockFaceView: MVClockFaceView!
   private var pauseIconImageView: NSImageView!
   private var progressView: MVClockProgressView!
   private var arrowView: MVClockArrowView!
@@ -87,11 +87,11 @@ class MVClockView: NSControl {
     self.layoutSubviews()
     self.addSubview(arrowView)
     
-    imageView = MVClockImageView(frame: NSMakeRect(16, 15, 118, 118))
-    self.addSubview(imageView)
+    clockFaceView = MVClockFaceView(frame: NSMakeRect(16, 15, 118, 118))
+    self.addSubview(clockFaceView)
     
     pauseIconImageView = NSImageView(frame: NSMakeRect(70, 99, 10, 12))
-    pauseIconImageView.image = NSImage(named: NSImage.Name(rawValue: "icon-pause"))
+    pauseIconImageView.image = NSImage(named: "icon-pause")
     pauseIconImageView.alphaValue = 0.0
     self.addSubview(pauseIconImageView)
     
@@ -114,13 +114,13 @@ class MVClockView: NSControl {
     
     let minutesLabelSuffix = "'"
     let minutesLabelSize = minutesLabelSuffix.size(withAttributes: [
-      NSAttributedStringKey.font: minutesLabel.font!
+      NSAttributedString.Key.font: minutesLabel.font!
     ])
     minutesLabelSuffixWidth = minutesLabelSize.width
     
     let minutesLabelSecondsSuffix = "\""
     let minutesLabelSecondsSize = minutesLabelSecondsSuffix.size(withAttributes: [
-      NSAttributedStringKey.font: minutesLabel.font!
+      NSAttributedString.Key.font: minutesLabel.font!
     ])
     minutesLabelSecondsSuffixWidth = minutesLabelSecondsSize.width
 
@@ -136,11 +136,11 @@ class MVClockView: NSControl {
     
     let secondsLabelSuffix = "'"
     let secondsLabelSize = secondsLabelSuffix.size(withAttributes: [
-      NSAttributedStringKey.font: secondsLabel.font!
+      NSAttributedString.Key.font: secondsLabel.font!
     ])
     secondsSuffixWidth = secondsLabelSize.width
     
-    self.updateClockImageView()
+    self.updateClockFaceView()
     self.updateAllViews()
 
     let nc = NotificationCenter.default
@@ -156,16 +156,11 @@ class MVClockView: NSControl {
   }
   
   @objc func windowFocusChanged(_ notification: Notification) {
-    self.updateClockImageView()
+    self.updateClockFaceView()
   }
   
-  private func updateClockImageView(highlighted: Bool = false) {
-    let windowHasFocus = self.window?.isKeyWindow ?? false
-    var image = windowHasFocus ? "clock" : "clock-unfocus"
-    if highlighted {
-      image = "clock-highlighted"
-    }
-    imageView.image = NSImage(named: NSImage.Name(rawValue: image))
+  private func updateClockFaceView(highlighted: Bool = false) {
+    clockFaceView.update(highlighted: highlighted)
   }
   
   private func center(_ view: NSView) {
@@ -224,7 +219,7 @@ class MVClockView: NSControl {
     let showPauseIcon = paused && self.timer != nil
     NSAnimationContext.runAnimationGroup({ (ctx) in
       ctx.duration = 0.2
-      ctx.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+      ctx.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
       self.pauseIconImageView.animator().alphaValue = showPauseIcon ? 1 : 0
       self.timerTimeLabel.animator().alphaValue = showPauseIcon ? 0 : 1
     }, completionHandler: nil)
@@ -235,7 +230,7 @@ class MVClockView: NSControl {
   
   override func mouseDown(with event: NSEvent) {
     self.didDrag = false
-    self.updateClockImageView(highlighted: true)
+    self.updateClockFaceView(highlighted: true)
 
     self.nextResponder?.mouseDown(with: event) // Allow window to also track the event (so user can drag window)
   }
@@ -243,7 +238,7 @@ class MVClockView: NSControl {
   override func mouseDragged(with event: NSEvent) {
     if !self.didDrag {
       self.didDrag = true
-      self.updateClockImageView()
+      self.updateClockFaceView()
     }
   }
   
@@ -252,7 +247,7 @@ class MVClockView: NSControl {
     if self.hitTest(point) == self && !self.didDrag {
       self.handleClick()
     }
-    self.updateClockImageView()
+    self.updateClockFaceView()
   }
   
   override func keyUp(with theEvent: NSEvent) {
@@ -528,7 +523,7 @@ class MVClockProgressView: NSView {
     transform.translate(x: -cp.x, y: -cp.y)
     (transform as NSAffineTransform).concat()
     
-    let image = NSImage(named: windowHasFocus ? NSImage.Name(rawValue: "progress") : NSImage.Name(rawValue: "progress-unfocus"))
+    let image = NSImage(named: windowHasFocus ? "progress" : "progress-unfocus")
     image?.draw(in: self.bounds)
     
     ctx?.restoreGraphicsState()
@@ -657,10 +652,28 @@ class MVClockArrowView: NSControl {
   
 }
 
-class MVClockImageView: NSImageView {
- 
-  override func hitTest(_ aPoint: NSPoint) -> NSView? {
-    return nil
+class MVClockFaceView: NSView {
+
+  private var _image:NSImage?
+
+  func update(highlighted: Bool = false) {
+    // Load the appropriate image for the clock face
+    let imageName:String
+    if highlighted {
+      imageName = "clock-highlighted"
+    } else {
+      let windowHasFocus = self.window?.isKeyWindow ?? false
+      imageName = windowHasFocus ? "clock" : "clock-unfocus"
+    }
+    
+    _image = NSImage(named: NSImage.Name(imageName))
+
+    setNeedsDisplay(self.bounds)
   }
-  
+
+  override func draw(_ dirtyRect: NSRect) {
+    if let image = _image {
+      image.draw(in: self.bounds)
+    }
+  }
 }
