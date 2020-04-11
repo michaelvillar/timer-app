@@ -54,6 +54,12 @@ class MVMainView: NSView {
 
     let topColor = NSColor(named: "background-top-color")!
     let bottomColor = NSColor(named: "background-bottom-color")!
+
+    if isDarkMode {
+        topColor = NSColor(srgbRed: 39/255, green: 39/255, blue: 39/255, alpha: 1.000)
+        bottomColor = NSColor(srgbRed: 18/255, green: 18/255, blue: 18/255, alpha: 1.000)
+    }
+
     let gradient = NSGradient(colors: [topColor, bottomColor])
     let radius: CGFloat = 4.53
     let path = NSBezierPath(roundedRect: self.bounds, xRadius: radius, yRadius: radius)
