@@ -1,5 +1,5 @@
 struct Keycode {
-    
+
     // Layout-independent Keys
     // eg.These key codes are always the same key on all layouts.
     static let returnKey                 : UInt16 = 0x24
@@ -50,7 +50,7 @@ struct Keycode {
     static let f18                       : UInt16 = 0x4F
     static let f19                       : UInt16 = 0x50
     static let f20                       : UInt16 = 0x5A
-    
+
     // US-ANSI Keyboard Positions
     // eg. These key codes are for the physical key (in any keyboard layout)
     // at the location of the named key in the US-ANSI layout.
@@ -80,7 +80,7 @@ struct Keycode {
     static let x                         : UInt16 = 0x07
     static let y                         : UInt16 = 0x10
     static let z                         : UInt16 = 0x06
-    
+
     static let zero                      : UInt16 = 0x1D
     static let one                       : UInt16 = 0x12
     static let two                       : UInt16 = 0x13
@@ -91,7 +91,7 @@ struct Keycode {
     static let seven                     : UInt16 = 0x1A
     static let eight                     : UInt16 = 0x1C
     static let nine                      : UInt16 = 0x19
-    
+
     static let equals                    : UInt16 = 0x18
     static let minus                     : UInt16 = 0x1B
     static let semicolon                 : UInt16 = 0x29
@@ -103,7 +103,7 @@ struct Keycode {
     static let grave                     : UInt16 = 0x32
     static let leftBracket               : UInt16 = 0x21
     static let rightBracket              : UInt16 = 0x1E
-    
+
     static let keypadDecimal             : UInt16 = 0x41
     static let keypadMultiply            : UInt16 = 0x43
     static let keypadPlus                : UInt16 = 0x45
