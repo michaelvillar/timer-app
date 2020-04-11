@@ -1,6 +1,8 @@
 # A simple Timer app for Mac
 
-<img src="/screenshots/timer.png?raw=true" width="262" align="right">
+<img src="/screenshots/light-mode.png?raw=true" width="262" align="right">
+
+<img src="/screenshots/dark-mode.png?raw=true" width="262" align="right">
 
 [Download here](https://github.com/michaelvillar/timer-app/releases)
 
