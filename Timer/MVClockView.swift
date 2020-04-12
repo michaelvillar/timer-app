@@ -666,7 +666,8 @@ class MVClockFaceView: NSView {
       let windowHasFocus = self.window?.isKeyWindow ?? false
       imageName = windowHasFocus ? "clock" : "clock-unfocus"
     }
-    _image = NSImage(named: NSImage.Name(imageName))
+
+    _image = NSImage(named: imageName)
 
     setNeedsDisplay(self.bounds)
   }
