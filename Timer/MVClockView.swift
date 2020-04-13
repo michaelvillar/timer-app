@@ -14,6 +14,7 @@ class MVClockView: NSControl {
   private var secondsLabel: NSTextView!
   private var secondsSuffixWidth: CGFloat = 0.0
   private var inputSeconds: Bool = false
+  private var lastTimerSeconds: CGFloat?
   private let docktile: NSDockTile = NSApplication.shared.dockTile
   public  var inDock : Bool = false{
     didSet{
@@ -294,6 +295,13 @@ class MVClockView: NSControl {
     } else if (key == Keycode.returnKey || key == Keycode.space || key == Keycode.keypadEnter) {
       // "Enter" or "Space" or "Keypad Enter"
       self.handleClick();
+    } else if (key == Keycode.r && self.timer == nil && self.paused != true) {
+      // "r" for restarting with the last timer
+      if let seconds = self.lastTimerSeconds {
+        self.seconds = seconds
+        self.handleClick()
+      }
+        
     }
   }
 
@@ -375,6 +383,7 @@ class MVClockView: NSControl {
 
   private func start() {
     guard self.seconds > 0  else { return }
+    self.lastTimerSeconds = self.seconds
 
     self.paused = false
     self.stop()
