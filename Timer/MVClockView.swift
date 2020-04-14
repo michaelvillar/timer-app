@@ -275,8 +275,8 @@ class MVClockView: NSControl {
     } else if (key == Keycode.period || key == Keycode.keypadDecimal) {
       // Period or Decimal
       self.inputSeconds = !self.inputSeconds
-    } else if (key == Keycode.escape) {
-      // Escape
+    } else if (key == Keycode.escape || key == Keycode.c) {
+      // Escape or "c" (for "clear")
       self.paused = false
       self.stop()
       self.seconds = 0
