@@ -1,6 +1,8 @@
 # A simple Timer app for Mac
 
-<img src="/screenshots/timer.png?raw=true" width="262" align="right">
+<img src="/screenshots/light-mode.png?raw=true" width="262" align="right">
+
+<img src="/screenshots/dark-mode.png?raw=true" width="262" align="right">
 
 [Download here](https://github.com/michaelvillar/timer-app/releases)
 
@@ -29,3 +31,4 @@ Enter digits to set minutes. A decimal point specifies seconds so `2.34` is 2 mi
 <kbd>backspace</kbd> or <kbd>escape</kbd> to edit.
 <kbd>enter</kbd> to start or pause the timer.
 <kbd>cmd</kbd>+<kbd>n</kbd> to create a new timer.
+<kbd>r</kbd> to restart with the last timer.

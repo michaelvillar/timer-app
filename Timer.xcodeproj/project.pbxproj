@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		41A37D0724426E360078EA40 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 41A37D0624426E360078EA40 /* Credits.rtf */; };
 		41B080C62114CE2700EEE7E8 /* Keycodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B080C52114CE2700EEE7E8 /* Keycodes.swift */; };
 		4C30BBFC1CA7C56500C45EBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C30BBFB1CA7C56500C45EBF /* AppDelegate.swift */; };
 		4C30BBFE1CA7C56500C45EBF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C30BBFD1CA7C56500C45EBF /* Assets.xcassets */; };
@@ -22,6 +23,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		41A37D0624426E360078EA40 /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		41B080C52114CE2700EEE7E8 /* Keycodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keycodes.swift; sourceTree = "<group>"; };
 		4C30BBF81CA7C56500C45EBF /* Timer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Timer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C30BBFB1CA7C56500C45EBF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 				723C0C571E12211000E7AE1E /* MVUserDefaultsKeys.swift */,
 				4C30BBFD1CA7C56500C45EBF /* Assets.xcassets */,
 				4C30BC021CA7C56500C45EBF /* Info.plist */,
+				41A37D0624426E360078EA40 /* Credits.rtf */,
 				4C30BC121CA7D73C00C45EBF /* MainMenu.xib */,
 				4C6F0F291CAA79EB00E9A6F7 /* alert-sound.caf */,
 				41B080C52114CE2700EEE7E8 /* Keycodes.swift */,
@@ -117,8 +120,7 @@
 				TargetAttributes = {
 					4C30BBF71CA7C56500C45EBF = {
 						CreatedOnToolsVersion = 7.3;
-						DevelopmentTeam = H9MWYLG8FW;
-						LastSwiftMigration = 0940;
+						LastSwiftMigration = 1140;
 					};
 				};
 			};
@@ -127,6 +129,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -148,6 +151,7 @@
 				4C30BBFE1CA7C56500C45EBF /* Assets.xcassets in Resources */,
 				4C6F0F2A1CAA79EB00E9A6F7 /* alert-sound.caf in Resources */,
 				4C30BC141CA7D73C00C45EBF /* MainMenu.xib in Resources */,
+				41A37D0724426E360078EA40 /* Credits.rtf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -297,10 +301,11 @@
 				INFOPLIST_FILE = Timer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MARKETING_VERSION = 1.5.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.michaelvillar.Timer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -314,10 +319,11 @@
 				INFOPLIST_FILE = Timer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MARKETING_VERSION = 1.5.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.michaelvillar.Timer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
