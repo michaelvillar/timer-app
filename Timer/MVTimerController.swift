@@ -5,6 +5,8 @@ class MVTimerController: NSWindowController {
 
   private var mainView: MVMainView!
   private var clockView: MVClockView!
+  
+  private var audioPlayer: AVAudioPlayer? // player must be kept in memory
 
   convenience init() {
     let mainView = MVMainView(frame: NSZeroRect)
@@ -50,6 +52,13 @@ class MVTimerController: NSWindowController {
     clockView.windowIsVisible = visible
   }
   
+  func playAlarmSound() {
+    let soundURL = Bundle.main.url(forResource: "alert-sound", withExtension: "caf")
+    audioPlayer = try? AVAudioPlayer(contentsOf: soundURL!)
+    //audioPlayer?.volume = self.volume
+    audioPlayer?.play()
+  }
+  
   @objc func handleClockTimer(_ clockView: MVClockView) {
     let notification = NSUserNotification()
     notification.title = "It's time! 🕘"
@@ -58,10 +67,7 @@ class MVTimerController: NSWindowController {
     
     NSApplication.shared.requestUserAttention(.criticalRequest)
     
-    let soundURL = Bundle.main.url(forResource: "alert-sound", withExtension: "caf")
-    var soundID: SystemSoundID = 0
-    AudioServicesCreateSystemSoundID(soundURL! as CFURL, &soundID)
-    AudioServicesPlaySystemSound(soundID)
+    playAlarmSound()
   }
   
   override func keyUp(with theEvent: NSEvent) {
