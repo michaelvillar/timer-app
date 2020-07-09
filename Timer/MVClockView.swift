@@ -102,11 +102,7 @@ class MVClockView: NSControl {
 
     minutesLabel = MVLabel(frame: NSRect(x: 0, y: 57, width: 150, height: 30))
     minutesLabel.string = ""
-    if #available(OSX 10.11, *) {
-      minutesLabel.font = NSFont.systemFont(ofSize: 35, weight: .medium)
-    } else {
-      minutesLabel.font = NSFont(name: "HelveticaNeue-Medium", size: 35)
-    }
+    minutesLabel.font = NSFont.monospacedDigitSystemFont(ofSize: 35, weight: .medium)
     minutesLabel.alignment = NSTextAlignment.center
     minutesLabel.textColor = NSColor(srgbRed: 0.2353, green: 0.2549, blue: 0.2706, alpha: 1.0)
     self.addSubview(minutesLabel)
@@ -124,11 +120,7 @@ class MVClockView: NSControl {
     minutesLabelSecondsSuffixWidth = minutesLabelSecondsSize.width
 
     secondsLabel = MVLabel(frame: NSRect(x: 0, y: 38, width: 150, height: 20))
-    if #available(OSX 10.11, *) {
-      secondsLabel.font = NSFont.systemFont(ofSize: 15, weight: .medium)
-    } else {
-      secondsLabel.font = NSFont(name: "HelveticaNeue-Medium", size: 15)
-    }
+    secondsLabel.font = NSFont.monospacedDigitSystemFont(ofSize: 15, weight: .regular)
     secondsLabel.alignment = NSTextAlignment.center
     secondsLabel.textColor = NSColor(srgbRed: 0.6353, green: 0.6667, blue: 0.6863, alpha: 1.0)
     self.addSubview(secondsLabel)
@@ -403,17 +395,9 @@ class MVClockView: NSControl {
       timeString.range(of: " PM", options: [.caseInsensitive])
     ) {
       timerTimeLabel.setFont(
-        timeLabelFont(ofSize: timerTimeLabelFontSize - 3),
+        NSFont.systemFont(ofSize: timerTimeLabelFontSize - 3, weight: .medium),
         range: NSRange(ampmRange, in: timeString)
       )
-    }
-  }
-
-  private func timeLabelFont(ofSize fontSize: CGFloat) -> NSFont {
-    if #available(OSX 10.11, *) {
-      return NSFont.systemFont(ofSize: fontSize, weight: .medium)
-    } else {
-      return NSFont.labelFont(ofSize: fontSize)
     }
   }
 
