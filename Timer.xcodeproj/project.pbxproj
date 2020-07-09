@@ -3,10 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		41413B3424B6BAC600BD8270 /* GeneralPreferenceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41413B3224B6BAC600BD8270 /* GeneralPreferenceViewController.swift */; };
+		41413B3524B6BAC600BD8270 /* GeneralPreferenceViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 41413B3324B6BAC600BD8270 /* GeneralPreferenceViewController.xib */; };
+		416A9C8824B6BC0D00AB3CBC /* Preferences in Frameworks */ = {isa = PBXBuildFile; productRef = 416A9C8724B6BC0D00AB3CBC /* Preferences */; };
 		41A37D0724426E360078EA40 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 41A37D0624426E360078EA40 /* Credits.rtf */; };
 		41B080C62114CE2700EEE7E8 /* Keycodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B080C52114CE2700EEE7E8 /* Keycodes.swift */; };
 		4C30BBFC1CA7C56500C45EBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C30BBFB1CA7C56500C45EBF /* AppDelegate.swift */; };
@@ -23,6 +26,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		41413B3224B6BAC600BD8270 /* GeneralPreferenceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneralPreferenceViewController.swift; sourceTree = "<group>"; };
+		41413B3324B6BAC600BD8270 /* GeneralPreferenceViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GeneralPreferenceViewController.xib; sourceTree = "<group>"; };
 		41A37D0624426E360078EA40 /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		41B080C52114CE2700EEE7E8 /* Keycodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keycodes.swift; sourceTree = "<group>"; };
 		4C30BBF81CA7C56500C45EBF /* Timer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Timer.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -45,6 +50,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				416A9C8824B6BC0D00AB3CBC /* Preferences in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,6 +76,8 @@
 		4C30BBFA1CA7C56500C45EBF /* Timer */ = {
 			isa = PBXGroup;
 			children = (
+				41413B3224B6BAC600BD8270 /* GeneralPreferenceViewController.swift */,
+				41413B3324B6BAC600BD8270 /* GeneralPreferenceViewController.xib */,
 				4C30BBFB1CA7C56500C45EBF /* AppDelegate.swift */,
 				4C6F0F2B1CACF4B500E9A6F7 /* MVTimerController.swift */,
 				4C30BC081CA7C81C00C45EBF /* MVWindow.swift */,
@@ -104,6 +112,9 @@
 			dependencies = (
 			);
 			name = Timer;
+			packageProductDependencies = (
+				416A9C8724B6BC0D00AB3CBC /* Preferences */,
+			);
 			productName = Timer;
 			productReference = 4C30BBF81CA7C56500C45EBF /* Timer.app */;
 			productType = "com.apple.product-type.application";
@@ -134,6 +145,9 @@
 				Base,
 			);
 			mainGroup = 4C30BBEF1CA7C56500C45EBF;
+			packageReferences = (
+				416A9C8624B6BC0D00AB3CBC /* XCRemoteSwiftPackageReference "Preferences" */,
+			);
 			productRefGroup = 4C30BBF91CA7C56500C45EBF /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -150,6 +164,7 @@
 			files = (
 				4C30BBFE1CA7C56500C45EBF /* Assets.xcassets in Resources */,
 				4C6F0F2A1CAA79EB00E9A6F7 /* alert-sound.caf in Resources */,
+				41413B3524B6BAC600BD8270 /* GeneralPreferenceViewController.xib in Resources */,
 				4C30BC141CA7D73C00C45EBF /* MainMenu.xib in Resources */,
 				41A37D0724426E360078EA40 /* Credits.rtf in Resources */,
 			);
@@ -162,6 +177,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				41413B3424B6BAC600BD8270 /* GeneralPreferenceViewController.swift in Sources */,
 				4C30BC0B1CA7C96700C45EBF /* MVMainView.swift in Sources */,
 				723C0C581E12211000E7AE1E /* MVUserDefaultsKeys.swift in Sources */,
 				4C6F0F211CAA3D8600E9A6F7 /* MVLabel.swift in Sources */,
@@ -235,7 +251,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -284,7 +300,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -299,8 +315,11 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Timer/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MARKETING_VERSION = 1.5.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.michaelvillar.Timer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -317,8 +336,11 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Timer/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MARKETING_VERSION = 1.5.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.michaelvillar.Timer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -349,6 +371,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		416A9C8624B6BC0D00AB3CBC /* XCRemoteSwiftPackageReference "Preferences" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/Preferences";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		416A9C8724B6BC0D00AB3CBC /* Preferences */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 416A9C8624B6BC0D00AB3CBC /* XCRemoteSwiftPackageReference "Preferences" */;
+			productName = Preferences;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 4C30BBF01CA7C56500C45EBF /* Project object */;
 }
