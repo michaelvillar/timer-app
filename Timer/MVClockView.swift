@@ -95,7 +95,7 @@ class MVClockView: NSControl {
     self.addSubview(pauseIconImageView)
 
     timerTimeLabel = MVLabel(frame: NSRect(x: 0, y: 94, width: 150, height: 20))
-    timerTimeLabel.font = timeLabelFont(ofSize: timerTimeLabelFontSize)
+    timerTimeLabel.font = NSFont.systemFont(ofSize: timerTimeLabelFontSize, weight: .medium)
     timerTimeLabel.alignment = NSTextAlignment.center
     timerTimeLabel.textColor = NSColor(srgbRed: 0.749, green: 0.1412, blue: 0.0118, alpha: 1.0)
     self.addSubview(timerTimeLabel)
