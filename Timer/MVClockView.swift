@@ -440,7 +440,7 @@ class MVClockView: NSControl {
 
     // Improves the system's ability to optimize for increased power savings and responsiveness
     // A general rule, set the tolerance to at least 10% of the interval, for a repeating timer.
-    currentTimeTimer?.tolerance = 0.03
+    currentTimeTimer?.tolerance = 0.45
   }
 
   @objc func tick() {
@@ -471,7 +471,7 @@ class MVClockView: NSControl {
 
     // Improves the system's ability to optimize for increased power savings and responsiveness
     // A general rule, set the tolerance to at least 10% of the interval, for a repeating timer.
-    currentTimeTimer?.tolerance = 0.5
+    currentTimeTimer?.tolerance = 0.45
   }
 
   private func stopClockTimer() {
