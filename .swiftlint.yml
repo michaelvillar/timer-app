@@ -1,0 +1,44 @@
+# rule identifiers to exclude from running
+disabled_rules:
+  - type_body_length
+  - function_body_length
+  - file_length
+  - unneeded_break_in_switch
+
+# some rules are only opt-in
+# Find all the available rules by running: swiftlint rules
+opt_in_rules:
+  - anyobject_protocol
+  - closure_end_indentation
+  - closure_spacing
+  - collection_alignment
+  - empty_count
+  - explicit_init
+  - explicit_self
+  - implicit_return
+  - joined_default_parameter
+  - literal_expression_end_indentation
+  - modifier_order
+  # - number_separator
+  - operator_usage_whitespace
+  - optional_enum_case_matching
+  - prefer_self_type_over_type_of_self
+  - redundant_nil_coalescing
+  - redundant_type_annotation
+  - sorted_imports
+  - toggle_bool
+  - unneeded_parentheses_in_closure_argument
+  - untyped_error_in_catch
+  - unused_import
+  - vertical_whitespace_between_cases
+  - vertical_whitespace_closing_braces
+  - vertical_whitespace_opening_braces
+
+included:
+  - Timer
+
+excluded:
+  - Timer/Keycodes.swift
+
+# reporter type (xcode, json, csv, checkstyle, junit, html, emoji, sonarqube, markdown)
+reporter: 'xcode'
