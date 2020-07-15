@@ -15,6 +15,7 @@ class MVClockView: NSControl {
   private var secondsSuffixWidth: CGFloat = 0.0
   private var inputSeconds: Bool = false
   private var lastTimerSeconds: CGFloat?
+  private var firstTick: Bool = false
   private let docktile: NSDockTile = NSApplication.shared.dockTile
   public  var inDock : Bool = false{
     didSet{
@@ -369,10 +370,11 @@ class MVClockView: NSControl {
     self.lastTimerSeconds = self.seconds
 
     self.paused = false
+    self.firstTick = true
     self.stop()
 
-    // Ensure that each countdown tick occurs just past the exact seconds boundary (so system delays won't affect the value displayed)
-    self.timer = Timer.scheduledTimer(timeInterval: 0.97, target: self, selector: #selector(firstTick), userInfo: nil, repeats: false)
+    self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(tick), userInfo: nil, repeats: true)
+    self.timer?.tolerance = 0.03 // improve battery life
   }
 
   func stop() {
@@ -384,16 +386,18 @@ class MVClockView: NSControl {
     }
   }
 
-  @objc func firstTick() {
-    self.tick()
-    self.timer = Foundation.Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(tick), userInfo: nil, repeats: true)
-    self.timer?.tolerance = 0.03 // improve battery life
-  }
-
   @objc func tick() {
     guard let timerTime = self.timerTime  else { return }
-
-    self.seconds = fmax(0, floor(CGFloat(timerTime.timeIntervalSinceNow)))
+    self.seconds -= 1
+    if self.firstTick == true {
+      self.updateTimerTime()
+      self.firstTick = false
+      return
+    }
+    let wallTime = fmax(0, floor(CGFloat(timerTime.timeIntervalSinceNow)))
+    if (self.seconds - wallTime) > 1 { // maintain correct countdown even if thread was sleeping or falls behind
+      self.seconds = wallTime
+    }
     if self.seconds <= 0 {
       self.stop()
       _ = self.target?.perform(self.action, with: self)
