@@ -407,16 +407,18 @@ class MVClockView: NSControl {
 
     self.paused = false
     self.stop()
-
-    // Ensure that each countdown tick occurs just past the exact seconds boundary
-    // (so system delays won't affect the value displayed)
-    self.timer = Timer.scheduledTimer(
-      timeInterval: 0.97,
+    
+    // Since the UI only allows timers to be set in multiples of 1 second, each tick will fire _near_ an integer seconds-remaining boundary.
+    self.timer = Foundation.Timer.scheduledTimer(
+      timeInterval: 1, // (second)
       target: self,
-      selector: #selector(firstTick),
+      selector: #selector(tick),
       userInfo: nil,
-      repeats: false
+      repeats: true
     )
+    
+    // Improves the system's ability to optimize for increased power savings by allowing the timer a small amount of variance in when it can fire (without drifting over time).
+    self.timer?.tolerance = 0.03 // (seconds)
   }
 
   func stop() {
@@ -428,26 +430,16 @@ class MVClockView: NSControl {
     }
   }
 
-  @objc func firstTick() {
-    self.tick()
-    self.timer = Foundation.Timer.scheduledTimer(
-      timeInterval: 1,
-      target: self,
-      selector: #selector(tick),
-      userInfo: nil,
-      repeats: true
-    )
-
-    // Improves the system's ability to optimize for increased power savings and responsiveness
-    // A general rule, set the tolerance to at least 10% of the interval, for a repeating timer.
-    currentTimeTimer?.tolerance = 0.03
-  }
-
   @objc func tick() {
     guard let timerTime = self.timerTime  else { return }
 
-    self.seconds = fmax(0, floor(CGFloat(timerTime.timeIntervalSinceNow)))
-    if self.seconds <= 0 {
+    let secondsRemaining = CGFloat(timerTime.timeIntervalSinceNow)
+    //print(secondsRemaining)
+    
+    // Round the seconds displayed on the clock face
+    self.seconds = max(0, round(secondsRemaining))
+    
+    if self.seconds <= 0 { // Timer is done!
       self.stop()
       _ = self.target?.perform(self.action, with: self)
     }
