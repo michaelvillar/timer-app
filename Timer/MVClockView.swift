@@ -436,7 +436,6 @@ class MVClockView: NSControl {
     guard let timerTime = self.timerTime  else { return }
 
     let secondsRemaining = CGFloat(timerTime.timeIntervalSinceNow)
-    //print(secondsRemaining)
 
     // Round the seconds displayed on the clock face
     self.seconds = max(0, round(secondsRemaining))
