@@ -407,8 +407,9 @@ class MVClockView: NSControl {
 
     self.paused = false
     self.stop()
-    
-    // Since the UI only allows timers to be set in multiples of 1 second, each tick will fire _near_ an integer seconds-remaining boundary.
+
+    // Since the UI only allows timers to be set in multiples of 1 second, each tick
+    // will fire _near_ an integer seconds-remaining boundary.
     self.timer = Foundation.Timer.scheduledTimer(
       timeInterval: 1, // (second)
       target: self,
@@ -416,8 +417,9 @@ class MVClockView: NSControl {
       userInfo: nil,
       repeats: true
     )
-    
-    // Improves the system's ability to optimize for increased power savings by allowing the timer a small amount of variance in when it can fire (without drifting over time).
+
+    // Improves the system's ability to optimize for increased power savings by allowing
+    // the timer a small amount of variance in when it can fire (without drifting over time).
     self.timer?.tolerance = 0.03 // (seconds)
   }
 
@@ -435,10 +437,10 @@ class MVClockView: NSControl {
 
     let secondsRemaining = CGFloat(timerTime.timeIntervalSinceNow)
     //print(secondsRemaining)
-    
+
     // Round the seconds displayed on the clock face
     self.seconds = max(0, round(secondsRemaining))
-    
+
     if self.seconds <= 0 { // Timer is done!
       self.stop()
       _ = self.target?.perform(self.action, with: self)
