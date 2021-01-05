@@ -15,7 +15,7 @@ Create new timers with `CMD+N`.
 Install as a [brew cask](https://caskroom.github.io) via 
 
 ```shell
-brew cask install michaelvillar-timer
+brew install --cask michaelvillar-timer
 ```
 
 Inspired by the **great** [Minutes widget](http://minutes.en.softonic.com/mac) from Nitram-nunca I've been using for years. But it wasn't maintained anymore (non-retina) + it was the only widget in my dashboard :)
