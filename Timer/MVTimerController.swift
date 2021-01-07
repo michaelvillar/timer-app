@@ -6,6 +6,7 @@ class MVTimerController: NSWindowController {
   private var clockView: MVClockView!
 
   private var audioPlayer: AVAudioPlayer? // player must be kept in memory
+  private var soundURL = Bundle.main.url(forResource: "alert-sound", withExtension: "caf")
 
   convenience init() {
     let mainView = MVMainView(frame: NSRect.zero)
@@ -52,7 +53,7 @@ class MVTimerController: NSWindowController {
   }
 
   func playAlarmSound() {
-    let soundURL = Bundle.main.url(forResource: "alert-sound", withExtension: "caf")
+    
     audioPlayer = try? AVAudioPlayer(contentsOf: soundURL!)
     //audioPlayer?.volume = self.volume
     audioPlayer?.play()
@@ -74,5 +75,23 @@ class MVTimerController: NSWindowController {
   }
 
   override func keyDown(with event: NSEvent) {
+  }
+    
+  func pickSound(_ index: Int) {
+    let sound: String
+    switch index {
+    case 0:
+        sound = "alert-sound"
+    case 1:
+        sound = "alert-sound-2"
+    case 2:
+        sound = "alert-sound-3"
+    default:
+        sound = "alert-sound"
+    }
+    self.soundURL = Bundle.main.url(forResource: sound, withExtension: "caf")
+    
+    // 'preview'
+    playAlarmSound()
   }
 }
