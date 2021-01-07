@@ -97,8 +97,9 @@ class MVMainView: NSView {
             item.state = .off
         }
     }
-    let soundIdx = sender.representedObject as! Int
-    self.controller!.pickSound(soundIdx)
+    if let soundIdx = sender.representedObject as? Int {
+        self.controller!.pickSound(soundIdx)
+    }
   }
     
   deinit {
