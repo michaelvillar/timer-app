@@ -33,7 +33,7 @@ class MVMainView: NSView {
       action: #selector(self.toggleShowInDock),
       keyEquivalent: ""
     )
-    let submenu = NSMenu();
+    let submenu = NSMenu()
     let menuItemSoundChoice = NSMenuItem(
       title: "Sound",
       action: nil,
@@ -49,9 +49,13 @@ class MVMainView: NSView {
     let sound3Item = NSMenuItem(title: "Sound 3", action: #selector(self.pickSound), keyEquivalent: "")
     sound3Item.representedObject = 2
     self.soundMenuItems.append(sound3Item)
+    let soundNoSoundItem = NSMenuItem(title: "No Sound", action: #selector(self.pickSound), keyEquivalent: "")
+    soundNoSoundItem.representedObject = -1
+    self.soundMenuItems.append(soundNoSoundItem)
     submenu.addItem(sound1Item)
     submenu.addItem(sound2Item)
     submenu.addItem(sound3Item)
+    submenu.addItem(soundNoSoundItem)
     self.contextMenu?.addItem(menuItem!)
     self.contextMenu?.addItem(menuItemSoundChoice)
     self.contextMenu?.setSubmenu(submenu, for: menuItemSoundChoice)
@@ -91,7 +95,7 @@ class MVMainView: NSView {
 
   @objc func pickSound(_ sender: NSMenuItem) {
     for item in self.soundMenuItems {
-        if (item == sender) {
+        if item == sender {
             item.state = .on
         } else {
             item.state = .off
@@ -101,7 +105,7 @@ class MVMainView: NSView {
         self.controller!.pickSound(soundIdx)
     }
   }
-    
+
   deinit {
     NotificationCenter.default.removeObserver(self)
   }
