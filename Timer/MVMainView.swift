@@ -39,23 +39,19 @@ class MVMainView: NSView {
       action: nil,
       keyEquivalent: ""
     )
-    let sound1Item = NSMenuItem(title: "Sound 1", action: #selector(self.pickSound), keyEquivalent: "")
-    sound1Item.representedObject = 0
-    sound1Item.state = .on
-    self.soundMenuItems.append(sound1Item)
-    let sound2Item = NSMenuItem(title: "Sound 2", action: #selector(self.pickSound), keyEquivalent: "")
-    sound2Item.representedObject = 1
-    self.soundMenuItems.append(sound2Item)
-    let sound3Item = NSMenuItem(title: "Sound 3", action: #selector(self.pickSound), keyEquivalent: "")
-    sound3Item.representedObject = 2
-    self.soundMenuItems.append(sound3Item)
-    let soundNoSoundItem = NSMenuItem(title: "No Sound", action: #selector(self.pickSound), keyEquivalent: "")
-    soundNoSoundItem.representedObject = -1
-    self.soundMenuItems.append(soundNoSoundItem)
-    submenu.addItem(sound1Item)
-    submenu.addItem(sound2Item)
-    submenu.addItem(sound3Item)
-    submenu.addItem(soundNoSoundItem)
+    let soundOptions = [
+        (title: "Sound 1", value: 0),
+        (title: "Sound 2", value: 1),
+        (title: "Sound 3", value: 2),
+        (title: "No Sound", value: -1),
+    ];
+    for option in soundOptions {
+        let soundItem = NSMenuItem(title: option.title, action: #selector(self.pickSound), keyEquivalent: "")
+        soundItem.representedObject = option.value
+        self.soundMenuItems.append(soundItem)
+        submenu.addItem(soundItem)
+    }
+    self.soundMenuItems.first?.state = .on
     self.contextMenu?.addItem(menuItem!)
     self.contextMenu?.addItem(menuItemSoundChoice)
     self.contextMenu?.setSubmenu(submenu, for: menuItemSoundChoice)
