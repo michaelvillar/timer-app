@@ -43,8 +43,8 @@ class MVMainView: NSView {
         (title: "Sound 1", value: 0),
         (title: "Sound 2", value: 1),
         (title: "Sound 3", value: 2),
-        (title: "No Sound", value: -1),
-    ];
+        (title: "No Sound", value: -1)
+    ]
     for option in soundOptions {
         let soundItem = NSMenuItem(title: option.title, action: #selector(self.pickSound), keyEquivalent: "")
         soundItem.representedObject = option.value
