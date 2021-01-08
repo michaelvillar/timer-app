@@ -15,6 +15,7 @@ class MVMainView: NSView {
   weak var controller: MVTimerController?
   private var contextMenu: NSMenu?
   public  var menuItem: NSMenuItem?
+  private var soundMenuItems: [NSMenuItem] = []
 
   // swiftlint:disable unused_setter_value
   override var menu: NSMenu? {
@@ -32,7 +33,28 @@ class MVMainView: NSView {
       action: #selector(self.toggleShowInDock),
       keyEquivalent: ""
     )
+    let submenu = NSMenu()
+    let menuItemSoundChoice = NSMenuItem(
+      title: "Sound",
+      action: nil,
+      keyEquivalent: ""
+    )
+    let soundOptions = [
+        (title: "Sound 1", value: 0),
+        (title: "Sound 2", value: 1),
+        (title: "Sound 3", value: 2),
+        (title: "No Sound", value: -1)
+    ]
+    for option in soundOptions {
+        let soundItem = NSMenuItem(title: option.title, action: #selector(self.pickSound), keyEquivalent: "")
+        soundItem.representedObject = option.value
+        self.soundMenuItems.append(soundItem)
+        submenu.addItem(soundItem)
+    }
+    self.soundMenuItems.first?.state = .on
     self.contextMenu?.addItem(menuItem!)
+    self.contextMenu?.addItem(menuItemSoundChoice)
+    self.contextMenu?.setSubmenu(submenu, for: menuItemSoundChoice)
 
     let notificationCenter = NotificationCenter.default
 
@@ -64,6 +86,19 @@ class MVMainView: NSView {
       appDelegate.removeBadgeFromDock()
     } else {
       appDelegate.addBadgeToDock(controller: self.controller!)
+    }
+  }
+
+  @objc func pickSound(_ sender: NSMenuItem) {
+    for item in self.soundMenuItems {
+        if item == sender {
+            item.state = .on
+        } else {
+            item.state = .off
+        }
+    }
+    if let soundIdx = sender.representedObject as? Int {
+        self.controller!.pickSound(soundIdx)
     }
   }
 
