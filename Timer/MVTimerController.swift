@@ -83,12 +83,16 @@ class MVTimerController: NSWindowController {
     switch index {
     case -1:
         sound = nil
+
     case 0:
         sound = "alert-sound"
+
     case 1:
         sound = "alert-sound-2"
+
     case 2:
         sound = "alert-sound-3"
+
     default:
         sound = "alert-sound"
     }
