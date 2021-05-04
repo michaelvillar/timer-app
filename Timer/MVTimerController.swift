@@ -78,7 +78,7 @@ class MVTimerController: NSWindowController {
   override func keyDown(with event: NSEvent) {
   }
 
-  func pickSound(_ index: Int) {
+    func pickSound(_ index: Int, preview: Bool = true) {
     let sound: String?
     switch index {
     case -1:
@@ -100,7 +100,9 @@ class MVTimerController: NSWindowController {
         self.soundURL = Bundle.main.url(forResource: sound, withExtension: "caf")
 
         // 'preview'
-        playAlarmSound()
+        if preview {
+            playAlarmSound()
+        }
     } else {
         self.soundURL = nil
     }
