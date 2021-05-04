@@ -22,6 +22,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     let controller = MVTimerController()
     controllers.append(controller)
     self.addBadgeToDock(controller: controller)
+    controller.pickSound(UserDefaults.standard.integer(forKey: "sound"), preview: false)
 
     NSUserNotificationCenter.default.delegate = self
 
@@ -82,6 +83,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     let controller = MVTimerController(closeToWindow: NSApplication.shared.keyWindow)
     controller.window?.level = self.windowLevel()
     controllers.append(controller)
+    controller.pickSound(UserDefaults.standard.integer(forKey: "sound"), preview: false)
   }
 
   @objc func handleClose(_ notification: Notification) {

@@ -51,7 +51,12 @@ class MVMainView: NSView {
         self.soundMenuItems.append(soundItem)
         submenu.addItem(soundItem)
     }
-    self.soundMenuItems.first?.state = .on
+    let soundIdx = UserDefaults.standard.integer(forKey: "sound")
+    if soundIdx == -1 {
+        self.soundMenuItems.last?.state = .on
+    } else {
+        self.soundMenuItems[soundIdx].state = .on
+    }
     self.contextMenu?.addItem(menuItem!)
     self.contextMenu?.addItem(menuItemSoundChoice)
     self.contextMenu?.setSubmenu(submenu, for: menuItemSoundChoice)
@@ -99,6 +104,7 @@ class MVMainView: NSView {
     }
     if let soundIdx = sender.representedObject as? Int {
         self.controller!.pickSound(soundIdx)
+        UserDefaults.standard.set(soundIdx, forKey: "sound")
     }
   }
 
