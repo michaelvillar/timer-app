@@ -16,6 +16,7 @@ class MVMainView: NSView {
   private var contextMenu: NSMenu?
   public  var menuItem: NSMenuItem?
   private var soundMenuItems: [NSMenuItem] = []
+  var fullDiskTimerMenuItem: NSMenuItem?
 
   // swiftlint:disable unused_setter_value
   override var menu: NSMenu? {
@@ -60,6 +61,13 @@ class MVMainView: NSView {
     )
     let submenuViewConfig = NSMenu()
     submenuViewConfig.autoenablesItems = false
+
+    fullDiskTimerMenuItem = NSMenuItem(
+      title: "Show full disk timer",
+      action: #selector(self.toggleViewItemState),
+      keyEquivalent: ""
+    )
+    submenuViewConfig.addItem(fullDiskTimerMenuItem!)
 
     self.contextMenu?.addItem(menuItem!)
     self.contextMenu?.addItem(menuItemSoundChoice)
@@ -117,6 +125,8 @@ class MVMainView: NSView {
     var value = sender.state == .on ? true : false
     value.toggle()
     switch sender {
+    case fullDiskTimerMenuItem:
+      self.controller?.setViewState(value, forKey: MVUserDefaultsKeys.fullDiskTimer)
     default:
       break
     }

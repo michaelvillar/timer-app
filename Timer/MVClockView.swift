@@ -188,6 +188,15 @@ class MVClockView: NSControl {
     self.arrowView.progress = progress
   }
 
+  func showFullDiskTimer(_ progressViewAboveClock: Bool) {
+    progressView.removeFromSuperview()
+    if progressViewAboveClock {
+      self.addSubview(progressView, positioned: .above, relativeTo:clockFaceView)
+    } else {
+      self.addSubview(progressView, positioned: .below, relativeTo:arrowView)
+    }
+  }
+
   @objc func handleArrowControl(_ object: NSNumber) {
     var progressValue = CGFloat(object.floatValue)
     progressValue = convertProgressToScale(progressValue)
