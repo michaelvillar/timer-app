@@ -160,6 +160,13 @@ class MVClockView: NSControl {
     self.updateClockFaceView()
   }
 
+  func appearanceChangeOnFocusChange(_ change: Bool) {
+    clockFaceView.appearanceChangeOnFocus = change
+    arrowView.appearanceChangeOnFocus = change
+    progressView.appearanceChangeOnFocus = change
+    self.needsDisplay = true
+  }
+
   private func updateClockFaceView(highlighted: Bool = false) {
     clockFaceView.update(highlighted: highlighted)
   }
@@ -526,6 +533,7 @@ class MVClockProgressView: NSView {
       self.needsDisplay = true
     }
   }
+  var appearanceChangeOnFocus: Bool = true
 
   convenience init() {
     self.init(frame: NSRect(x: 0, y: 0, width: 116, height: 116))
@@ -583,7 +591,7 @@ class MVClockProgressView: NSView {
     transform.translate(x: -center.x, y: -center.y)
     (transform as NSAffineTransform).concat()
 
-    let image = NSImage(named: windowHasFocus ? "progress" : "progress-unfocus")
+    let image = NSImage(named: windowHasFocus || !appearanceChangeOnFocus ? "progress" : "progress-unfocus")
     image?.draw(in: self.bounds)
 
     ctx?.restoreGraphicsState()
@@ -601,6 +609,7 @@ class MVClockArrowView: NSControl {
     }
   }
   var actionMouseUp: Selector?
+  var appearanceChangeOnFocus: Bool = true
   private var center = CGPoint.zero
 
   convenience init(center: CGPoint) {
@@ -647,7 +656,7 @@ class MVClockArrowView: NSControl {
     path.transform(using: transform)
 
     let windowHasFocus = self.window?.isKeyWindow ?? false
-    if windowHasFocus {
+    if windowHasFocus || !appearanceChangeOnFocus {
       let ratio: CGFloat = 0.5
       NSColor(
         srgbRed: 0.1734 + ratio * (0.2235 - 0.1734),
@@ -737,6 +746,7 @@ class MVClockArrowView: NSControl {
 
 class MVClockFaceView: NSView {
   private var _image: NSImage?
+  var appearanceChangeOnFocus: Bool = true
 
   func update(highlighted: Bool = false) {
     // Load the appropriate image for the clock face
@@ -744,6 +754,8 @@ class MVClockFaceView: NSView {
 
     if highlighted {
       imageName = "clock-highlighted"
+    } else if !appearanceChangeOnFocus {
+      imageName = "clock"
     } else {
       let windowHasFocus = self.window?.isKeyWindow ?? false
       imageName = windowHasFocus ? "clock" : "clock-unfocus"

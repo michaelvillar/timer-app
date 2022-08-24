@@ -16,6 +16,7 @@ class MVMainView: NSView {
   private var contextMenu: NSMenu?
   public  var menuItem: NSMenuItem?
   private var soundMenuItems: [NSMenuItem] = []
+  var appearanceChangeOnFocusMenuItem: NSMenuItem?
 
   // swiftlint:disable unused_setter_value
   override var menu: NSMenu? {
@@ -60,6 +61,13 @@ class MVMainView: NSView {
     )
     let submenuViewConfig = NSMenu()
     submenuViewConfig.autoenablesItems = false
+
+    appearanceChangeOnFocusMenuItem = NSMenuItem(
+      title: "Change appearance when not in focus",
+      action: #selector(self.toggleViewItemState),
+      keyEquivalent: ""
+    )
+    submenuViewConfig.addItem(appearanceChangeOnFocusMenuItem!)
 
     self.contextMenu?.addItem(menuItem!)
     self.contextMenu?.addItem(menuItemSoundChoice)
@@ -117,6 +125,8 @@ class MVMainView: NSView {
     var value = sender.state == .on ? true : false
     value.toggle()
     switch sender {
+    case appearanceChangeOnFocusMenuItem:
+      self.controller?.setViewState(value, forKey: MVUserDefaultsKeys.appearanceChangeOnFocusChange)
     default:
       break
     }

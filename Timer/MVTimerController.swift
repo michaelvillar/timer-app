@@ -117,6 +117,9 @@ class MVTimerController: NSWindowController {
   private func setViewState(_ value: Bool, forKey viewConfigKey: String, save: Bool) {
     let state: NSControl.StateValue = value ? .on : .off
     switch viewConfigKey {
+    case MVUserDefaultsKeys.appearanceChangeOnFocusChange:
+      mainView.appearanceChangeOnFocusMenuItem?.state = state
+      clockView.appearanceChangeOnFocusChange(value)
     default:
       break
     }
@@ -127,6 +130,7 @@ class MVTimerController: NSWindowController {
 
   private func loadViewStateFromUserDefaults() {
     let keys: [String] = [
+      MVUserDefaultsKeys.appearanceChangeOnFocusChange
     ]
     for key in keys {
       let value = UserDefaults.standard.bool(forKey: key)
