@@ -16,6 +16,7 @@ class MVMainView: NSView {
   private var contextMenu: NSMenu?
   public  var menuItem: NSMenuItem?
   private var soundMenuItems: [NSMenuItem] = []
+  var hideDigitalTimerMenuItem: NSMenuItem?
 
   // swiftlint:disable unused_setter_value
   override var menu: NSMenu? {
@@ -60,6 +61,13 @@ class MVMainView: NSView {
     )
     let submenuViewConfig = NSMenu()
     submenuViewConfig.autoenablesItems = false
+
+    hideDigitalTimerMenuItem = NSMenuItem(
+      title: "Hide digital timer",
+      action: #selector(self.toggleViewItemState),
+      keyEquivalent: ""
+    )
+    submenuViewConfig.addItem(hideDigitalTimerMenuItem!)
 
     self.contextMenu?.addItem(menuItem!)
     self.contextMenu?.addItem(menuItemSoundChoice)
@@ -117,6 +125,8 @@ class MVMainView: NSView {
     var value = sender.state == .on ? true : false
     value.toggle()
     switch sender {
+    case hideDigitalTimerMenuItem:
+      self.controller?.setViewState(value, forKey: MVUserDefaultsKeys.hideDigitalTimer)
     default:
       break
     }
