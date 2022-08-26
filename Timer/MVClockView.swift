@@ -5,7 +5,6 @@ class MVClockView: NSControl {
   private var pauseIconImageView: NSImageView!
   private var progressView: MVClockProgressView!
   private var arrowView: MVClockArrowView!
-  private var timerTimeLabel: NSTextView!
   private var timerTimeLabelFontSize: CGFloat = 15
   private var minutesLabel: NSTextView!
   private var minutesLabelSuffixWidth: CGFloat = 0.0
@@ -47,6 +46,7 @@ class MVClockView: NSControl {
       self.layoutPauseViews()
     }
   }
+  var timerTimeLabel: NSTextView!
 
   var seconds: CGFloat = 0.0 {
     didSet {
@@ -186,6 +186,15 @@ class MVClockView: NSControl {
 
     self.progressView.progress = progress
     self.arrowView.progress = progress
+  }
+
+  func showFullDiskTimer(_ progressViewAboveClock: Bool) {
+    progressView.removeFromSuperview()
+    if progressViewAboveClock {
+      self.addSubview(progressView, positioned: .above, relativeTo:clockFaceView)
+    } else {
+      self.addSubview(progressView, positioned: .below, relativeTo:arrowView)
+    }
   }
 
   @objc func handleArrowControl(_ object: NSNumber) {
