@@ -8,6 +8,8 @@ class MVTimerController: NSWindowController {
   private var audioPlayer: AVAudioPlayer? // player must be kept in memory
   private var soundURL = Bundle.main.url(forResource: "alert-sound", withExtension: "caf")
 
+  var isMainController: Bool = false
+
   convenience init() {
     let mainView = MVMainView(frame: NSRect.zero)
 
@@ -25,6 +27,8 @@ class MVTimerController: NSWindowController {
     self.windowFrameAutosaveName = "TimerWindowAutosaveFrame"
 
     window.makeKeyAndOrderFront(self)
+
+    loadViewStateFromUserDefaults()
   }
 
   convenience init(closeToWindow: NSWindow?) {
@@ -107,10 +111,26 @@ class MVTimerController: NSWindowController {
   }
 
   func setViewState(_ value: Bool, forKey viewConfigKey: String) {
+    setViewState(value, forKey: viewConfigKey, save: isMainController)
+  }
+
+  private func setViewState(_ value: Bool, forKey viewConfigKey: String, save: Bool) {
     let state: NSControl.StateValue = value ? .on : .off
     switch viewConfigKey {
     default:
       break
+    }
+    if save {
+      UserDefaults.standard.set(value, forKey: viewConfigKey)
+    }
+  }
+
+  private func loadViewStateFromUserDefaults() {
+    let keys: [String] = [
+    ]
+    for key in keys {
+      let value = UserDefaults.standard.bool(forKey: key)
+      setViewState(value, forKey: key, save: false)
     }
   }
 }

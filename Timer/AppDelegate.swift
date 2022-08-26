@@ -20,6 +20,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
 
   func applicationDidFinishLaunching(_ aNotification: Notification) {
     let controller = MVTimerController()
+    controller.isMainController = true
     controllers.append(controller)
     self.addBadgeToDock(controller: controller)
 
@@ -81,6 +82,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
   @objc func newDocument(_ sender: AnyObject?) {
     let controller = MVTimerController(closeToWindow: NSApplication.shared.keyWindow)
     controller.window?.level = self.windowLevel()
+    controller.isMainController = controllers.isEmpty
     controllers.append(controller)
   }
 
@@ -109,6 +111,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
   }
 
   private func registerDefaults() {
-    UserDefaults.standard.register(defaults: [MVUserDefaultsKeys.staysOnTop: false])
+    UserDefaults.standard.register(defaults: [
+      MVUserDefaultsKeys.staysOnTop: false,
+    ])
   }
 }
