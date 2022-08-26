@@ -69,6 +69,11 @@ class MVClockView: NSControl {
       }
     }
   }
+  var typicalSuffixes = false {
+    didSet {
+      self.updateLabels()
+    }
+  }
 
   // MARK: -
 
@@ -342,28 +347,36 @@ class MVClockView: NSControl {
   private func updateLabels() {
     var suffixWidth: CGFloat = 0
 
+    let minutesSuffixFormat: NSString = typicalSuffixes ? "%im" : "%i'"
+    let secondsSuffixFormat: NSString = typicalSuffixes ? "%is" : "%i\""
     if self.seconds < 60 {
-      minutesLabel.string = NSString(format: "%i\"", Int(self.seconds)) as String
+      minutesLabel.string = NSString(format: secondsSuffixFormat, Int(self.seconds)) as String
       suffixWidth = minutesLabelSecondsSuffixWidth
     } else {
-      minutesLabel.string = NSString(format: "%i'", Int(self.minutes)) as String
+      minutesLabel.string = NSString(format: minutesSuffixFormat, Int(self.minutes)) as String
       suffixWidth = minutesLabelSuffixWidth
     }
     minutesLabel.sizeToFit()
 
-    var frame = minutesLabel.frame
-    frame.origin.x = round((self.bounds.width - (frame.size.width - suffixWidth)) / 2)
-    minutesLabel.frame = frame
+    // typical suffixes look better without frame adjustments
+    if !typicalSuffixes {
+      var frame = minutesLabel.frame
+      frame.origin.x = round((self.bounds.width - (frame.size.width - suffixWidth)) / 2)
+      minutesLabel.frame = frame
+    }
 
     if self.seconds < 60 {
       secondsLabel.string = ""
     } else {
-      secondsLabel.string = NSString(format: "%i\"", Int(self.seconds.truncatingRemainder(dividingBy: 60))) as String
+      secondsLabel.string = NSString(format: secondsSuffixFormat, Int(self.seconds.truncatingRemainder(dividingBy: 60))) as String
       secondsLabel.sizeToFit()
 
-      frame = secondsLabel.frame
-      frame.origin.x = round((self.bounds.width - (frame.size.width - secondsSuffixWidth)) / 2)
-      secondsLabel.frame = frame
+      // typical suffixes look better without frame adjustments
+      if !typicalSuffixes {
+        var frame = secondsLabel.frame
+        frame.origin.x = round((self.bounds.width - (frame.size.width - secondsSuffixWidth)) / 2)
+        secondsLabel.frame = frame
+      }
     }
   }
 
