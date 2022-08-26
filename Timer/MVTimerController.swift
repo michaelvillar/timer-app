@@ -105,4 +105,12 @@ class MVTimerController: NSWindowController {
         self.soundURL = nil
     }
   }
+
+  func setViewState(_ value: Bool, forKey viewConfigKey: String) {
+    let state: NSControl.StateValue = value ? .on : .off
+    switch viewConfigKey {
+    default:
+      break
+    }
+  }
 }
