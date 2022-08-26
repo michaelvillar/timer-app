@@ -16,6 +16,7 @@ class MVMainView: NSView {
   private var contextMenu: NSMenu?
   public  var menuItem: NSMenuItem?
   private var soundMenuItems: [NSMenuItem] = []
+  var hideDigitalTimerMenuItem: NSMenuItem?
 
   // swiftlint:disable unused_setter_value
   override var menu: NSMenu? {
@@ -52,9 +53,27 @@ class MVMainView: NSView {
         submenu.addItem(soundItem)
     }
     self.soundMenuItems.first?.state = .on
+
+    let menuItemViewConfig = NSMenuItem(
+      title: "View",
+      action: nil,
+      keyEquivalent: ""
+    )
+    let submenuViewConfig = NSMenu()
+    submenuViewConfig.autoenablesItems = false
+
+    hideDigitalTimerMenuItem = NSMenuItem(
+      title: "Hide digital timer",
+      action: #selector(self.toggleViewItemState),
+      keyEquivalent: ""
+    )
+    submenuViewConfig.addItem(hideDigitalTimerMenuItem!)
+
     self.contextMenu?.addItem(menuItem!)
     self.contextMenu?.addItem(menuItemSoundChoice)
     self.contextMenu?.setSubmenu(submenu, for: menuItemSoundChoice)
+    self.contextMenu?.addItem(menuItemViewConfig)
+    self.contextMenu?.setSubmenu(submenuViewConfig, for: menuItemViewConfig)
 
     let notificationCenter = NotificationCenter.default
 
@@ -99,6 +118,17 @@ class MVMainView: NSView {
     }
     if let soundIdx = sender.representedObject as? Int {
         self.controller!.pickSound(soundIdx)
+    }
+  }
+
+  @objc func toggleViewItemState(_ sender: NSMenuItem) {
+    var value = sender.state == .on ? true : false
+    value.toggle()
+    switch sender {
+    case hideDigitalTimerMenuItem:
+      self.controller?.setViewState(value, forKey: MVUserDefaultsKeys.hideDigitalTimer)
+    default:
+      break
     }
   }
 

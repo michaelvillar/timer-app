@@ -5,7 +5,6 @@ class MVClockView: NSControl {
   private var pauseIconImageView: NSImageView!
   private var progressView: MVClockProgressView!
   private var arrowView: MVClockArrowView!
-  private var timerTimeLabel: NSTextView!
   private var timerTimeLabelFontSize: CGFloat = 15
   private var minutesLabel: NSTextView!
   private var minutesLabelSuffixWidth: CGFloat = 0.0
@@ -47,6 +46,7 @@ class MVClockView: NSControl {
       self.layoutPauseViews()
     }
   }
+  var timerTimeLabel: NSTextView!
 
   var seconds: CGFloat = 0.0 {
     didSet {
