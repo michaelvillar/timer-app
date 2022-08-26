@@ -120,6 +120,7 @@ class MVTimerController: NSWindowController {
     case MVUserDefaultsKeys.fullDiskTimer:
       mainView.fullDiskTimerMenuItem?.state = state
       clockView.showFullDiskTimer(value)
+      clockView.timerTimeLabel.isHidden = value
     default:
       break
     }
