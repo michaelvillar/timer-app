@@ -97,14 +97,22 @@ class MVClockView: NSControl {
     timerTimeLabel = MVLabel(frame: NSRect(x: 0, y: 94, width: 150, height: 20))
     timerTimeLabel.font = NSFont.systemFont(ofSize: timerTimeLabelFontSize, weight: .medium)
     timerTimeLabel.alignment = NSTextAlignment.center
-    timerTimeLabel.textColor = NSColor(srgbRed: 0.749, green: 0.1412, blue: 0.0118, alpha: 1.0)
+    if #available(macOS 10.13, *) {
+        timerTimeLabel.textColor = NSColor(named: "timer-label")
+    } else {
+        timerTimeLabel.textColor = NSColor(srgbRed: 0.749, green: 0.1412, blue: 0.0118, alpha: 1.0)
+    }
     self.addSubview(timerTimeLabel)
 
     minutesLabel = MVLabel(frame: NSRect(x: 0, y: 57, width: 150, height: 30))
     minutesLabel.string = ""
     minutesLabel.font = NSFont.monospacedDigitSystemFont(ofSize: 35, weight: .medium)
     minutesLabel.alignment = NSTextAlignment.center
-    minutesLabel.textColor = NSColor(srgbRed: 0.2353, green: 0.2549, blue: 0.2706, alpha: 1.0)
+    if #available(macOS 10.13, *) {
+        minutesLabel.textColor = NSColor(named: "minutes-label")
+    } else {
+        minutesLabel.textColor = NSColor(srgbRed: 0.2353, green: 0.2549, blue: 0.2706, alpha: 1.0)
+    }
     self.addSubview(minutesLabel)
 
     let minutesLabelSuffix = "'"
@@ -122,7 +130,11 @@ class MVClockView: NSControl {
     secondsLabel = MVLabel(frame: NSRect(x: 0, y: 38, width: 150, height: 20))
     secondsLabel.font = NSFont.monospacedDigitSystemFont(ofSize: 15, weight: .regular)
     secondsLabel.alignment = NSTextAlignment.center
-    secondsLabel.textColor = NSColor(srgbRed: 0.6353, green: 0.6667, blue: 0.6863, alpha: 1.0)
+    if #available(OSX 10.13, *) {
+        secondsLabel.textColor = NSColor(named: "seconds-label")
+    } else {
+        secondsLabel.textColor = NSColor(srgbRed: 0.6353, green: 0.6667, blue: 0.6863, alpha: 1.0)
+    }
     self.addSubview(secondsLabel)
 
     let secondsLabelSuffix = "'"
