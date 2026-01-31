@@ -40,7 +40,10 @@ class MVMainView: NSView {
         self.soundMenuItems.append(soundItem)
         submenu.addItem(soundItem)
     }
-    self.soundMenuItems.first?.state = .on
+    let savedSoundIndex = UserDefaults.standard.integer(forKey: MVUserDefaultsKeys.soundIndex)
+    for item in self.soundMenuItems {
+        item.state = (item.representedObject as? Int) == savedSoundIndex ? .on : .off
+    }
     self.contextMenu?.addItem(menuItem!)
     self.contextMenu?.addItem(menuItemSoundChoice)
     self.contextMenu?.setSubmenu(submenu, for: menuItemSoundChoice)

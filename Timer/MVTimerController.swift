@@ -25,11 +25,18 @@ class MVTimerController: NSWindowController {
 
     self.windowFrameAutosaveName = "TimerWindowAutosaveFrame"
 
+    let savedSound = UserDefaults.standard.integer(forKey: MVUserDefaultsKeys.soundIndex)
+    self.applySoundIndex(savedSound)
+
     window.makeKeyAndOrderFront(self)
   }
 
   convenience init(closeToWindow: NSWindow?) {
     self.init()
+
+    // Secondary windows don't need autosave — clear it so they
+    // don't overwrite the primary window's saved position.
+    self.windowFrameAutosaveName = ""
 
     if closeToWindow != nil {
       var point = closeToWindow!.frame.origin
@@ -80,7 +87,12 @@ class MVTimerController: NSWindowController {
   override func keyDown(with event: NSEvent) {
   }
 
-  func pickSound(_ index: Int) {
+  func pickSound(_ index: Int, preview: Bool = true) {
+    UserDefaults.standard.set(index, forKey: MVUserDefaultsKeys.soundIndex)
+    applySoundIndex(index, preview: preview)
+  }
+
+  private func applySoundIndex(_ index: Int, preview: Bool = false) {
     let sound: String?
     switch index {
     case -1:
@@ -101,8 +113,9 @@ class MVTimerController: NSWindowController {
     if sound != nil {
         self.soundURL = Bundle.main.url(forResource: sound, withExtension: "caf")
 
-        // 'preview'
-        playAlarmSound()
+        if preview {
+            playAlarmSound()
+        }
     } else {
         self.soundURL = nil
     }

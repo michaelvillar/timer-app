@@ -112,6 +112,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
   }
 
   private func registerDefaults() {
-    UserDefaults.standard.register(defaults: [MVUserDefaultsKeys.staysOnTop: false])
+    UserDefaults.standard.register(defaults: [
+      MVUserDefaultsKeys.staysOnTop: false,
+      MVUserDefaultsKeys.soundIndex: 0
+    ])
   }
 }
