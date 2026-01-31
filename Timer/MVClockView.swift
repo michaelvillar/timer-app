@@ -12,6 +12,11 @@ class MVClockView: NSControl {
   private var minutesLabelSecondsSuffixWidth: CGFloat = 0.0
   private var secondsLabel: NSTextView!
   private var secondsSuffixWidth: CGFloat = 0.0
+  private lazy var timerTimeLabelFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "jj:mm", options: 0, locale: Locale.current)
+    return formatter
+  }()
   private var inputSeconds: Bool = false
   private var lastTimerSeconds: CGFloat?
   private let docktile: NSDockTile = NSApplication.shared.dockTile
@@ -384,9 +389,7 @@ class MVClockView: NSControl {
   }
 
   private func updateTimeLabel() {
-    let formatter = DateFormatter()
-    formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "jj:mm", options: 0, locale: Locale.current)
-    let timeString = formatter.string(from: self.timerTime ?? Date())
+    let timeString = timerTimeLabelFormatter.string(from: self.timerTime ?? Date())
     timerTimeLabel.string = timeString
 
     // If the local time format includes an " AM" or " PM" suffix, show the suffix with a smaller font
@@ -686,8 +689,10 @@ class MVClockArrowView: NSControl {
       }
 
       if isTracking {
-        let anEvent = self.window?.nextEvent(matching: [.leftMouseUp, .leftMouseDragged])
-        event = anEvent!
+        guard let nextEvent = self.window?.nextEvent(matching: [.leftMouseUp, .leftMouseDragged]) else {
+          break
+        }
+        event = nextEvent
       }
     }
   }

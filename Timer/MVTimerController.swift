@@ -1,5 +1,6 @@
 import AVFoundation
 import Cocoa
+import UserNotifications
 
 class MVTimerController: NSWindowController {
   private var mainView: MVMainView!
@@ -61,10 +62,11 @@ class MVTimerController: NSWindowController {
   }
 
   @objc func handleClockTimer(_ clockView: MVClockView) {
-    let notification = NSUserNotification()
-    notification.title = "It's time! 🕘"
+    let content = UNMutableNotificationContent()
+    content.title = "It's time! 🕘"
 
-    NSUserNotificationCenter.default.deliver(notification)
+    let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+    UNUserNotificationCenter.current().add(request)
 
     NSApplication.shared.requestUserAttention(.criticalRequest)
 

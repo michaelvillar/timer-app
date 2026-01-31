@@ -3,8 +3,6 @@ import Cocoa
 class MVWindow: NSWindow {
   var mainView: NSView!
 
-  private var initialLocation: CGPoint!
-
   convenience init(mainView: NSView) {
     let styleMask: NSWindow.StyleMask = [.closable, .titled]
     let size: CGFloat = 150.0

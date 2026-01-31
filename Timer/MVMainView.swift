@@ -1,16 +1,5 @@
 import Cocoa
 
-extension NSView {
-    var isDarkMode: Bool {
-        if #available(OSX 10.14, *) {
-            if effectiveAppearance.name == .darkAqua {
-                return true
-            }
-        }
-        return false
-    }
-}
-
 class MVMainView: NSView {
   weak var controller: MVTimerController?
   private var contextMenu: NSMenu?
@@ -109,23 +98,8 @@ class MVMainView: NSView {
   override func draw(_ dirtyRect: NSRect) {
     super.draw(dirtyRect)
 
-    let windowHasFocus = self.window?.isKeyWindow ?? false
-
-    var topColor = NSColor(srgbRed: 242 / 255, green: 241 / 255, blue: 242 / 255, alpha: 1.000)
-    var bottomColor = NSColor(srgbRed: 214 / 255, green: 212 / 255, blue: 214 / 255, alpha: 1.000)
-
-    if !windowHasFocus {
-      topColor = NSColor(srgbRed: 246 / 255, green: 246 / 255, blue: 246 / 255, alpha: 1.000)
-      bottomColor = topColor
-    }
-
-    if isDarkMode {
-        topColor = NSColor(srgbRed: 39 / 255, green: 39 / 255, blue: 39 / 255, alpha: 1.000)
-        bottomColor = NSColor(srgbRed: 18 / 255, green: 18 / 255, blue: 18 / 255, alpha: 1.000)
-    }
-
-    topColor = NSColor(named: "background-top-color")!
-    bottomColor = NSColor(named: "background-bottom-color")!
+    let topColor = NSColor(named: "background-top-color")!
+    let bottomColor = NSColor(named: "background-bottom-color")!
 
     let gradient = NSGradient(colors: [topColor, bottomColor])
     let radius: CGFloat = 4.53

@@ -1,7 +1,8 @@
 import Cocoa
+import UserNotifications
 
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
   private var controllers: [MVTimerController] = []
   private var currentlyInDock: MVTimerController?
 
@@ -23,7 +24,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     controllers.append(controller)
     self.addBadgeToDock(controller: controller)
 
-    NSUserNotificationCenter.default.delegate = self
+    UNUserNotificationCenter.current().delegate = self
+    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
 
     let notificationCenter = NotificationCenter.default
 
@@ -59,9 +61,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
   }
 
   func userNotificationCenter(
-    _ center: NSUserNotificationCenter,
-    shouldPresent notification: NSUserNotification) -> Bool {
-    true
+    _ center: UNUserNotificationCenter,
+    willPresent notification: UNNotification,
+    withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+    completionHandler([.banner, .sound])
   }
 
   func addBadgeToDock(controller: MVTimerController) {
