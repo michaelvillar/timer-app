@@ -124,10 +124,8 @@ class MVMainView: NSView {
         bottomColor = NSColor(srgbRed: 18 / 255, green: 18 / 255, blue: 18 / 255, alpha: 1.000)
     }
 
-    if #available(OSX 10.13, *) {
-        topColor = NSColor(named: "background-top-color")!
-        bottomColor = NSColor(named: "background-bottom-color")!
-    }
+    topColor = NSColor(named: "background-top-color")!
+    bottomColor = NSColor(named: "background-bottom-color")!
 
     let gradient = NSGradient(colors: [topColor, bottomColor])
     let radius: CGFloat = 4.53

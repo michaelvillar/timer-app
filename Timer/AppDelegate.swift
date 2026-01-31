@@ -96,7 +96,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
   @objc func handleOcclusionChange(_ notification: Notification) {
     if let window = notification.object as? NSWindow,
       let controller = window.windowController as? MVTimerController {
-      controller.windowVisibilityChanged(window.isVisible)
+      controller.windowVisibilityChanged(window.occlusionState.contains(.visible))
     }
   }
 
