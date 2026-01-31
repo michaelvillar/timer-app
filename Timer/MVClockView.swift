@@ -286,11 +286,11 @@ class MVClockView: NSControl {
       self.paused = false
       self.stop()
 
-      if self.inputSeconds {
-        self.seconds = currentMinutes * 60 + floor(currentSeconds / 10)
-      } else {
-        self.seconds = floor(currentMinutes / 10) * 60 + currentSeconds
-      }
+      self.seconds = TimerLogic.processBackspace(
+        currentSeconds: currentSeconds,
+        currentMinutes: currentMinutes,
+        inputSeconds: self.inputSeconds
+      )
 
       self.updateTimerTime()
 
@@ -313,22 +313,18 @@ class MVClockView: NSControl {
     }
 
     if let number = Int(theEvent.characters ?? "") {
-      var newSeconds: CGFloat
+      let result = TimerLogic.processDigitInput(
+        digit: number,
+        currentSeconds: currentSeconds,
+        currentMinutes: currentMinutes,
+        totalSeconds: self.seconds,
+        inputSeconds: self.inputSeconds
+      )
 
-      if self.inputSeconds {
-        if currentSeconds < 6 || currentMinutes == 0 {
-          newSeconds = currentMinutes * 60 + currentSeconds * 10 + CGFloat(number)
-        } else {
-          newSeconds = self.seconds
-        }
-      } else {
-        newSeconds = currentMinutes * 600 + currentSeconds + CGFloat(number) * 60
-      }
-
-      if newSeconds < 999 * 60 {
+      if result.accepted {
         self.paused = false
         self.stop()
-        self.seconds = newSeconds
+        self.seconds = result.seconds
         self.updateTimerTime()
       }
     }
@@ -345,25 +341,16 @@ class MVClockView: NSControl {
   }
 
   private func updateLabels() {
-    var suffixWidth: CGFloat = 0
-
-    if self.seconds < 60 {
-      minutesLabel.string = NSString(format: "%i\"", Int(self.seconds)) as String
-      suffixWidth = minutesLabelSecondsSuffixWidth
-    } else {
-      minutesLabel.string = NSString(format: "%i'", Int(self.minutes)) as String
-      suffixWidth = minutesLabelSuffixWidth
-    }
+    minutesLabel.string = TimerLogic.minutesDisplayString(seconds: self.seconds)
+    let suffixWidth: CGFloat = self.seconds < 60 ? minutesLabelSecondsSuffixWidth : minutesLabelSuffixWidth
     minutesLabel.sizeToFit()
 
     var frame = minutesLabel.frame
     frame.origin.x = round((self.bounds.width - (frame.size.width - suffixWidth)) / 2)
     minutesLabel.frame = frame
 
-    if self.seconds < 60 {
-      secondsLabel.string = ""
-    } else {
-      secondsLabel.string = NSString(format: "%i\"", Int(self.seconds.truncatingRemainder(dividingBy: 60))) as String
+    secondsLabel.string = TimerLogic.secondsDisplayString(seconds: self.seconds)
+    if self.seconds >= 60 {
       secondsLabel.sizeToFit()
 
       frame = secondsLabel.frame
@@ -377,7 +364,7 @@ class MVClockView: NSControl {
       if self.timer != nil || self.paused {
         let badgeSeconds = Int(self.seconds.truncatingRemainder(dividingBy: 60))
         let badgeMinutes = Int(self.minutes)
-        self.docktile.badgeLabel = NSString(format: "%02d:%02d", badgeMinutes, badgeSeconds) as String
+        self.docktile.badgeLabel = TimerLogic.badgeString(minutes: badgeMinutes, seconds: badgeSeconds)
       } else {
         self.removeBadge()
       }
@@ -496,30 +483,12 @@ class MVClockView: NSControl {
     return nil
   }
 
-  private let scaleOriginal: CGFloat = 6
-  private let scaleActual: CGFloat = 3
-
   private func convertProgressToScale(_ progress: CGFloat) -> CGFloat {
-    if self.minutes <= 60 {
-      if progress <= scaleOriginal / 60 {
-        return progress / (scaleOriginal / scaleActual)
-      } else {
-        return (progress * 60 - scaleOriginal + scaleActual) / (60 - scaleActual)
-      }
-    }
-    return progress
+    TimerLogic.convertProgressToScale(progress, minutes: self.minutes)
   }
 
   private func invertProgressToScale(_ progress: CGFloat) -> CGFloat {
-    if self.minutes > 60 {
-      return progress
-    }
-
-    if progress <= scaleActual / 60 {
-      return progress * (scaleOriginal / scaleActual)
-    } else {
-      return (progress * (60 - scaleActual) - scaleActual + scaleOriginal) / 60
-    }
+    TimerLogic.invertProgressToScale(progress, minutes: self.minutes)
   }
 }
 

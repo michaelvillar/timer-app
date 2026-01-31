@@ -16,5 +16,7 @@ jobs:
     - name: Clean
       run: xcodebuild clean
     - name: Build
-      run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO 
+      run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+    - name: Test
+      run: xcodebuild test -scheme Timer -destination 'platform=macOS' CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
 

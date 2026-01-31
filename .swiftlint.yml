@@ -36,6 +36,7 @@ opt_in_rules:
 
 included:
   - Timer
+  - TimerTests
 
 excluded:
   - Timer/Keycodes.swift

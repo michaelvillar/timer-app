@@ -93,24 +93,7 @@ class MVTimerController: NSWindowController {
   }
 
   private func applySoundIndex(_ index: Int, preview: Bool = false) {
-    let sound: String?
-    switch index {
-    case -1:
-        sound = nil
-
-    case 0:
-        sound = "alert-sound"
-
-    case 1:
-        sound = "alert-sound-2"
-
-    case 2:
-        sound = "alert-sound-3"
-
-    default:
-        sound = "alert-sound"
-    }
-    if sound != nil {
+    if let sound = TimerLogic.soundFilename(forIndex: index) {
         self.soundURL = Bundle.main.url(forResource: sound, withExtension: "caf")
 
         if preview {
