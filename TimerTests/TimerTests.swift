@@ -1,8 +1,7 @@
-import XCTest
 @testable import Timer
+import XCTest
 
 final class TimerLogicTests: XCTestCase {
-
   // MARK: - convertProgressToScale
 
   func testConvertProgressToScalePassthroughAbove60Minutes() {

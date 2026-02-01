@@ -40,8 +40,8 @@ class MVTimerController: NSWindowController {
 
     if closeToWindow != nil {
       var point = closeToWindow!.frame.origin
-      point.x += CGFloat(Int(arc4random_uniform(UInt32(80))) - 40)
-      point.y += CGFloat(Int(arc4random_uniform(UInt32(80))) - 40)
+      point.x += CGFloat(Int.random(in: -40...39))
+      point.y += CGFloat(Int.random(in: -40...39))
       self.window?.setFrameOrigin(point)
     }
   }
@@ -63,7 +63,7 @@ class MVTimerController: NSWindowController {
   func playAlarmSound() {
     if soundURL != nil {
         audioPlayer = try? AVAudioPlayer(contentsOf: soundURL!)
-        //audioPlayer?.volume = self.volume
+        // audioPlayer?.volume = self.volume
         audioPlayer?.play()
     }
   }

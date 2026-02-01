@@ -1,7 +1,6 @@
 import Foundation
 
 enum TimerLogic {
-
   private static let scaleOriginal: CGFloat = 6
   private static let scaleActual: CGFloat = 3
 

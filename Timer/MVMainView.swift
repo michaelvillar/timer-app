@@ -6,12 +6,10 @@ class MVMainView: NSView {
   public  var menuItem: NSMenuItem?
   private var soundMenuItems: [NSMenuItem] = []
 
-  // swiftlint:disable unused_setter_value
   override var menu: NSMenu? {
     get { self.contextMenu }
     set {}
   }
-  // swiftlint:enable unused_setter_value
 
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)

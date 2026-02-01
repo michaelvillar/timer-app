@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Resolved all SwiftLint warnings: replaced `arc4random_uniform` with `Int.random(in:)`, fixed comment spacing, removed superfluous disable command, moved analyzer-only rules to correct config section, removed defunct `anyobject_protocol` rule
 - Updated `MACOSX_DEPLOYMENT_TARGET` from 10.11 to 10.13 (Xcode no longer supports targets below 10.13)
 - Fixed `handleOcclusionChange` to use `window.occlusionState.contains(.visible)` instead of `window.isVisible`, which only checked if the window was ordered in rather than actually visible on screen
 - Removed redundant `#available(OSX 10.13, *)` check now that the deployment target is 10.13
