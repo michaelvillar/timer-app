@@ -13,6 +13,7 @@ opt_in_rules:
   - collection_alignment
   - empty_count
   - explicit_init
+  - force_unwrapping
   - implicit_return
   - joined_default_parameter
   - literal_expression_end_indentation

@@ -1,8 +1,6 @@
 import Cocoa
 
-class MVWindow: NSWindow {
-  var mainView: NSView!
-
+final class MVWindow: NSWindow {
   convenience init(mainView: NSView) {
     let styleMask: NSWindow.StyleMask = [.closable, .titled]
     let size: CGFloat = 150.0
@@ -11,9 +9,10 @@ class MVWindow: NSWindow {
       styleMask: styleMask
     ).size.height - size
 
+    let screenFrame = NSScreen.main?.frame ?? NSRect(x: 0, y: 0, width: 800, height: 600)
     let windowFrame = NSRect(
-      x: NSScreen.main!.frame.width / 2 - size / 2,
-      y: NSScreen.main!.frame.height / 2 - size / 2,
+      x: screenFrame.width / 2 - size / 2,
+      y: screenFrame.height / 2 - size / 2,
       width: size,
       height: size - titleBarHeight
     )
@@ -25,8 +24,7 @@ class MVWindow: NSWindow {
       defer: true
     )
 
-    self.mainView = mainView
-    self.mainView.frame = NSRect(x: 0, y: 0, width: size, height: size)
+    mainView.frame = NSRect(x: 0, y: 0, width: size, height: size)
 
     self.titleVisibility = .hidden
     self.titlebarAppearsTransparent = true
@@ -41,12 +39,13 @@ class MVWindow: NSWindow {
     self.standardWindowButton(.zoomButton)?.isHidden = true
 
     // Adjust the close button
-    let closeButton = self.standardWindowButton(.closeButton)!
-    var closeFrame = closeButton.frame
-    closeFrame.origin.y -= 2
-    closeButton.frame = closeFrame
+    if let closeButton = self.standardWindowButton(.closeButton) {
+      var closeFrame = closeButton.frame
+      closeFrame.origin.y -= 2
+      closeButton.frame = closeFrame
 
-    // Add the main clock view as a sibling underneath the close button
-    closeButton.superview?.addSubview(self.mainView, positioned: .below, relativeTo: closeButton)
+      // Add the main clock view as a sibling underneath the close button
+      closeButton.superview?.addSubview(mainView, positioned: .below, relativeTo: closeButton)
+    }
   }
 }

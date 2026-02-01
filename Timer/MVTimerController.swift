@@ -2,26 +2,24 @@ import AVFoundation
 import Cocoa
 import UserNotifications
 
-class MVTimerController: NSWindowController {
-  private var mainView: MVMainView!
-  private var clockView: MVClockView!
+final class MVTimerController: NSWindowController {
+  private weak var dockMenuItem: NSMenuItem?
+  private let clockView = MVClockView()
 
   private var audioPlayer: AVAudioPlayer? // player must be kept in memory
   private var soundURL = Bundle.main.url(forResource: "alert-sound", withExtension: "caf")
 
   convenience init() {
-    let mainView = MVMainView(frame: NSRect.zero)
+    let mainView = MVMainView(frame: .zero)
 
     let window = MVWindow(mainView: mainView)
 
     self.init(window: window)
 
-    self.mainView = mainView
-    self.mainView.controller = self
-    self.clockView = MVClockView()
-    self.clockView.target = self
-    self.clockView.action = #selector(handleClockTimer)
-    self.mainView.addSubview(clockView)
+    mainView.controller = self
+    self.clockView.onTimerComplete = { [weak self] in self?.handleClockTimer() }
+    mainView.addSubview(self.clockView)
+    self.dockMenuItem = mainView.menuItem
 
     self.windowFrameAutosaveName = "TimerWindowAutosaveFrame"
 
@@ -38,8 +36,8 @@ class MVTimerController: NSWindowController {
     // don't overwrite the primary window's saved position.
     self.windowFrameAutosaveName = ""
 
-    if closeToWindow != nil {
-      var point = closeToWindow!.frame.origin
+    if let closeToWindow {
+      var point = closeToWindow.frame.origin
       point.x += CGFloat(Int.random(in: -40...39))
       point.y += CGFloat(Int.random(in: -40...39))
       self.window?.setFrameOrigin(point)
@@ -47,28 +45,26 @@ class MVTimerController: NSWindowController {
   }
 
   deinit {
-    self.clockView.target = nil
     self.clockView.stop()
   }
 
   func showInDock(_ state: Bool) {
     self.clockView.inDock = state
-    self.mainView.menuItem?.state = state ? .on : .off
+    self.dockMenuItem?.state = state ? .on : .off
   }
 
   func windowVisibilityChanged(_ visible: Bool) {
     clockView.windowIsVisible = visible
   }
 
-  func playAlarmSound() {
-    if soundURL != nil {
-        audioPlayer = try? AVAudioPlayer(contentsOf: soundURL!)
-        // audioPlayer?.volume = self.volume
-        audioPlayer?.play()
+  private func playAlarmSound() {
+    if let soundURL {
+      audioPlayer = try? AVAudioPlayer(contentsOf: soundURL)
+      audioPlayer?.play()
     }
   }
 
-  @objc func handleClockTimer(_ clockView: MVClockView) {
+  private func handleClockTimer() {
     let content = UNMutableNotificationContent()
     content.title = "It's time! 🕘"
 
@@ -80,10 +76,11 @@ class MVTimerController: NSWindowController {
     playAlarmSound()
   }
 
-  override func keyUp(with theEvent: NSEvent) {
-    self.clockView.keyUp(with: theEvent)
+  override func keyUp(with event: NSEvent) {
+    self.clockView.keyUp(with: event)
   }
 
+  // Override required to suppress system beep on key press
   override func keyDown(with event: NSEvent) {
   }
 
@@ -94,13 +91,13 @@ class MVTimerController: NSWindowController {
 
   private func applySoundIndex(_ index: Int, preview: Bool = false) {
     if let sound = TimerLogic.soundFilename(forIndex: index) {
-        self.soundURL = Bundle.main.url(forResource: sound, withExtension: "caf")
+      self.soundURL = Bundle.main.url(forResource: sound, withExtension: "caf")
 
-        if preview {
-            playAlarmSound()
-        }
+      if preview {
+        playAlarmSound()
+      }
     } else {
-        self.soundURL = nil
+      self.soundURL = nil
     }
   }
 }

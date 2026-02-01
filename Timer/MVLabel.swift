@@ -1,6 +1,6 @@
 import Cocoa
 
-class MVLabel: NSTextView {
+final class MVLabel: NSTextView {
   override init(frame frameRect: NSRect, textContainer aTextContainer: NSTextContainer?) {
     super.init(frame: frameRect, textContainer: aTextContainer)
 

@@ -1,10 +1,11 @@
 import Cocoa
 
-class MVMainView: NSView {
+final class MVMainView: NSView {
   weak var controller: MVTimerController?
-  private var contextMenu: NSMenu?
-  public  var menuItem: NSMenuItem?
+  private let contextMenu = NSMenu(title: "Menu")
+  private(set) var menuItem: NSMenuItem?
   private var soundMenuItems: [NSMenuItem] = []
+  private var notificationObservers: [NSObjectProtocol] = []
 
   override var menu: NSMenu? {
     get { self.contextMenu }
@@ -14,7 +15,6 @@ class MVMainView: NSView {
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
 
-    self.contextMenu = NSMenu(title: "Menu")
     menuItem = NSMenuItem(
       title: "Show timer badge in dock",
       action: #selector(self.toggleShowInDock),
@@ -27,39 +27,39 @@ class MVMainView: NSView {
       keyEquivalent: ""
     )
     let soundOptions = [
-        (title: "Sound 1", value: 0),
-        (title: "Sound 2", value: 1),
-        (title: "Sound 3", value: 2),
-        (title: "No Sound", value: -1)
+      (title: "Sound 1", value: 0),
+      (title: "Sound 2", value: 1),
+      (title: "Sound 3", value: 2),
+      (title: "No Sound", value: -1)
     ]
     for option in soundOptions {
-        let soundItem = NSMenuItem(title: option.title, action: #selector(self.pickSound), keyEquivalent: "")
-        soundItem.representedObject = option.value
-        self.soundMenuItems.append(soundItem)
-        submenu.addItem(soundItem)
+      let soundItem = NSMenuItem(title: option.title, action: #selector(self.pickSound), keyEquivalent: "")
+      soundItem.tag = option.value
+      self.soundMenuItems.append(soundItem)
+      submenu.addItem(soundItem)
     }
     let savedSoundIndex = UserDefaults.standard.integer(forKey: MVUserDefaultsKeys.soundIndex)
     for item in self.soundMenuItems {
-        item.state = (item.representedObject as? Int) == savedSoundIndex ? .on : .off
+      item.state = item.tag == savedSoundIndex ? .on : .off
     }
-    self.contextMenu?.addItem(menuItem!)
-    self.contextMenu?.addItem(menuItemSoundChoice)
-    self.contextMenu?.setSubmenu(submenu, for: menuItemSoundChoice)
+    if let menuItem {
+      self.contextMenu.addItem(menuItem)
+    }
+    self.contextMenu.addItem(menuItemSoundChoice)
+    self.contextMenu.setSubmenu(submenu, for: menuItemSoundChoice)
 
     let notificationCenter = NotificationCenter.default
 
-    notificationCenter.addObserver(
-      self,
-      selector: #selector(windowFocusChanged),
-      name: NSWindow.didBecomeKeyNotification,
-      object: nil
+    notificationObservers.append(
+      notificationCenter.addObserver(forName: NSWindow.didBecomeKeyNotification, object: nil, queue: nil) {
+        [weak self] _ in self?.needsDisplay = true
+      }
     )
 
-    notificationCenter.addObserver(
-      self,
-      selector: #selector(windowFocusChanged),
-      name: NSWindow.didResignKeyNotification,
-      object: nil
+    notificationObservers.append(
+      notificationCenter.addObserver(forName: NSWindow.didResignKeyNotification, object: nil, queue: nil) {
+        [weak self] _ in self?.needsDisplay = true
+      }
     )
   }
 
@@ -68,48 +68,41 @@ class MVMainView: NSView {
   }
 
   @objc func toggleShowInDock() {
-    // swiftlint:disable force_cast
-    let appDelegate = NSApplication.shared.delegate as! AppDelegate
-    // swiftlint:enable force_cast
+    guard let appDelegate = NSApplication.shared.delegate as? AppDelegate,
+          let controller else { return }
 
     if menuItem?.state == .on {
       appDelegate.removeBadgeFromDock()
     } else {
-      appDelegate.addBadgeToDock(controller: self.controller!)
+      appDelegate.addBadgeToDock(controller: controller)
     }
   }
 
   @objc func pickSound(_ sender: NSMenuItem) {
     for item in self.soundMenuItems {
-        if item == sender {
-            item.state = .on
-        } else {
-            item.state = .off
-        }
+      if item == sender {
+        item.state = .on
+      } else {
+        item.state = .off
+      }
     }
-    if let soundIdx = sender.representedObject as? Int {
-        self.controller!.pickSound(soundIdx)
-    }
+    self.controller?.pickSound(sender.tag)
   }
 
   deinit {
-    NotificationCenter.default.removeObserver(self)
+    notificationObservers.forEach { NotificationCenter.default.removeObserver($0) }
   }
 
   override func draw(_ dirtyRect: NSRect) {
     super.draw(dirtyRect)
 
-    let topColor = NSColor(named: "background-top-color")!
-    let bottomColor = NSColor(named: "background-bottom-color")!
+    let topColor = NSColor(resource: .backgroundTop)
+    let bottomColor = NSColor(resource: .backgroundBottom)
 
     let gradient = NSGradient(colors: [topColor, bottomColor])
     let radius: CGFloat = 4.53
     let path = NSBezierPath(roundedRect: self.bounds, xRadius: radius, yRadius: radius)
 
     gradient?.draw(in: path, angle: -90)
-  }
-
-  @objc func windowFocusChanged(_ notification: Notification) {
-    self.needsDisplay = true
   }
 }

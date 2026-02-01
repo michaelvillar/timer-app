@@ -1,4 +1,4 @@
-struct Keycode {
+enum Keycode {
     
     // Layout-independent Keys
     // eg.These key codes are always the same key on all layouts.

@@ -1,17 +1,51 @@
 import Cocoa
 
-class MVClockView: NSControl {
-  private var clockFaceView: MVClockFaceView!
-  private var pauseIconImageView: NSImageView!
-  private var progressView: MVClockProgressView!
-  private var arrowView: MVClockArrowView!
-  private var timerTimeLabel: NSTextView!
-  private var timerTimeLabelFontSize: CGFloat = 15
-  private var minutesLabel: NSTextView!
-  private var minutesLabelSuffixWidth: CGFloat = 0.0
-  private var minutesLabelSecondsSuffixWidth: CGFloat = 0.0
-  private var secondsLabel: NSTextView!
-  private var secondsSuffixWidth: CGFloat = 0.0
+final class MVClockView: NSView {
+  override var mouseDownCanMoveWindow: Bool { false }
+
+  private static let minutesFont = NSFont.monospacedDigitSystemFont(ofSize: 35, weight: .medium)
+  private static let secondsFont = NSFont.monospacedDigitSystemFont(ofSize: 15, weight: .regular)
+
+  private let progressView = MVClockProgressView()
+  private let arrowView = MVClockArrowView(center: CGPoint(x: 75, y: 75))
+  private let clockFaceView = MVClockFaceView(frame: NSRect(x: 16, y: 15, width: 118, height: 118))
+
+  private let pauseIconImageView: NSImageView = {
+    let view = NSImageView(frame: NSRect(x: 70, y: 99, width: 10, height: 12))
+    view.image = NSImage(resource: .iconPause)
+    view.alphaValue = 0.0
+    return view
+  }()
+
+  private let timerTimeLabel: MVLabel = {
+    let label = MVLabel(frame: NSRect(x: 0, y: 94, width: 150, height: 20))
+    label.font = NSFont.systemFont(ofSize: 15, weight: .medium)
+    label.alignment = .center
+    label.textColor = NSColor(srgbRed: 0.749, green: 0.1412, blue: 0.0118, alpha: 1.0)
+    return label
+  }()
+
+  private let minutesLabel: MVLabel = {
+    let label = MVLabel(frame: NSRect(x: 0, y: 57, width: 150, height: 30))
+    label.string = ""
+    label.font = MVClockView.minutesFont
+    label.alignment = .center
+    label.textColor = NSColor(srgbRed: 0.2353, green: 0.2549, blue: 0.2706, alpha: 1.0)
+    return label
+  }()
+
+  private let secondsLabel: MVLabel = {
+    let label = MVLabel(frame: NSRect(x: 0, y: 38, width: 150, height: 20))
+    label.font = MVClockView.secondsFont
+    label.alignment = .center
+    label.textColor = NSColor(srgbRed: 0.6353, green: 0.6667, blue: 0.6863, alpha: 1.0)
+    return label
+  }()
+
+  private let timerTimeLabelFontSize: CGFloat = 15
+  private let minutesLabelSuffixWidth = "'".size(withAttributes: [.font: MVClockView.minutesFont]).width
+  private let minutesLabelSecondsSuffixWidth = "\"".size(withAttributes: [.font: MVClockView.minutesFont]).width
+  private let secondsSuffixWidth = "'".size(withAttributes: [.font: MVClockView.secondsFont]).width
   private lazy var timerTimeLabelFormatter: DateFormatter = {
     let formatter = DateFormatter()
     formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "jj:mm", options: 0, locale: Locale.current)
@@ -20,7 +54,7 @@ class MVClockView: NSControl {
   private var inputSeconds: Bool = false
   private var lastTimerSeconds: CGFloat?
   private let docktile: NSDockTile = NSApplication.shared.dockTile
-  public  var inDock: Bool = false {
+  var inDock: Bool = false {
     didSet {
       if !inDock {
         self.removeBadge()
@@ -28,7 +62,7 @@ class MVClockView: NSControl {
       self.updateBadge()
     }
   }
-  public var windowIsVisible: Bool = false {
+  var windowIsVisible: Bool = false {
     didSet {
       if windowIsVisible {
         self.startClockTimer()
@@ -45,6 +79,8 @@ class MVClockView: NSControl {
       }
     }
   }
+  var onTimerComplete: (() -> Void)?
+  private var notificationObservers: [NSObjectProtocol] = []
   private var currentTimeTimer: Timer?
   private var timer: Timer?
   private var paused: Bool = false {
@@ -53,13 +89,13 @@ class MVClockView: NSControl {
     }
   }
 
-  var seconds: CGFloat = 0.0 {
+  private var seconds: CGFloat = 0.0 {
     didSet {
       self.minutes = floor(seconds / 60)
       self.progress = invertProgressToScale(seconds / 60.0 / 60.0)
     }
   }
-  var minutes: CGFloat = 0.0 {
+  private var minutes: CGFloat = 0.0 {
     didSet {
       if windowIsVisible {
         self.updateLabels()
@@ -67,7 +103,7 @@ class MVClockView: NSControl {
       self.updateBadge() // Update the dock badge even when the window is hidden
     }
   }
-  var progress: CGFloat = 0.0 {
+  private var progress: CGFloat = 0.0 {
     didSet {
       if windowIsVisible {
         self.layoutSubviews()
@@ -80,89 +116,45 @@ class MVClockView: NSControl {
   convenience init() {
     self.init(frame: NSRect(x: 0, y: 0, width: 150, height: 150))
 
-    progressView = MVClockProgressView()
     self.center(progressView)
     self.addSubview(progressView)
 
-    arrowView = MVClockArrowView(center: CGPoint(x: 75, y: 75))
-    arrowView.target = self
-    arrowView.action = #selector(handleArrowControl)
-    arrowView.actionMouseUp = #selector(handleArrowControlMouseUp)
+    self.arrowView.onProgressChanged = { [weak self] progress in self?.handleArrowControl(progress: progress) }
+    self.arrowView.onMouseUp = { [weak self] in self?.handleArrowControlMouseUp() }
     self.layoutSubviews()
     self.addSubview(arrowView)
 
-    clockFaceView = MVClockFaceView(frame: NSRect(x: 16, y: 15, width: 118, height: 118))
     self.addSubview(clockFaceView)
-
-    pauseIconImageView = NSImageView(frame: NSRect(x: 70, y: 99, width: 10, height: 12))
-    pauseIconImageView.image = NSImage(named: "icon-pause")
-    pauseIconImageView.alphaValue = 0.0
     self.addSubview(pauseIconImageView)
-
-    timerTimeLabel = MVLabel(frame: NSRect(x: 0, y: 94, width: 150, height: 20))
-    timerTimeLabel.font = NSFont.systemFont(ofSize: timerTimeLabelFontSize, weight: .medium)
-    timerTimeLabel.alignment = NSTextAlignment.center
-    timerTimeLabel.textColor = NSColor(srgbRed: 0.749, green: 0.1412, blue: 0.0118, alpha: 1.0)
     self.addSubview(timerTimeLabel)
-
-    minutesLabel = MVLabel(frame: NSRect(x: 0, y: 57, width: 150, height: 30))
-    minutesLabel.string = ""
-    minutesLabel.font = NSFont.monospacedDigitSystemFont(ofSize: 35, weight: .medium)
-    minutesLabel.alignment = NSTextAlignment.center
-    minutesLabel.textColor = NSColor(srgbRed: 0.2353, green: 0.2549, blue: 0.2706, alpha: 1.0)
     self.addSubview(minutesLabel)
-
-    let minutesLabelSuffix = "'"
-    let minutesLabelSize = minutesLabelSuffix.size(withAttributes: [
-      NSAttributedString.Key.font: minutesLabel.font!
-    ])
-    minutesLabelSuffixWidth = minutesLabelSize.width
-
-    let minutesLabelSecondsSuffix = "\""
-    let minutesLabelSecondsSize = minutesLabelSecondsSuffix.size(withAttributes: [
-      NSAttributedString.Key.font: minutesLabel.font!
-    ])
-    minutesLabelSecondsSuffixWidth = minutesLabelSecondsSize.width
-
-    secondsLabel = MVLabel(frame: NSRect(x: 0, y: 38, width: 150, height: 20))
-    secondsLabel.font = NSFont.monospacedDigitSystemFont(ofSize: 15, weight: .regular)
-    secondsLabel.alignment = NSTextAlignment.center
-    secondsLabel.textColor = NSColor(srgbRed: 0.6353, green: 0.6667, blue: 0.6863, alpha: 1.0)
     self.addSubview(secondsLabel)
-
-    let secondsLabelSuffix = "'"
-    let secondsLabelSize = secondsLabelSuffix.size(withAttributes: [
-      NSAttributedString.Key.font: secondsLabel.font!
-    ])
-    secondsSuffixWidth = secondsLabelSize.width
 
     self.updateClockFaceView()
     self.updateAllViews()
 
     let notificationCenter = NotificationCenter.default
-    notificationCenter.addObserver(
-      self,
-      selector: #selector(windowFocusChanged),
-      name: NSWindow.didBecomeKeyNotification,
-      object: nil
+    notificationObservers.append(
+      notificationCenter.addObserver(forName: NSWindow.didBecomeKeyNotification, object: nil, queue: nil) {
+        [weak self] _ in
+        self?.updateClockFaceView()
+        self?.arrowView.needsDisplay = true
+        self?.progressView.needsDisplay = true
+      }
     )
 
-    notificationCenter.addObserver(
-      self,
-      selector: #selector(windowFocusChanged),
-      name: NSWindow.didResignKeyNotification,
-      object: nil
+    notificationObservers.append(
+      notificationCenter.addObserver(forName: NSWindow.didResignKeyNotification, object: nil, queue: nil) {
+        [weak self] _ in
+        self?.updateClockFaceView()
+        self?.arrowView.needsDisplay = true
+        self?.progressView.needsDisplay = true
+      }
     )
   }
 
   deinit {
-    NotificationCenter.default.removeObserver(self)
-
-    arrowView.target = nil
-  }
-
-  @objc func windowFocusChanged(_ notification: Notification) {
-    self.updateClockFaceView()
+    notificationObservers.forEach { NotificationCenter.default.removeObserver($0) }
   }
 
   private func updateClockFaceView(highlighted: Bool = false) {
@@ -193,8 +185,8 @@ class MVClockView: NSControl {
     self.arrowView.progress = progress
   }
 
-  @objc func handleArrowControl(_ object: NSNumber) {
-    var progressValue = CGFloat(object.floatValue)
+  private func handleArrowControl(progress rawProgress: CGFloat) {
+    var progressValue = rawProgress
     progressValue = convertProgressToScale(progressValue)
     var seconds: CGFloat = round(progressValue * 60.0 * 60.0)
     if seconds <= 300 {
@@ -210,12 +202,12 @@ class MVClockView: NSControl {
     self.paused = false
   }
 
-  @objc func handleArrowControlMouseUp() {
+  private func handleArrowControlMouseUp() {
     self.updateTimerTime()
     self.start()
   }
 
-  func handleClick() {
+  private func handleClick() {
     if self.timer == nil && self.seconds > 0 {
       self.updateTimerTime()
       self.start()
@@ -227,15 +219,15 @@ class MVClockView: NSControl {
 
   private func layoutPauseViews() {
     let showPauseIcon = paused && self.timer != nil
-    NSAnimationContext.runAnimationGroup({ ctx in
+    NSAnimationContext.runAnimationGroup { ctx in
       ctx.duration = 0.2
-      ctx.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+      ctx.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
       self.pauseIconImageView.animator().alphaValue = showPauseIcon ? 1 : 0
       self.timerTimeLabel.animator().alphaValue = showPauseIcon ? 0 : 1
-    }, completionHandler: nil)
+    }
   }
 
-  var didDrag: Bool = false
+  private var didDrag: Bool = false
 
   override func mouseDown(with event: NSEvent) {
     self.didDrag = false
@@ -259,8 +251,8 @@ class MVClockView: NSControl {
     self.updateClockFaceView()
   }
 
-  override func keyUp(with theEvent: NSEvent) {
-    let key = theEvent.keyCode
+  override func keyUp(with event: NSEvent) {
+    let key = event.keyCode
     let currentSeconds = self.seconds.truncatingRemainder(dividingBy: 60)
     let currentMinutes = floor(self.seconds / 60)
 
@@ -305,14 +297,14 @@ class MVClockView: NSControl {
     }
 
     // "r" for restarting with the last timer
-    if key == Keycode.r && self.timer == nil && self.paused != true, let seconds = self.lastTimerSeconds {
+    if key == Keycode.r && self.timer == nil && !self.paused, let seconds = self.lastTimerSeconds {
       self.seconds = seconds
       self.handleClick()
 
       return
     }
 
-    if let number = Int(theEvent.characters ?? "") {
+    if let number = Int(event.characters ?? "") {
       let result = TimerLogic.processDigitInput(
         digit: number,
         currentSeconds: currentSeconds,
@@ -392,7 +384,7 @@ class MVClockView: NSControl {
   }
 
   private func start() {
-    guard self.seconds > 0  else { return }
+    guard self.seconds > 0 else { return }
     self.lastTimerSeconds = self.seconds
 
     self.paused = false
@@ -400,13 +392,9 @@ class MVClockView: NSControl {
 
     // Since the UI only allows timers to be set in multiples of 1 second, each tick
     // will fire _near_ an integer seconds-remaining boundary.
-    self.timer = Foundation.Timer.scheduledTimer(
-      timeInterval: 1, // (second)
-      target: self,
-      selector: #selector(tick),
-      userInfo: nil,
-      repeats: true
-    )
+    self.timer = Foundation.Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+      self?.tick()
+    }
 
     // Improves the system's ability to optimize for increased power savings by allowing
     // the timer a small amount of variance in when it can fire (without drifting over time).
@@ -422,8 +410,8 @@ class MVClockView: NSControl {
     }
   }
 
-  @objc func tick() {
-    guard let timerTime = self.timerTime  else { return }
+  private func tick() {
+    guard let timerTime = self.timerTime else { return }
 
     let secondsRemaining = CGFloat(timerTime.timeIntervalSinceNow)
 
@@ -432,7 +420,7 @@ class MVClockView: NSControl {
 
     if self.seconds <= 0 { // Timer is done!
       self.stop()
-      _ = self.target?.perform(self.action, with: self)
+      self.onTimerComplete?()
     }
   }
 
@@ -444,13 +432,9 @@ class MVClockView: NSControl {
       self.timerTime = Date()
     }
 
-    currentTimeTimer = Foundation.Timer.scheduledTimer(
-      timeInterval: 1,
-      target: self,
-      selector: #selector(maintainCurrentTime),
-      userInfo: nil,
-      repeats: true
-    )
+    currentTimeTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+      self?.maintainCurrentTime()
+    }
 
     // Improves the system's ability to optimize for increased power savings and responsiveness
     // A general rule, set the tolerance to at least 10% of the interval, for a repeating timer.
@@ -462,8 +446,8 @@ class MVClockView: NSControl {
     currentTimeTimer = nil
   }
 
-  @objc func maintainCurrentTime() {
-    guard self.timer == nil  else { return } // don't set if the main timer is counting down
+  private func maintainCurrentTime() {
+    guard self.timer == nil else { return } // don't set if the main timer is counting down
 
     let time = Date()
     if Calendar.current.component(.second, from: time) == 0 { // only need to set when minute changes
@@ -489,252 +473,5 @@ class MVClockView: NSControl {
 
   private func invertProgressToScale(_ progress: CGFloat) -> CGFloat {
     TimerLogic.invertProgressToScale(progress, minutes: self.minutes)
-  }
-}
-
-class MVClockProgressView: NSView {
-  var progress: CGFloat = 0.0 {
-    didSet {
-      self.needsDisplay = true
-    }
-  }
-
-  convenience init() {
-    self.init(frame: NSRect(x: 0, y: 0, width: 116, height: 116))
-
-    let notificationCenter = NotificationCenter.default
-
-    notificationCenter.addObserver(
-      self,
-      selector: #selector(windowFocusChanged),
-      name: NSWindow.didBecomeKeyNotification,
-      object: nil
-    )
-
-    notificationCenter.addObserver(
-      self,
-      selector: #selector(windowFocusChanged),
-      name: NSWindow.didResignKeyNotification,
-      object: nil
-    )
-  }
-
-  deinit {
-    NotificationCenter.default.removeObserver(self)
-  }
-
-  override func draw(_ dirtyRect: NSRect) {
-    NSColor(srgbRed: 0.7255, green: 0.7255, blue: 0.7255, alpha: 0.15).setFill()
-    NSBezierPath(ovalIn: self.bounds).fill()
-
-    drawArc(progress)
-  }
-
-  private func drawArc(_ progress: CGFloat) {
-    let center = NSPoint(x: self.bounds.width / 2, y: self.bounds.height / 2)
-    let windowHasFocus = self.window?.isKeyWindow ?? false
-
-    let path = NSBezierPath()
-    path.move(to: NSPoint(x: self.bounds.width / 2, y: self.bounds.height))
-    path.appendArc(
-      withCenter: NSPoint(x: self.bounds.width / 2, y: self.bounds.height / 2),
-      radius: self.bounds.width / 2,
-      startAngle: 90,
-      endAngle: 90 - (progress > 1 ? 1 : progress) * 360,
-      clockwise: true
-    )
-    path.line(to: center)
-    path.addClip()
-
-    let ctx = NSGraphicsContext.current
-    ctx?.saveGraphicsState()
-
-    var transform = AffineTransform.identity
-    transform.translate(x: center.x, y: center.y)
-    transform.rotate(byDegrees: -progress * 360)
-    transform.translate(x: -center.x, y: -center.y)
-    (transform as NSAffineTransform).concat()
-
-    let image = NSImage(named: windowHasFocus ? "progress" : "progress-unfocus")
-    image?.draw(in: self.bounds)
-
-    ctx?.restoreGraphicsState()
-  }
-
-  @objc func windowFocusChanged(_ notification: Notification) {
-    self.needsDisplay = true
-  }
-}
-
-class MVClockArrowView: NSControl {
-  var progress: CGFloat = 0.0 {
-    didSet {
-      self.needsDisplay = true
-    }
-  }
-  var actionMouseUp: Selector?
-  private var center = CGPoint.zero
-
-  convenience init(center: CGPoint) {
-    self.init(frame: NSRect(x: 0, y: 0, width: 25, height: 25))
-    self.center = center
-
-    let notificationCenter = NotificationCenter.default
-
-    notificationCenter.addObserver(
-      self,
-      selector: #selector(windowFocusChanged),
-      name: NSWindow.didBecomeKeyNotification,
-      object: nil
-    )
-
-    notificationCenter.addObserver(
-      self,
-      selector: #selector(windowFocusChanged),
-      name: NSWindow.didResignKeyNotification,
-      object: nil
-    )
-  }
-
-  deinit {
-    NotificationCenter.default.removeObserver(self)
-  }
-
-  override func draw(_ dirtyRect: NSRect) {
-    NSColor.clear.setFill()
-    self.bounds.fill()
-
-    let path = NSBezierPath()
-    path.move(to: CGPoint(x: 0, y: 0))
-    path.line(to: CGPoint(x: self.bounds.width / 2, y: self.bounds.height * 0.8))
-    path.line(to: CGPoint(x: self.bounds.width, y: 0))
-
-    let center = CGPoint(x: self.bounds.width / 2, y: self.bounds.height / 2)
-    let angle = -progress * .pi * 2
-    var transform = AffineTransform.identity
-    transform.translate(x: center.x, y: center.y)
-    transform.rotate(byRadians: angle)
-    transform.translate(x: -center.x, y: -center.y)
-
-    path.transform(using: transform)
-
-    let windowHasFocus = self.window?.isKeyWindow ?? false
-    if windowHasFocus {
-      let ratio: CGFloat = 0.5
-      NSColor(
-        srgbRed: 0.1734 + ratio * (0.2235 - 0.1734),
-        green: 0.5284 + ratio * (0.5686 - 0.5284),
-        blue: 0.9448 + ratio * (0.9882 - 0.9448),
-        alpha: 1.0
-      ).setFill()
-    } else {
-      NSColor(srgbRed: 0.5529, green: 0.6275, blue: 0.7216, alpha: 1.0).setFill()
-    }
-    path.fill()
-  }
-
-  override func mouseDown(with theEvent: NSEvent) {
-    var isDragging = false
-    var isTracking = true
-    var event: NSEvent = theEvent
-
-    while isTracking {
-      switch event.type {
-      case .leftMouseUp:
-        isTracking = false
-        self.handleUp(event)
-        break
-
-      case .leftMouseDragged:
-        if isDragging {
-          self.handleDragged(event)
-        } else {
-          isDragging = true
-        }
-        break
-
-      default:
-        break
-      }
-
-      if isTracking {
-        guard let nextEvent = self.window?.nextEvent(matching: [.leftMouseUp, .leftMouseDragged]) else {
-          break
-        }
-        event = nextEvent
-      }
-    }
-  }
-
-  func handleDragged(_ theEvent: NSEvent) {
-    var location = self.convert(theEvent.locationInWindow, from: nil)
-    location = self.convert(location, to: self.superview)
-
-    // swiftlint:disable identifier_name
-    let dx = (location.x - center.x) / center.x
-    let dy = (location.y - center.y) / center.y
-    // swiftlint:enable identifier_name
-
-    var angle = atan(dy / dx)
-
-    if dx < 0 {
-      angle -= .pi
-    }
-
-    var progress = (self.progress - self.progress.truncatingRemainder(dividingBy: 1)) + -(angle - .pi / 2) / (.pi * 2)
-
-    if self.progress - progress > 0.25 {
-      progress += 1
-    } else if progress - self.progress > 0.75 {
-      progress -= 1
-    }
-
-    if progress < 0 {
-      progress = 0
-    }
-
-    let progressNumber = NSNumber(value: Float(progress) as Float)
-
-    _ = self.target?.perform(self.action, with: progressNumber)
-  }
-
-  func handleUp(_ theEvent: NSEvent) {
-    if let selector = self.actionMouseUp {
-      _ = self.target?.perform(selector)
-    }
-  }
-
-  @objc func windowFocusChanged(_ notification: Notification) {
-    self.needsDisplay = true
-  }
-}
-
-class MVClockFaceView: NSView {
-  private var _image: NSImage?
-
-  func update(highlighted: Bool = false) {
-    // Load the appropriate image for the clock face
-    let imageName: String
-
-    if highlighted {
-      imageName = "clock-highlighted"
-    } else {
-      let windowHasFocus = self.window?.isKeyWindow ?? false
-      imageName = windowHasFocus ? "clock" : "clock-unfocus"
-    }
-
-    _image = NSImage(named: imageName)
-
-    setNeedsDisplay(self.bounds)
-  }
-
-  override func draw(_ dirtyRect: NSRect) {
-    if let image = _image {
-      image.draw(in: self.bounds)
-    }
-  }
-
-  override func hitTest(_ aPoint: NSPoint) -> NSView? {
-    nil
   }
 }

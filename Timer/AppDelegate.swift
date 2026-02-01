@@ -1,15 +1,16 @@
 import Cocoa
 import UserNotifications
 
-@NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
+@main
+final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
   private var controllers: [MVTimerController] = []
   private var currentlyInDock: MVTimerController?
+  private var notificationObservers: [NSObjectProtocol] = []
 
   private var staysOnTop = false {
     didSet {
       for window in NSApplication.shared.windows {
-        window.level = self.windowLevel()
+        window.level = self.windowLevel
       }
     }
   }
@@ -29,25 +30,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     let notificationCenter = NotificationCenter.default
 
-    notificationCenter.addObserver(
-      self,
-      selector: #selector(handleClose),
-      name: NSWindow.willCloseNotification,
-      object: nil
+    notificationObservers.append(
+      notificationCenter.addObserver(forName: NSWindow.willCloseNotification, object: nil, queue: nil) {
+        [weak self] notification in self?.handleClose(notification)
+      }
     )
 
-    notificationCenter.addObserver(
-      self,
-      selector: #selector(handleUserDefaultsChange),
-      name: UserDefaults.didChangeNotification,
-      object: nil
+    notificationObservers.append(
+      notificationCenter.addObserver(forName: UserDefaults.didChangeNotification, object: nil, queue: nil) {
+        [weak self] _ in self?.handleUserDefaultsChange()
+      }
     )
 
-    notificationCenter.addObserver(
-      self,
-      selector: #selector(handleOcclusionChange),
-      name: NSWindow.didChangeOcclusionStateNotification,
-      object: nil
+    notificationObservers.append(
+      notificationCenter.addObserver(
+        forName: NSWindow.didChangeOcclusionStateNotification, object: nil, queue: nil
+      ) { [weak self] notification in self?.handleOcclusionChange(notification) }
     )
 
     staysOnTop = UserDefaults.standard.bool(forKey: MVUserDefaultsKeys.staysOnTop)
@@ -76,18 +74,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
   }
 
   func removeBadgeFromDock() {
-    if currentlyInDock != nil {
-      currentlyInDock!.showInDock(false)
-    }
+    currentlyInDock?.showInDock(false)
   }
 
   @objc func newDocument(_ sender: AnyObject?) {
     let controller = MVTimerController(closeToWindow: NSApplication.shared.keyWindow)
-    controller.window?.level = self.windowLevel()
+    controller.window?.level = self.windowLevel
     controllers.append(controller)
   }
 
-  @objc func handleClose(_ notification: Notification) {
+  private func handleClose(_ notification: Notification) {
     if let window = notification.object as? NSWindow,
       let controller = window.windowController as? MVTimerController,
       controller != currentlyInDock,
@@ -96,18 +92,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
   }
 
-  @objc func handleOcclusionChange(_ notification: Notification) {
+  private func handleOcclusionChange(_ notification: Notification) {
     if let window = notification.object as? NSWindow,
       let controller = window.windowController as? MVTimerController {
       controller.windowVisibilityChanged(window.occlusionState.contains(.visible))
     }
   }
 
-  @objc func handleUserDefaultsChange(_ notification: Notification) {
+  private func handleUserDefaultsChange() {
     staysOnTop = UserDefaults.standard.bool(forKey: MVUserDefaultsKeys.staysOnTop)
   }
 
-  func windowLevel() -> NSWindow.Level {
+  deinit {
+    notificationObservers.forEach { NotificationCenter.default.removeObserver($0) }
+  }
+
+  private var windowLevel: NSWindow.Level {
     staysOnTop ? .floating : .normal
   }
 

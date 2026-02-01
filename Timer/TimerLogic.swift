@@ -33,9 +33,9 @@ enum TimerLogic {
 
   static func minutesDisplayString(seconds: CGFloat) -> String {
     if seconds < 60 {
-      return NSString(format: "%i\"", Int(seconds)) as String
+      return "\(Int(seconds))\""
     } else {
-      return NSString(format: "%i'", Int(floor(seconds / 60))) as String
+      return "\(Int(floor(seconds / 60)))'"
     }
   }
 
@@ -43,12 +43,12 @@ enum TimerLogic {
     if seconds < 60 {
       return ""
     } else {
-      return NSString(format: "%i\"", Int(seconds.truncatingRemainder(dividingBy: 60))) as String
+      return "\(Int(seconds.truncatingRemainder(dividingBy: 60)))\""
     }
   }
 
   static func badgeString(minutes: Int, seconds: Int) -> String {
-    NSString(format: "%02d:%02d", minutes, seconds) as String
+    String(format: "%02d:%02d", minutes, seconds)
   }
 
   // MARK: - Keyboard Input
