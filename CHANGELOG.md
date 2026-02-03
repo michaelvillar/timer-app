@@ -69,11 +69,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Converted `windowLevel()` function to computed property in `AppDelegate`
 - `make build` now allows incremental builds (no longer forces clean)
 
+- Removed unnecessary `break` statements in `MVClockArrowView` switch cases (Swift doesn't fall through by default)
+- Simplified optional chain in keyboard input from `Int(event.characters ?? "")` to double-`if let` in `MVClockView`
+- Updated deployment target documentation in `CLAUDE.md` from macOS 10.11+ to macOS 14 (Sonoma)
+- Fixed over-indentation in `AppDelegate.handleClose` (10 spaces → 6)
+- Simplified `pickSound` loop in `MVMainView` with ternary operator
+- Re-enabled `unneeded_break_in_switch` SwiftLint rule (redundant breaks cleaned up in Round 8)
+- Added `private_over_fileprivate`, `discouraged_optional_boolean`, and `static_over_final_class` SwiftLint opt-in rules
+- Fixed `closure_parameter_position` SwiftLint warnings across `AppDelegate`, `MVMainView`, and `MVClockView` by moving closure parameters to the same line as the opening brace
+- Extracted inline `NSColor` allocations from `draw()` in `MVClockArrowView` and `MVClockProgressView` into `private static let` constants for performance
+- Pre-computed focused arrow color (was interpolated at ratio 0.5 every frame) in `MVClockArrowView`
+- Removed unused `event` parameter from `handleUp` in `MVClockArrowView`
+- Added `first_where`, `discouraged_optional_collection`, and `prefer_zero_over_explicit_init` SwiftLint opt-in rules
+- Replaced `CGPoint(x: 0, y: 0)` with `.zero` in `MVClockArrowView` (caught by new `prefer_zero_over_explicit_init` rule)
+- Added `lint`, `analyze`, and `format` targets to Makefile
+
 ### Removed
 
 - Deprecated `CFBundleSignature` key from `Info.plist` (legacy Classic Mac OS creator code, ignored since OS X)
 - Empty `CFBundleIconFile` key from `Info.plist` (app uses asset catalog icon)
 - Commented-out `audioPlayer?.volume` dead code in `MVTimerController`
+
+- Hidden Edit, Format, View, and Help menus from `MainMenu.xib` (~500 lines of dead XML)
+- Hidden Preferences menu item and separator from Timer menu in `MainMenu.xib`
+- Unused `NSFontManager` custom object from `MainMenu.xib`
 
 ### CI
 

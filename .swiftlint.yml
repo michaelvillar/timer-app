@@ -3,7 +3,6 @@ disabled_rules:
   - type_body_length
   - function_body_length
   - file_length
-  - unneeded_break_in_switch
 
 # some rules are only opt-in
 # Find all the available rules by running: swiftlint rules
@@ -11,8 +10,11 @@ opt_in_rules:
   - closure_end_indentation
   - closure_spacing
   - collection_alignment
+  - discouraged_optional_boolean
+  - discouraged_optional_collection
   - empty_count
   - explicit_init
+  - first_where
   - force_unwrapping
   - implicit_return
   - joined_default_parameter
@@ -22,9 +24,12 @@ opt_in_rules:
   - operator_usage_whitespace
   - optional_enum_case_matching
   - prefer_self_type_over_type_of_self
+  - prefer_zero_over_explicit_init
+  - private_over_fileprivate
   - redundant_nil_coalescing
   - redundant_type_annotation
   - sorted_imports
+  - static_over_final_class
   - toggle_bool
   - unneeded_parentheses_in_closure_argument
   - untyped_error_in_catch

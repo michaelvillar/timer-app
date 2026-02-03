@@ -1,6 +1,11 @@
 import Cocoa
 
 final class MVClockArrowView: NSView {
+  // Midpoint (ratio 0.5) between sRGB (0.1734, 0.5284, 0.9448) and (0.2235, 0.5686, 0.9882)
+  private static let focusedColor = NSColor(srgbRed: 0.1985, green: 0.5485, blue: 0.9665, alpha: 1.0)
+  // Desaturated steel blue for unfocused windows
+  private static let unfocusedColor = NSColor(srgbRed: 0.5529, green: 0.6275, blue: 0.7216, alpha: 1.0)
+
   var progress: CGFloat = 0.0 {
     didSet {
       self.needsDisplay = true
@@ -22,7 +27,7 @@ final class MVClockArrowView: NSView {
     self.bounds.fill()
 
     let path = NSBezierPath()
-    path.move(to: CGPoint(x: 0, y: 0))
+    path.move(to: .zero)
     path.line(to: CGPoint(x: self.bounds.width / 2, y: self.bounds.height * 0.8))
     path.line(to: CGPoint(x: self.bounds.width, y: 0))
 
@@ -35,18 +40,8 @@ final class MVClockArrowView: NSView {
 
     path.transform(using: transform)
 
-    let windowHasFocus = self.window?.isKeyWindow ?? false
-    if windowHasFocus {
-      let ratio: CGFloat = 0.5
-      NSColor(
-        srgbRed: 0.1734 + ratio * (0.2235 - 0.1734),
-        green: 0.5284 + ratio * (0.5686 - 0.5284),
-        blue: 0.9448 + ratio * (0.9882 - 0.9448),
-        alpha: 1.0
-      ).setFill()
-    } else {
-      NSColor(srgbRed: 0.5529, green: 0.6275, blue: 0.7216, alpha: 1.0).setFill()
-    }
+    let color = (self.window?.isKeyWindow ?? false) ? Self.focusedColor : Self.unfocusedColor
+    color.setFill()
     path.fill()
   }
 
@@ -59,8 +54,7 @@ final class MVClockArrowView: NSView {
       switch trackingEvent.type {
       case .leftMouseUp:
         isTracking = false
-        self.handleUp(trackingEvent)
-        break
+        self.handleUp()
 
       case .leftMouseDragged:
         if isDragging {
@@ -68,7 +62,6 @@ final class MVClockArrowView: NSView {
         } else {
           isDragging = true
         }
-        break
 
       default:
         break
@@ -113,7 +106,7 @@ final class MVClockArrowView: NSView {
     self.onProgressChanged?(progress)
   }
 
-  private func handleUp(_ event: NSEvent) {
+  private func handleUp() {
     self.onMouseUp?()
   }
 }

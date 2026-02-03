@@ -31,15 +31,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     let notificationCenter = NotificationCenter.default
 
     notificationObservers.append(
-      notificationCenter.addObserver(forName: NSWindow.willCloseNotification, object: nil, queue: nil) {
-        [weak self] notification in self?.handleClose(notification)
-      }
+      notificationCenter.addObserver(
+        forName: NSWindow.willCloseNotification, object: nil, queue: nil
+      ) { [weak self] notification in self?.handleClose(notification) }
     )
 
     notificationObservers.append(
-      notificationCenter.addObserver(forName: UserDefaults.didChangeNotification, object: nil, queue: nil) {
-        [weak self] _ in self?.handleUserDefaultsChange()
-      }
+      notificationCenter.addObserver(
+        forName: UserDefaults.didChangeNotification, object: nil, queue: nil
+      ) { [weak self] _ in self?.handleUserDefaultsChange() }
     )
 
     notificationObservers.append(
@@ -88,7 +88,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
       let controller = window.windowController as? MVTimerController,
       controller != currentlyInDock,
       let index = controllers.firstIndex(of: controller) {
-          controllers.remove(at: index)
+      controllers.remove(at: index)
     }
   }
 

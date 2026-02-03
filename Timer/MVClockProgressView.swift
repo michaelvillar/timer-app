@@ -1,6 +1,8 @@
 import Cocoa
 
 final class MVClockProgressView: NSView {
+  private static let ringColor = NSColor(srgbRed: 0.7255, green: 0.7255, blue: 0.7255, alpha: 0.15)
+
   var progress: CGFloat = 0.0 {
     didSet {
       self.needsDisplay = true
@@ -11,7 +13,7 @@ final class MVClockProgressView: NSView {
   }
 
   override func draw(_ dirtyRect: NSRect) {
-    NSColor(srgbRed: 0.7255, green: 0.7255, blue: 0.7255, alpha: 0.15).setFill()
+    Self.ringColor.setFill()
     NSBezierPath(ovalIn: self.bounds).fill()
 
     drawArc(progress)

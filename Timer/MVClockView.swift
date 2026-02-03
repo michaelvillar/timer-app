@@ -135,8 +135,9 @@ final class MVClockView: NSView {
 
     let notificationCenter = NotificationCenter.default
     notificationObservers.append(
-      notificationCenter.addObserver(forName: NSWindow.didBecomeKeyNotification, object: nil, queue: nil) {
-        [weak self] _ in
+      notificationCenter.addObserver(
+        forName: NSWindow.didBecomeKeyNotification, object: nil, queue: nil
+      ) { [weak self] _ in
         self?.updateClockFaceView()
         self?.arrowView.needsDisplay = true
         self?.progressView.needsDisplay = true
@@ -144,8 +145,9 @@ final class MVClockView: NSView {
     )
 
     notificationObservers.append(
-      notificationCenter.addObserver(forName: NSWindow.didResignKeyNotification, object: nil, queue: nil) {
-        [weak self] _ in
+      notificationCenter.addObserver(
+        forName: NSWindow.didResignKeyNotification, object: nil, queue: nil
+      ) { [weak self] _ in
         self?.updateClockFaceView()
         self?.arrowView.needsDisplay = true
         self?.progressView.needsDisplay = true
@@ -304,7 +306,7 @@ final class MVClockView: NSView {
       return
     }
 
-    if let number = Int(event.characters ?? "") {
+    if let characters = event.characters, let number = Int(characters) {
       let result = TimerLogic.processDigitInput(
         digit: number,
         currentSeconds: currentSeconds,

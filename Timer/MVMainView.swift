@@ -51,15 +51,15 @@ final class MVMainView: NSView {
     let notificationCenter = NotificationCenter.default
 
     notificationObservers.append(
-      notificationCenter.addObserver(forName: NSWindow.didBecomeKeyNotification, object: nil, queue: nil) {
-        [weak self] _ in self?.needsDisplay = true
-      }
+      notificationCenter.addObserver(
+        forName: NSWindow.didBecomeKeyNotification, object: nil, queue: nil
+      ) { [weak self] _ in self?.needsDisplay = true }
     )
 
     notificationObservers.append(
-      notificationCenter.addObserver(forName: NSWindow.didResignKeyNotification, object: nil, queue: nil) {
-        [weak self] _ in self?.needsDisplay = true
-      }
+      notificationCenter.addObserver(
+        forName: NSWindow.didResignKeyNotification, object: nil, queue: nil
+      ) { [weak self] _ in self?.needsDisplay = true }
     )
   }
 
@@ -80,11 +80,7 @@ final class MVMainView: NSView {
 
   @objc func pickSound(_ sender: NSMenuItem) {
     for item in self.soundMenuItems {
-      if item == sender {
-        item.state = .on
-      } else {
-        item.state = .off
-      }
+      item.state = item == sender ? .on : .off
     }
     self.controller?.pickSound(sender.tag)
   }
