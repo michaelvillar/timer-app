@@ -1,6 +1,6 @@
 SWIFTLINT := $(shell command -v swiftlint 2>/dev/null || echo mise exec -- swiftlint)
 
-.PHONY: default clean build open test lint analyze format
+.PHONY: default clean build open test uitest lint analyze format
 
 default: clean build open
 
@@ -15,6 +15,9 @@ open: build
 
 test:
 	xcodebuild -quiet test -scheme Timer -destination 'platform=macOS' CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+
+uitest:
+	xcodebuild -quiet test -scheme TimerUITests -destination 'platform=macOS' -allowProvisioningUpdates
 
 lint:
 	$(SWIFTLINT)

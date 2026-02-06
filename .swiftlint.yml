@@ -44,6 +44,7 @@ analyzer_rules:
 included:
   - Timer
   - TimerTests
+  - TimerUITests
 
 excluded:
   - Timer/Keycodes.swift

@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - `make test` target for running tests locally
 - CI test step in `swift.yml` workflow
 - Sound choice is now persisted to UserDefaults across launches
+- Added 7 final UI tests: active timer interruption (`testDigitInputStopsRunningTimer`), timer completion then restart (`testTimerCompletionThenRestartWithRKey`), background timer execution (`testTimerContinuesWhileAppHidden`), rapid pause/resume stress test (`testRapidPauseResumeCycles`), multi-window dock badge handoff (`testDockBadgeSwitchesBetweenWindows`), sequential backspace (`testMultipleBackspacesSequentially`), and natural completion with badge (`testTimerCompletionWithDockBadgeActive`) — 54 total UI tests
+- Removed 16 redundant UI tests where one test was a strict subset or near-duplicate of another (54 → 38 UI tests, no code path coverage lost)
+- Improved UI test quality: replaced silent `if exists` guards with `XCTAssertTrue` assertions in `testSoundMenuSelection`, replaced `Thread.sleep` with `waitForExistence(timeout:)` for window appearance waits, consolidated 14 MARK sections into 9
 
 ### Changed
 
@@ -88,6 +91,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added explicit `self.` prefix to instance members per `explicit_self` analyzer rule in `MVClockArrowView`, `MVClockProgressView`, `MVClockFaceView`
 - Added explicit `self.` prefix to instance members in `MVMainView`, `MVTimerController`, `AppDelegate`
 - Added explicit `self.` prefix to instance members in `MVClockView` (resolves all `explicit_self` analyzer violations)
+- Added `TimerUITests` target with XCUITest framework for automated UI testing
+- Added `TimerUITests.xcscheme` for running UI tests separately
+- Added `make uitest` target to Makefile for running UI tests
+- Added comprehensive UI tests covering: keyboard input (digits, Escape, Enter, Space, R, Backspace, Delete, Period), mouse clicks (clock face pause/resume), arrow dragging, context menu, sound selection, dock badge toggle, timer completion, and multiple windows
+- Added 6 medium-difficulty UI tests: keypad decimal edge cases (`testDecimalWithMinutesAndSeconds`, `testDoublePeriodTogglesBackToMinutes`, `testMaxSecondsInput`), max timer limit (`testMaxTimerLimitViaKeyboard`, `testExcessDigitsRejected`), and app reopen from dock (`testAppReopenAfterHide`)
+- Added 4 hard-difficulty UI tests: sound preference persistence across restart (`testSoundPersistsAfterRestart`), dock badge active while timer runs (`testDockBadgeActiveWhileTimerRuns`), dock badge clears on timer stop (`testDockBadgeClearsOnTimerStop`), and notification on timer completion (`testNotificationOnTimerComplete`) — 37 total UI tests
+- Added 10 edge case UI tests: state transition edge cases (`testEscapeWhilePaused`, `testCrossInputPauseResume`, `testArrowDragThenEnterToStart`, `testContextMenuDuringActiveTimer`, `testCloseWindowWithActiveTimer`, `testCloseLastWindowAppStaysRunning`) and input edge cases (`testBackspaceWithNoDigits`, `testRKeyWithNoPreviousTimer`, `testMultipleWindowsIndependentTimers`, `testZeroAsOnlyDigit`) — 47 total UI tests
 
 ### Removed
 
@@ -116,6 +126,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Cached `DateFormatter` in `MVClockView.updateTimeLabel()` to avoid allocation every second
 - Replaced force unwrap of `nextEvent` in `MVClockArrowView.mouseDown` with safe unwrap
 - Removed unused `initialLocation` property in `MVWindow`
+- Fixed unused variable warning in `testWindowDragging` (removed unused `originalFrame`)
 - Secondary timer windows no longer overwrite the primary window's saved position
 - `make` now opens `Timer.app` directly instead of the Release folder
 - Renamed `makefile` to `Makefile` (conventional capitalization)
