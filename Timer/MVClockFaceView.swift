@@ -1,4 +1,4 @@
-import Cocoa
+import AppKit
 
 final class MVClockFaceView: NSView {
   private var cachedImage: NSImage?
@@ -14,13 +14,13 @@ final class MVClockFaceView: NSView {
       resource = windowHasFocus ? .clock : .clockUnfocus
     }
 
-    cachedImage = NSImage(resource: resource)
+    self.cachedImage = NSImage(resource: resource)
 
     self.needsDisplay = true
   }
 
   override func draw(_ dirtyRect: NSRect) {
-    if let image = cachedImage {
+    if let image = self.cachedImage {
       image.draw(in: self.bounds)
     }
   }

@@ -1,4 +1,4 @@
-import Cocoa
+import AppKit
 
 final class MVMainView: NSView {
   weak var controller: MVTimerController?
@@ -15,7 +15,7 @@ final class MVMainView: NSView {
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
 
-    menuItem = NSMenuItem(
+    self.menuItem = NSMenuItem(
       title: "Show timer badge in dock",
       action: #selector(self.toggleShowInDock),
       keyEquivalent: ""
@@ -42,7 +42,7 @@ final class MVMainView: NSView {
     for item in self.soundMenuItems {
       item.state = item.tag == savedSoundIndex ? .on : .off
     }
-    if let menuItem {
+    if let menuItem = self.menuItem {
       self.contextMenu.addItem(menuItem)
     }
     self.contextMenu.addItem(menuItemSoundChoice)
@@ -50,13 +50,13 @@ final class MVMainView: NSView {
 
     let notificationCenter = NotificationCenter.default
 
-    notificationObservers.append(
+    self.notificationObservers.append(
       notificationCenter.addObserver(
         forName: NSWindow.didBecomeKeyNotification, object: nil, queue: nil
       ) { [weak self] _ in self?.needsDisplay = true }
     )
 
-    notificationObservers.append(
+    self.notificationObservers.append(
       notificationCenter.addObserver(
         forName: NSWindow.didResignKeyNotification, object: nil, queue: nil
       ) { [weak self] _ in self?.needsDisplay = true }
@@ -69,9 +69,9 @@ final class MVMainView: NSView {
 
   @objc func toggleShowInDock() {
     guard let appDelegate = NSApplication.shared.delegate as? AppDelegate,
-          let controller else { return }
+          let controller = self.controller else { return }
 
-    if menuItem?.state == .on {
+    if self.menuItem?.state == .on {
       appDelegate.removeBadgeFromDock()
     } else {
       appDelegate.addBadgeToDock(controller: controller)
@@ -86,7 +86,7 @@ final class MVMainView: NSView {
   }
 
   deinit {
-    notificationObservers.forEach { NotificationCenter.default.removeObserver($0) }
+    self.notificationObservers.forEach { NotificationCenter.default.removeObserver($0) }
   }
 
   override func draw(_ dirtyRect: NSRect) {

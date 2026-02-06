@@ -1,5 +1,5 @@
+import AppKit
 import AVFoundation
-import Cocoa
 import UserNotifications
 
 final class MVTimerController: NSWindowController {
@@ -54,13 +54,13 @@ final class MVTimerController: NSWindowController {
   }
 
   func windowVisibilityChanged(_ visible: Bool) {
-    clockView.windowIsVisible = visible
+    self.clockView.windowIsVisible = visible
   }
 
   private func playAlarmSound() {
-    if let soundURL {
-      audioPlayer = try? AVAudioPlayer(contentsOf: soundURL)
-      audioPlayer?.play()
+    if let soundURL = self.soundURL {
+      self.audioPlayer = try? AVAudioPlayer(contentsOf: soundURL)
+      self.audioPlayer?.play()
     }
   }
 
@@ -73,7 +73,7 @@ final class MVTimerController: NSWindowController {
 
     NSApplication.shared.requestUserAttention(.criticalRequest)
 
-    playAlarmSound()
+    self.playAlarmSound()
   }
 
   override func keyUp(with event: NSEvent) {
@@ -86,7 +86,7 @@ final class MVTimerController: NSWindowController {
 
   func pickSound(_ index: Int, preview: Bool = true) {
     UserDefaults.standard.set(index, forKey: MVUserDefaultsKeys.soundIndex)
-    applySoundIndex(index, preview: preview)
+    self.applySoundIndex(index, preview: preview)
   }
 
   private func applySoundIndex(_ index: Int, preview: Bool = false) {
@@ -94,7 +94,7 @@ final class MVTimerController: NSWindowController {
       self.soundURL = Bundle.main.url(forResource: sound, withExtension: "caf")
 
       if preview {
-        playAlarmSound()
+        self.playAlarmSound()
       }
     } else {
       self.soundURL = nil

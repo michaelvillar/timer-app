@@ -1,4 +1,4 @@
-import Cocoa
+import AppKit
 
 final class MVClockArrowView: NSView {
   // Midpoint (ratio 0.5) between sRGB (0.1734, 0.5284, 0.9448) and (0.2235, 0.5686, 0.9882)
@@ -32,7 +32,7 @@ final class MVClockArrowView: NSView {
     path.line(to: CGPoint(x: self.bounds.width, y: 0))
 
     let center = CGPoint(x: self.bounds.width / 2, y: self.bounds.height / 2)
-    let angle = -progress * .pi * 2
+    let angle = -self.progress * .pi * 2
     var transform = AffineTransform.identity
     transform.translate(x: center.x, y: center.y)
     transform.rotate(byRadians: angle)
@@ -81,8 +81,8 @@ final class MVClockArrowView: NSView {
     location = self.convert(location, to: self.superview)
 
     // swiftlint:disable identifier_name
-    let dx = (location.x - center.x) / center.x
-    let dy = (location.y - center.y) / center.y
+    let dx = (location.x - self.center.x) / self.center.x
+    let dy = (location.y - self.center.y) / self.center.y
     // swiftlint:enable identifier_name
 
     var angle = atan(dy / dx)

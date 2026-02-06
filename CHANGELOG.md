@@ -83,6 +83,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `first_where`, `discouraged_optional_collection`, and `prefer_zero_over_explicit_init` SwiftLint opt-in rules
 - Replaced `CGPoint(x: 0, y: 0)` with `.zero` in `MVClockArrowView` (caught by new `prefer_zero_over_explicit_init` rule)
 - Added `lint`, `analyze`, and `format` targets to Makefile
+- Fixed outdated `CLAUDE.md` claim "No unit tests in the project" (now points to `TimerTests/` target)
+- Replaced `import Cocoa` with `import AppKit` in 10 view/controller files (narrower import = faster compilation + clearer dependencies)
+- Added explicit `self.` prefix to instance members per `explicit_self` analyzer rule in `MVClockArrowView`, `MVClockProgressView`, `MVClockFaceView`
+- Added explicit `self.` prefix to instance members in `MVMainView`, `MVTimerController`, `AppDelegate`
+- Added explicit `self.` prefix to instance members in `MVClockView` (resolves all `explicit_self` analyzer violations)
 
 ### Removed
 

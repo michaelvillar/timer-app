@@ -1,4 +1,4 @@
-import Cocoa
+import AppKit
 
 final class MVClockView: NSView {
   override var mouseDownCanMoveWindow: Bool { false }
@@ -56,7 +56,7 @@ final class MVClockView: NSView {
   private let docktile: NSDockTile = NSApplication.shared.dockTile
   var inDock: Bool = false {
     didSet {
-      if !inDock {
+      if !self.inDock {
         self.removeBadge()
       }
       self.updateBadge()
@@ -64,7 +64,7 @@ final class MVClockView: NSView {
   }
   var windowIsVisible: Bool = false {
     didSet {
-      if windowIsVisible {
+      if self.windowIsVisible {
         self.startClockTimer()
         self.updateAllViews() // Update the UI with any changes that may have happened while it was hidden
       } else { // window is no longer visible
@@ -74,7 +74,7 @@ final class MVClockView: NSView {
   }
   private var timerTime: Date? {
     didSet {
-      if windowIsVisible {
+      if self.windowIsVisible {
         self.updateTimeLabel()
       }
     }
@@ -91,13 +91,13 @@ final class MVClockView: NSView {
 
   private var seconds: CGFloat = 0.0 {
     didSet {
-      self.minutes = floor(seconds / 60)
-      self.progress = invertProgressToScale(seconds / 60.0 / 60.0)
+      self.minutes = floor(self.seconds / 60)
+      self.progress = self.invertProgressToScale(self.seconds / 60.0 / 60.0)
     }
   }
   private var minutes: CGFloat = 0.0 {
     didSet {
-      if windowIsVisible {
+      if self.windowIsVisible {
         self.updateLabels()
       }
       self.updateBadge() // Update the dock badge even when the window is hidden
@@ -105,7 +105,7 @@ final class MVClockView: NSView {
   }
   private var progress: CGFloat = 0.0 {
     didSet {
-      if windowIsVisible {
+      if self.windowIsVisible {
         self.layoutSubviews()
       }
     }
@@ -116,25 +116,25 @@ final class MVClockView: NSView {
   convenience init() {
     self.init(frame: NSRect(x: 0, y: 0, width: 150, height: 150))
 
-    self.center(progressView)
-    self.addSubview(progressView)
+    self.center(self.progressView)
+    self.addSubview(self.progressView)
 
     self.arrowView.onProgressChanged = { [weak self] progress in self?.handleArrowControl(progress: progress) }
     self.arrowView.onMouseUp = { [weak self] in self?.handleArrowControlMouseUp() }
     self.layoutSubviews()
-    self.addSubview(arrowView)
+    self.addSubview(self.arrowView)
 
-    self.addSubview(clockFaceView)
-    self.addSubview(pauseIconImageView)
-    self.addSubview(timerTimeLabel)
-    self.addSubview(minutesLabel)
-    self.addSubview(secondsLabel)
+    self.addSubview(self.clockFaceView)
+    self.addSubview(self.pauseIconImageView)
+    self.addSubview(self.timerTimeLabel)
+    self.addSubview(self.minutesLabel)
+    self.addSubview(self.secondsLabel)
 
     self.updateClockFaceView()
     self.updateAllViews()
 
     let notificationCenter = NotificationCenter.default
-    notificationObservers.append(
+    self.notificationObservers.append(
       notificationCenter.addObserver(
         forName: NSWindow.didBecomeKeyNotification, object: nil, queue: nil
       ) { [weak self] _ in
@@ -144,7 +144,7 @@ final class MVClockView: NSView {
       }
     )
 
-    notificationObservers.append(
+    self.notificationObservers.append(
       notificationCenter.addObserver(
         forName: NSWindow.didResignKeyNotification, object: nil, queue: nil
       ) { [weak self] _ in
@@ -156,11 +156,11 @@ final class MVClockView: NSView {
   }
 
   deinit {
-    notificationObservers.forEach { NotificationCenter.default.removeObserver($0) }
+    self.notificationObservers.forEach { NotificationCenter.default.removeObserver($0) }
   }
 
   private func updateClockFaceView(highlighted: Bool = false) {
-    clockFaceView.update(highlighted: highlighted)
+    self.clockFaceView.update(highlighted: highlighted)
   }
 
   private func center(_ view: NSView) {
@@ -171,25 +171,25 @@ final class MVClockView: NSView {
   }
 
   private func layoutSubviews() {
-    let angle = -progress * .pi * 2 + .pi / 2
+    let angle = -self.progress * .pi * 2 + .pi / 2
 
     // swiftlint:disable identifier_name
-    let x = self.bounds.width / 2 + cos(angle) * progressView.bounds.width / 2
-    let y = self.bounds.height / 2 + sin(angle) * progressView.bounds.height / 2
+    let x = self.bounds.width / 2 + cos(angle) * self.progressView.bounds.width / 2
+    let y = self.bounds.height / 2 + sin(angle) * self.progressView.bounds.height / 2
     // swiftlint:enable identifier_name
 
-    let point = NSPoint(x: x - arrowView.bounds.width / 2, y: y - arrowView.bounds.height / 2)
-    var frame = arrowView.frame
+    let point = NSPoint(x: x - self.arrowView.bounds.width / 2, y: y - self.arrowView.bounds.height / 2)
+    var frame = self.arrowView.frame
     frame.origin = point
-    arrowView.frame = frame
+    self.arrowView.frame = frame
 
-    self.progressView.progress = progress
-    self.arrowView.progress = progress
+    self.progressView.progress = self.progress
+    self.arrowView.progress = self.progress
   }
 
   private func handleArrowControl(progress rawProgress: CGFloat) {
     var progressValue = rawProgress
-    progressValue = convertProgressToScale(progressValue)
+    progressValue = self.convertProgressToScale(progressValue)
     var seconds: CGFloat = round(progressValue * 60.0 * 60.0)
     if seconds <= 300 {
       seconds -= seconds.truncatingRemainder(dividingBy: 10)
@@ -220,7 +220,7 @@ final class MVClockView: NSView {
   }
 
   private func layoutPauseViews() {
-    let showPauseIcon = paused && self.timer != nil
+    let showPauseIcon = self.paused && self.timer != nil
     NSAnimationContext.runAnimationGroup { ctx in
       ctx.duration = 0.2
       ctx.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
@@ -335,21 +335,21 @@ final class MVClockView: NSView {
   }
 
   private func updateLabels() {
-    minutesLabel.string = TimerLogic.minutesDisplayString(seconds: self.seconds)
-    let suffixWidth: CGFloat = self.seconds < 60 ? minutesLabelSecondsSuffixWidth : minutesLabelSuffixWidth
-    minutesLabel.sizeToFit()
+    self.minutesLabel.string = TimerLogic.minutesDisplayString(seconds: self.seconds)
+    let suffixWidth: CGFloat = self.seconds < 60 ? self.minutesLabelSecondsSuffixWidth : self.minutesLabelSuffixWidth
+    self.minutesLabel.sizeToFit()
 
-    var frame = minutesLabel.frame
+    var frame = self.minutesLabel.frame
     frame.origin.x = round((self.bounds.width - (frame.size.width - suffixWidth)) / 2)
-    minutesLabel.frame = frame
+    self.minutesLabel.frame = frame
 
-    secondsLabel.string = TimerLogic.secondsDisplayString(seconds: self.seconds)
+    self.secondsLabel.string = TimerLogic.secondsDisplayString(seconds: self.seconds)
     if self.seconds >= 60 {
-      secondsLabel.sizeToFit()
+      self.secondsLabel.sizeToFit()
 
-      frame = secondsLabel.frame
-      frame.origin.x = round((self.bounds.width - (frame.size.width - secondsSuffixWidth)) / 2)
-      secondsLabel.frame = frame
+      frame = self.secondsLabel.frame
+      frame.origin.x = round((self.bounds.width - (frame.size.width - self.secondsSuffixWidth)) / 2)
+      self.secondsLabel.frame = frame
     }
   }
 
@@ -370,16 +370,16 @@ final class MVClockView: NSView {
   }
 
   private func updateTimeLabel() {
-    let timeString = timerTimeLabelFormatter.string(from: self.timerTime ?? Date())
-    timerTimeLabel.string = timeString
+    let timeString = self.timerTimeLabelFormatter.string(from: self.timerTime ?? Date())
+    self.timerTimeLabel.string = timeString
 
     // If the local time format includes an " AM" or " PM" suffix, show the suffix with a smaller font
     if let ampmRange = (
       timeString.range(of: " AM", options: [.caseInsensitive]) ??
       timeString.range(of: " PM", options: [.caseInsensitive])
     ) {
-      timerTimeLabel.setFont(
-        NSFont.systemFont(ofSize: timerTimeLabelFontSize - 3, weight: .medium),
+      self.timerTimeLabel.setFont(
+        NSFont.systemFont(ofSize: self.timerTimeLabelFontSize - 3, weight: .medium),
         range: NSRange(ampmRange, in: timeString)
       )
     }
@@ -427,25 +427,25 @@ final class MVClockView: NSView {
   }
 
   private func startClockTimer() {
-    guard currentTimeTimer == nil else { return }
+    guard self.currentTimeTimer == nil else { return }
 
     // Set the current time right away, unless a timer is running
     if self.timer == nil {
       self.timerTime = Date()
     }
 
-    currentTimeTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+    self.currentTimeTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
       self?.maintainCurrentTime()
     }
 
     // Improves the system's ability to optimize for increased power savings and responsiveness
     // A general rule, set the tolerance to at least 10% of the interval, for a repeating timer.
-    currentTimeTimer?.tolerance = 0.5
+    self.currentTimeTimer?.tolerance = 0.5
   }
 
   private func stopClockTimer() {
-    currentTimeTimer?.invalidate()
-    currentTimeTimer = nil
+    self.currentTimeTimer?.invalidate()
+    self.currentTimeTimer = nil
   }
 
   private func maintainCurrentTime() {
@@ -459,7 +459,7 @@ final class MVClockView: NSView {
 
   override func hitTest(_ aPoint: NSPoint) -> NSView? {
     let view = super.hitTest(aPoint)
-    if view == arrowView {
+    if view == self.arrowView {
       return view
     }
     let path = NSBezierPath(ovalIn: NSRect(x: 21, y: 21, width: 108, height: 108))

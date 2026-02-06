@@ -1,4 +1,4 @@
-import Cocoa
+import AppKit
 
 final class MVWindow: NSWindow {
   convenience init(mainView: NSView) {

@@ -1,4 +1,4 @@
-import Cocoa
+import AppKit
 
 final class MVTitlebarAccessoryViewController: NSTitlebarAccessoryViewController {
   override func loadView() {

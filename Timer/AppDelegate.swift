@@ -1,4 +1,4 @@
-import Cocoa
+import AppKit
 import UserNotifications
 
 @main
@@ -22,7 +22,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
 
   func applicationDidFinishLaunching(_ aNotification: Notification) {
     let controller = MVTimerController()
-    controllers.append(controller)
+    self.controllers.append(controller)
     self.addBadgeToDock(controller: controller)
 
     UNUserNotificationCenter.current().delegate = self
@@ -30,25 +30,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
 
     let notificationCenter = NotificationCenter.default
 
-    notificationObservers.append(
+    self.notificationObservers.append(
       notificationCenter.addObserver(
         forName: NSWindow.willCloseNotification, object: nil, queue: nil
       ) { [weak self] notification in self?.handleClose(notification) }
     )
 
-    notificationObservers.append(
+    self.notificationObservers.append(
       notificationCenter.addObserver(
         forName: UserDefaults.didChangeNotification, object: nil, queue: nil
       ) { [weak self] _ in self?.handleUserDefaultsChange() }
     )
 
-    notificationObservers.append(
+    self.notificationObservers.append(
       notificationCenter.addObserver(
         forName: NSWindow.didChangeOcclusionStateNotification, object: nil, queue: nil
       ) { [weak self] notification in self?.handleOcclusionChange(notification) }
     )
 
-    staysOnTop = UserDefaults.standard.bool(forKey: MVUserDefaultsKeys.staysOnTop)
+    self.staysOnTop = UserDefaults.standard.bool(forKey: MVUserDefaultsKeys.staysOnTop)
   }
 
   func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
@@ -66,29 +66,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
   }
 
   func addBadgeToDock(controller: MVTimerController) {
-    if currentlyInDock != controller {
+    if self.currentlyInDock != controller {
       self.removeBadgeFromDock()
     }
-    currentlyInDock = controller
+    self.currentlyInDock = controller
     controller.showInDock(true)
   }
 
   func removeBadgeFromDock() {
-    currentlyInDock?.showInDock(false)
+    self.currentlyInDock?.showInDock(false)
   }
 
   @objc func newDocument(_ sender: AnyObject?) {
     let controller = MVTimerController(closeToWindow: NSApplication.shared.keyWindow)
     controller.window?.level = self.windowLevel
-    controllers.append(controller)
+    self.controllers.append(controller)
   }
 
   private func handleClose(_ notification: Notification) {
     if let window = notification.object as? NSWindow,
       let controller = window.windowController as? MVTimerController,
-      controller != currentlyInDock,
-      let index = controllers.firstIndex(of: controller) {
-      controllers.remove(at: index)
+      controller != self.currentlyInDock,
+      let index = self.controllers.firstIndex(of: controller) {
+      self.controllers.remove(at: index)
     }
   }
 
@@ -100,15 +100,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
   }
 
   private func handleUserDefaultsChange() {
-    staysOnTop = UserDefaults.standard.bool(forKey: MVUserDefaultsKeys.staysOnTop)
+    self.staysOnTop = UserDefaults.standard.bool(forKey: MVUserDefaultsKeys.staysOnTop)
   }
 
   deinit {
-    notificationObservers.forEach { NotificationCenter.default.removeObserver($0) }
+    self.notificationObservers.forEach { NotificationCenter.default.removeObserver($0) }
   }
 
   private var windowLevel: NSWindow.Level {
-    staysOnTop ? .floating : .normal
+    self.staysOnTop ? .floating : .normal
   }
 
   private func registerDefaults() {
