@@ -1,10 +1,8 @@
 import AppKit
 
 final class MVClockArrowView: NSView {
-  // Midpoint (ratio 0.5) between sRGB (0.1734, 0.5284, 0.9448) and (0.2235, 0.5686, 0.9882)
-  private static let focusedColor = NSColor(srgbRed: 0.1985, green: 0.5485, blue: 0.9665, alpha: 1.0)
-  // Desaturated steel blue for unfocused windows
-  private static let unfocusedColor = NSColor(srgbRed: 0.5529, green: 0.6275, blue: 0.7216, alpha: 1.0)
+  private static let focusedColor = NSColor(resource: .arrowFocused)
+  private static let unfocusedColor = NSColor(resource: .arrowUnfocused)
 
   var progress: CGFloat = 0.0 {
     didSet {
@@ -108,5 +106,24 @@ final class MVClockArrowView: NSView {
 
   private func handleUp() {
     self.onMouseUp?()
+  }
+
+  // MARK: - Accessibility
+
+  override func isAccessibilityElement() -> Bool { true }
+  override func accessibilityRole() -> NSAccessibility.Role? { .slider }
+  override func accessibilityLabel() -> String? { "Timer duration" }
+
+  override func accessibilityValue() -> Any? {
+    let totalSeconds = Int(self.progress * 60 * 60)
+    let mins = totalSeconds / 60
+    let secs = totalSeconds % 60
+    if mins > 0 && secs > 0 {
+      return "\(mins) minutes \(secs) seconds"
+    } else if mins > 0 {
+      return "\(mins) minutes"
+    } else {
+      return "\(secs) seconds"
+    }
   }
 }
