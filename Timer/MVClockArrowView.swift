@@ -43,7 +43,12 @@ final class MVClockArrowView: NSView {
     path.fill()
   }
 
+  override func resetCursorRects() {
+    self.addCursorRect(self.bounds, cursor: .openHand)
+  }
+
   override func mouseDown(with event: NSEvent) {
+    NSCursor.closedHand.push()
     var isDragging = false
     var isTracking = true
     var trackingEvent: NSEvent = event
@@ -52,6 +57,7 @@ final class MVClockArrowView: NSView {
       switch trackingEvent.type {
       case .leftMouseUp:
         isTracking = false
+        NSCursor.pop()
         self.handleUp()
 
       case .leftMouseDragged:
