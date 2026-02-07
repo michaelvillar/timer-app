@@ -503,7 +503,7 @@
 				INFOPLIST_FILE = Timer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.6.0;
+				MARKETING_VERSION = 2.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.michaelvillar.Timer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 6;
@@ -520,7 +520,7 @@
 				INFOPLIST_FILE = Timer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.6.0;
+				MARKETING_VERSION = 2.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.michaelvillar.Timer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 6;

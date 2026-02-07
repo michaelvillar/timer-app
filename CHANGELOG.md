@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-02-07
+
+### Added
+
+- URL scheme support — e.g. `open "timer://5"`, `open "timer://2:30?window=2"` (#51)
+- Launch argument support — e.g. `open -a Timer --args 5 --window 2` (#51)
+- AppleScript support with scripting definition — e.g. `tell app "Timer" to start timer "5"` (#105)
+- CLI wrapper script (`timer-cli`) with `make install-cli` target (#51)
+- Commands: start, stop, reset, pause, new — all with optional window targeting
+- Time input formats: `5` (5 min), `2.5` (2m30s fractional), `2:30` (2m30s colon)
+- Scroll wheel input for setting timer duration (#140)
+- Open/closed hand cursor feedback on arrow control (#139)
+
+### Fixed
+
+- Label colors now use Apple Lead (#191919) instead of pure black for better contrast
+
 ## [2.0.0] - 2026-02-07
 
 ### Added
@@ -190,7 +207,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Fixed crash on launch
 
-[Unreleased]: https://github.com/michaelvillar/timer-app/compare/2.0.0...HEAD
+[Unreleased]: https://github.com/michaelvillar/timer-app/compare/2.1.0...HEAD
+[2.1.0]: https://github.com/michaelvillar/timer-app/compare/2.0.0...2.1.0
 [2.0.0]: https://github.com/michaelvillar/timer-app/compare/1.6.0...2.0.0
 [1.6.0]: https://github.com/michaelvillar/timer-app/compare/1.5.5...1.6.0
 [1.5.5]: https://github.com/michaelvillar/timer-app/compare/1.5.4...1.5.5
