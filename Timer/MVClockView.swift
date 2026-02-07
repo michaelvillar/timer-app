@@ -1,4 +1,4 @@
-import AppKit
+@preconcurrency import AppKit
 
 final class MVClockView: NSView {
   override var mouseDownCanMoveWindow: Bool { false }
