@@ -1,26 +1,25 @@
 import AppKit
 
 final class MVClockFaceView: NSView {
-  private var cachedImage: NSImage?
+  private static let clockImage = NSImage(resource: .clock)
+  private static let clockUnfocusImage = NSImage(resource: .clockUnfocus)
+  private static let clockHighlightedImage = NSImage(resource: .clockHighlighted)
+
+  private var currentImage: NSImage?
 
   func update(highlighted: Bool = false) {
-    // Load the appropriate image for the clock face
-    let resource: ImageResource
-
     if highlighted {
-      resource = .clockHighlighted
+      self.currentImage = Self.clockHighlightedImage
     } else {
       let windowHasFocus = self.window?.isKeyWindow ?? false
-      resource = windowHasFocus ? .clock : .clockUnfocus
+      self.currentImage = windowHasFocus ? Self.clockImage : Self.clockUnfocusImage
     }
-
-    self.cachedImage = NSImage(resource: resource)
 
     self.needsDisplay = true
   }
 
   override func draw(_ dirtyRect: NSRect) {
-    if let image = self.cachedImage {
+    if let image = self.currentImage {
       image.draw(in: self.bounds)
     }
   }

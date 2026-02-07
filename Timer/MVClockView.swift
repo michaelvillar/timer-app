@@ -21,7 +21,7 @@ final class MVClockView: NSView {
     let label = MVLabel(frame: NSRect(x: 0, y: 94, width: 150, height: 20))
     label.font = NSFont.systemFont(ofSize: 15, weight: .medium)
     label.alignment = .center
-    label.textColor = NSColor(srgbRed: 0.749, green: 0.1412, blue: 0.0118, alpha: 1.0)
+    label.textColor = NSColor(resource: .timerTime)
     return label
   }()
 
@@ -30,7 +30,7 @@ final class MVClockView: NSView {
     label.string = ""
     label.font = MVClockView.minutesFont
     label.alignment = .center
-    label.textColor = NSColor(srgbRed: 0.2353, green: 0.2549, blue: 0.2706, alpha: 1.0)
+    label.textColor = NSColor(resource: .minutes)
     return label
   }()
 
@@ -38,7 +38,7 @@ final class MVClockView: NSView {
     let label = MVLabel(frame: NSRect(x: 0, y: 38, width: 150, height: 20))
     label.font = MVClockView.secondsFont
     label.alignment = .center
-    label.textColor = NSColor(srgbRed: 0.6353, green: 0.6667, blue: 0.6863, alpha: 1.0)
+    label.textColor = NSColor(resource: .seconds)
     return label
   }()
 
@@ -132,11 +132,21 @@ final class MVClockView: NSView {
 
     self.updateClockFaceView()
     self.updateAllViews()
+  }
+
+  override func viewDidMoveToWindow() {
+    super.viewDidMoveToWindow()
+
+    // Remove previous observers when moving between windows
+    self.notificationObservers.forEach { NotificationCenter.default.removeObserver($0) }
+    self.notificationObservers.removeAll()
+
+    guard let window = self.window else { return }
 
     let notificationCenter = NotificationCenter.default
     self.notificationObservers.append(
       notificationCenter.addObserver(
-        forName: NSWindow.didBecomeKeyNotification, object: nil, queue: nil
+        forName: NSWindow.didBecomeKeyNotification, object: window, queue: nil
       ) { [weak self] _ in
         self?.updateClockFaceView()
         self?.arrowView.needsDisplay = true
@@ -146,7 +156,7 @@ final class MVClockView: NSView {
 
     self.notificationObservers.append(
       notificationCenter.addObserver(
-        forName: NSWindow.didResignKeyNotification, object: nil, queue: nil
+        forName: NSWindow.didResignKeyNotification, object: window, queue: nil
       ) { [weak self] _ in
         self?.updateClockFaceView()
         self?.arrowView.needsDisplay = true
@@ -217,6 +227,7 @@ final class MVClockView: NSView {
       self.paused = true
       self.stop()
     }
+    self.postAccessibilityValueChanged()
   }
 
   private func layoutPauseViews() {
@@ -422,6 +433,7 @@ final class MVClockView: NSView {
 
     if self.seconds <= 0 { // Timer is done!
       self.stop()
+      self.postAccessibilityValueChanged()
       self.onTimerComplete?()
     }
   }
@@ -457,13 +469,14 @@ final class MVClockView: NSView {
     }
   }
 
+  private static let clockFaceHitPath = NSBezierPath(ovalIn: NSRect(x: 21, y: 21, width: 108, height: 108))
+
   override func hitTest(_ aPoint: NSPoint) -> NSView? {
     let view = super.hitTest(aPoint)
     if view == self.arrowView {
       return view
     }
-    let path = NSBezierPath(ovalIn: NSRect(x: 21, y: 21, width: 108, height: 108))
-    if path.contains(aPoint) && self.seconds > 0 {
+    if Self.clockFaceHitPath.contains(aPoint) && self.seconds > 0 {
       return self
     }
     return nil
@@ -475,5 +488,42 @@ final class MVClockView: NSView {
 
   private func invertProgressToScale(_ progress: CGFloat) -> CGFloat {
     TimerLogic.invertProgressToScale(progress, minutes: self.minutes)
+  }
+
+  // MARK: - Accessibility
+
+  override func isAccessibilityElement() -> Bool { true }
+  override func accessibilityRole() -> NSAccessibility.Role? { .group }
+  override func accessibilityLabel() -> String? { "Timer" }
+  override func accessibilityValue() -> Any? { self.accessibilityTimerDescription }
+
+  private var accessibilityTimerDescription: String {
+    let mins = Int(self.minutes)
+    let secs = Int(self.seconds.truncatingRemainder(dividingBy: 60))
+
+    if self.seconds <= 0 && self.timer == nil {
+      return "Ready"
+    }
+
+    let timeDescription: String
+    if mins > 0 && secs > 0 {
+      timeDescription = "\(mins) minutes \(secs) seconds"
+    } else if mins > 0 {
+      timeDescription = "\(mins) minutes"
+    } else {
+      timeDescription = "\(secs) seconds"
+    }
+
+    if self.paused {
+      return "Paused at \(timeDescription)"
+    }
+    if self.timer != nil {
+      return "\(timeDescription) remaining"
+    }
+    return timeDescription
+  }
+
+  private func postAccessibilityValueChanged() {
+    NSAccessibility.post(element: self, notification: .valueChanged)
   }
 }

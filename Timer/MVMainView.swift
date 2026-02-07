@@ -1,11 +1,15 @@
 import AppKit
 
 final class MVMainView: NSView {
+  private static let backgroundGradient = NSGradient(colors: [
+    NSColor(resource: .backgroundTop),
+    NSColor(resource: .backgroundBottom)
+  ])
+
   weak var controller: MVTimerController?
   private let contextMenu = NSMenu(title: "Menu")
   private(set) var menuItem: NSMenuItem?
   private var soundMenuItems: [NSMenuItem] = []
-  private var notificationObservers: [NSObjectProtocol] = []
 
   override var menu: NSMenu? {
     get { self.contextMenu }
@@ -47,20 +51,6 @@ final class MVMainView: NSView {
     }
     self.contextMenu.addItem(menuItemSoundChoice)
     self.contextMenu.setSubmenu(submenu, for: menuItemSoundChoice)
-
-    let notificationCenter = NotificationCenter.default
-
-    self.notificationObservers.append(
-      notificationCenter.addObserver(
-        forName: NSWindow.didBecomeKeyNotification, object: nil, queue: nil
-      ) { [weak self] _ in self?.needsDisplay = true }
-    )
-
-    self.notificationObservers.append(
-      notificationCenter.addObserver(
-        forName: NSWindow.didResignKeyNotification, object: nil, queue: nil
-      ) { [weak self] _ in self?.needsDisplay = true }
-    )
   }
 
   required init?(coder: NSCoder) {
@@ -85,20 +75,9 @@ final class MVMainView: NSView {
     self.controller?.pickSound(sender.tag)
   }
 
-  deinit {
-    self.notificationObservers.forEach { NotificationCenter.default.removeObserver($0) }
-  }
-
   override func draw(_ dirtyRect: NSRect) {
-    super.draw(dirtyRect)
-
-    let topColor = NSColor(resource: .backgroundTop)
-    let bottomColor = NSColor(resource: .backgroundBottom)
-
-    let gradient = NSGradient(colors: [topColor, bottomColor])
     let radius: CGFloat = 4.53
     let path = NSBezierPath(roundedRect: self.bounds, xRadius: radius, yRadius: radius)
-
-    gradient?.draw(in: path, angle: -90)
+    Self.backgroundGradient?.draw(in: path, angle: -90)
   }
 }

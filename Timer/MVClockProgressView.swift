@@ -2,6 +2,8 @@ import AppKit
 
 final class MVClockProgressView: NSView {
   private static let ringColor = NSColor(srgbRed: 0.7255, green: 0.7255, blue: 0.7255, alpha: 0.15)
+  private static let progressImage = NSImage(resource: .progress)
+  private static let progressUnfocusImage = NSImage(resource: .progressUnfocus)
 
   var progress: CGFloat = 0.0 {
     didSet {
@@ -43,7 +45,7 @@ final class MVClockProgressView: NSView {
       .translatedBy(x: -center.x, y: -center.y)
     NSGraphicsContext.current?.cgContext.concatenate(cgTransform)
 
-    let image = NSImage(resource: windowHasFocus ? .progress : .progressUnfocus)
+    let image = windowHasFocus ? Self.progressImage : Self.progressUnfocusImage
     image.draw(in: self.bounds)
 
     ctx?.restoreGraphicsState()
