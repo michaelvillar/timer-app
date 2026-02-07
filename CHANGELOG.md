@@ -17,8 +17,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added 7 final UI tests: active timer interruption (`testDigitInputStopsRunningTimer`), timer completion then restart (`testTimerCompletionThenRestartWithRKey`), background timer execution (`testTimerContinuesWhileAppHidden`), rapid pause/resume stress test (`testRapidPauseResumeCycles`), multi-window dock badge handoff (`testDockBadgeSwitchesBetweenWindows`), sequential backspace (`testMultipleBackspacesSequentially`), and natural completion with badge (`testTimerCompletionWithDockBadgeActive`) — 54 total UI tests
 - Removed 16 redundant UI tests where one test was a strict subset or near-duplicate of another (54 → 38 UI tests, no code path coverage lost)
 - Improved UI test quality: replaced silent `if exists` guards with `XCTAssertTrue` assertions in `testSoundMenuSelection`, replaced `Thread.sleep` with `waitForExistence(timeout:)` for window appearance waits, consolidated 14 MARK sections into 9
+- Dark mode support: added 5 asset catalog color sets with light/dark variants for timer time label, minutes label, seconds label, arrow focused, and arrow unfocused colors
+- VoiceOver accessibility: `MVClockView` reports timer state ("Ready", "5 minutes 30 seconds remaining", "Paused at 3 minutes"), `MVClockArrowView` acts as a slider with duration value
 
 ### Changed
+
+- Updated CI workflow (`swift.yml`) to trigger on `main` branch instead of `master`
+- Updated README deployment target from macOS 10.11 to macOS 14 (Sonoma)
+- Replaced `NSTextView` with `NSTextField` in `MVLabel` (lightweight label rendering)
+- Cached `NSGradient` as static constant in `MVMainView.draw()` (was allocated every frame)
+- Cached `NSBezierPath` for clock face hit testing in `MVClockView` (was allocated every `hitTest` call)
+- Cached `NSImage` resources as static constants in `MVClockProgressView` and `MVClockFaceView`
+- Removed unnecessary window focus notification observers from `MVMainView` (gradient is focus-independent)
+- Scoped `MVClockView` focus notifications to own window via `viewDidMoveToWindow()` (was `object: nil`, reacting to all windows)
+- Replaced hard-coded `sRGB` colors with `NSColor(resource:)` in `MVClockView` and `MVClockArrowView`
+- Removed duplicate `enter` keycode constant (identical to `keypadEnter`, both `0x4C`)
+- Used `async`/`await` for notification authorization in `AppDelegate`, logging errors instead of silently ignoring
+- Modernized Xcode project settings: `objectVersion` 46→56, `compatibilityVersion` Xcode 3.2→14.0, `developmentRegion` English→en
+- Updated C/C++ language standards: `gnu99`→`gnu11`, `gnu++0x`→`gnu++14`
+- Removed deprecated build settings: `ALWAYS_SEARCH_USER_PATHS`, `GCC_DYNAMIC_NO_PIC`, `ENABLE_STRICT_OBJC_MSGSEND`
+- Set `CURRENT_PROJECT_VERSION = 1` (was unset, `CFBundleVersion` resolved to empty)
+- Added explicit `SWIFT_OPTIMIZATION_LEVEL = -O` for Release builds
 
 - Added comment documenting empty `keyDown` override that suppresses system beep
 - Made `windowLevel()` private in `AppDelegate`
