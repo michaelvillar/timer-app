@@ -9,7 +9,7 @@ extension MVClockView {
     self.nextResponder?.mouseDown(with: event)
   }
 
-  override func mouseDragged(with event: NSEvent) {
+  override func mouseDragged(with _: NSEvent) {
     if !self.didDrag {
       self.didDrag = true
       self.updateClockFaceView()
@@ -18,7 +18,7 @@ extension MVClockView {
 
   override func mouseUp(with event: NSEvent) {
     let point = self.convert(event.locationInWindow, from: nil)
-    if self.hitTest(point) == self && !self.didDrag {
+    if self.hitTest(point) == self, !self.didDrag {
       self.handleClick()
     }
     self.updateClockFaceView()
@@ -39,7 +39,7 @@ extension MVClockView {
       self.handleClick()
 
     case "r":
-      if self.timerTask == nil && !self.paused, let seconds = self.lastTimerSeconds {
+      if self.timerTask == nil, !self.paused, let seconds = self.lastTimerSeconds {
         self.seconds = seconds
         self.handleClick()
       }
@@ -113,7 +113,7 @@ extension MVClockView {
     self.timerTask?.cancel()
     self.timerTask = nil
 
-    if self.inDock && !self.paused {
+    if self.inDock, !self.paused {
       self.removeBadge()
     }
   }
@@ -174,18 +174,11 @@ extension MVClockView {
     let mins = Int(self.minutes)
     let secs = Int(self.seconds.truncatingRemainder(dividingBy: 60))
 
-    if self.seconds <= 0 && self.timerTask == nil {
+    if self.seconds <= 0, self.timerTask == nil {
       return "Ready"
     }
 
-    let timeDescription: String
-    if mins > 0 && secs > 0 {
-      timeDescription = "\(mins) minutes \(secs) seconds"
-    } else if mins > 0 {
-      timeDescription = "\(mins) minutes"
-    } else {
-      timeDescription = "\(secs) seconds"
-    }
+    let timeDescription = TimerLogic.accessibilityTimeDescription(minutes: mins, seconds: secs)
 
     if self.paused {
       return "Paused at \(timeDescription)"

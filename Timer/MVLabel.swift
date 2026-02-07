@@ -10,7 +10,7 @@ final class MVLabel: NSTextField {
     self.drawsBackground = false
   }
 
-  required init?(coder: NSCoder) {
+  required init?(coder _: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
 
@@ -27,7 +27,7 @@ final class MVLabel: NSTextField {
     self.attributedStringValue = attributed
   }
 
-  override func hitTest(_ aPoint: NSPoint) -> NSView? {
+  override func hitTest(_: NSPoint) -> NSView? {
     nil
   }
 }

@@ -10,9 +10,8 @@ enum TimerLogic {
     if minutes <= 60 {
       if progress <= scaleOriginal / 60 {
         return progress / (scaleOriginal / scaleActual)
-      } else {
-        return (progress * 60 - scaleOriginal + scaleActual) / (60 - scaleActual)
       }
+      return (progress * 60 - scaleOriginal + scaleActual) / (60 - scaleActual)
     }
     return progress
   }
@@ -24,9 +23,8 @@ enum TimerLogic {
 
     if progress <= scaleActual / 60 {
       return progress * (scaleOriginal / scaleActual)
-    } else {
-      return (progress * (60 - scaleActual) - scaleActual + scaleOriginal) / 60
     }
+    return (progress * (60 - scaleActual) - scaleActual + scaleOriginal) / 60
   }
 
   // MARK: - Display Strings
@@ -34,17 +32,15 @@ enum TimerLogic {
   static func minutesDisplayString(seconds: CGFloat) -> String {
     if seconds < 60 {
       return "\(Int(seconds))\""
-    } else {
-      return "\(Int(floor(seconds / 60)))'"
     }
+    return "\(Int(floor(seconds / 60)))'"
   }
 
   static func secondsDisplayString(seconds: CGFloat) -> String {
     if seconds < 60 {
       return ""
-    } else {
-      return "\(Int(seconds.truncatingRemainder(dividingBy: 60)))\""
     }
+    return "\(Int(seconds.truncatingRemainder(dividingBy: 60)))\""
   }
 
   static func badgeString(minutes: Int, seconds: Int) -> String {
@@ -90,9 +86,20 @@ enum TimerLogic {
   ) -> CGFloat {
     if inputSeconds {
       return currentMinutes * 60 + floor(currentSeconds / 10)
-    } else {
-      return floor(currentMinutes / 10) * 60 + currentSeconds
     }
+    return floor(currentMinutes / 10) * 60 + currentSeconds
+  }
+
+  // MARK: - Accessibility
+
+  static func accessibilityTimeDescription(minutes: Int, seconds: Int) -> String {
+    if minutes > 0, seconds > 0 {
+      return "\(minutes) minutes \(seconds) seconds"
+    }
+    if minutes > 0 {
+      return "\(minutes) minutes"
+    }
+    return "\(seconds) seconds"
   }
 
   // MARK: - Sound

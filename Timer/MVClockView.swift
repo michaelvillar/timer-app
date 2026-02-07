@@ -42,7 +42,6 @@ final class MVClockView: NSView {
     return label
   }()
 
-  private let timerTimeLabelFontSize: CGFloat = 15
   private let minutesLabelSuffixWidth = "'".size(withAttributes: [.font: MVClockView.minutesFont]).width
   private let minutesLabelSecondsSuffixWidth = "\"".size(withAttributes: [.font: MVClockView.minutesFont]).width
   private let secondsSuffixWidth = "'".size(withAttributes: [.font: MVClockView.secondsFont]).width
@@ -53,7 +52,6 @@ final class MVClockView: NSView {
   }()
   var inputSeconds: Bool = false
   var lastTimerSeconds: CGFloat?
-  private let docktile: NSDockTile = NSApplication.shared.dockTile
   var inDock: Bool = false {
     didSet {
       if !self.inDock {
@@ -91,24 +89,20 @@ final class MVClockView: NSView {
 
   var seconds: CGFloat = 0.0 {
     didSet {
-      self.minutes = floor(self.seconds / 60)
-      self.progress = self.invertProgressToScale(self.seconds / 60.0 / 60.0)
-    }
-  }
-  var minutes: CGFloat = 0.0 {
-    didSet {
       if self.windowIsVisible {
         self.updateLabels()
+        self.layoutSubviews()
       }
       self.updateBadge()
     }
   }
-  private var progress: CGFloat = 0.0 {
-    didSet {
-      if self.windowIsVisible {
-        self.layoutSubviews()
-      }
-    }
+
+  var minutes: CGFloat {
+    floor(self.seconds / 60)
+  }
+
+  private var progress: CGFloat {
+    self.invertProgressToScale(self.seconds / 60.0 / 60.0)
   }
   var didDrag: Bool = false
 
@@ -219,7 +213,7 @@ extension MVClockView {
   }
 
   func handleClick() {
-    if self.timerTask == nil && self.seconds > 0 {
+    if self.timerTask == nil, self.seconds > 0 {
       self.updateTimerTime()
       self.start()
     } else {
@@ -273,7 +267,7 @@ extension MVClockView {
       if self.timerTask != nil || self.paused {
         let badgeSeconds = Int(self.seconds.truncatingRemainder(dividingBy: 60))
         let badgeMinutes = Int(self.minutes)
-        self.docktile.badgeLabel = TimerLogic.badgeString(minutes: badgeMinutes, seconds: badgeSeconds)
+        NSApplication.shared.dockTile.badgeLabel = TimerLogic.badgeString(minutes: badgeMinutes, seconds: badgeSeconds)
       } else {
         self.removeBadge()
       }
@@ -281,7 +275,7 @@ extension MVClockView {
   }
 
   func removeBadge() {
-    self.docktile.badgeLabel = ""
+    NSApplication.shared.dockTile.badgeLabel = ""
   }
 
   private func updateTimeLabel() {
@@ -293,7 +287,7 @@ extension MVClockView {
       timeString.range(of: " PM", options: [.caseInsensitive])
     ) {
       self.timerTimeLabel.setFont(
-        NSFont.systemFont(ofSize: self.timerTimeLabelFontSize - 3, weight: .medium),
+        NSFont.systemFont(ofSize: 12, weight: .medium),
         range: NSRange(ampmRange, in: timeString)
       )
     }
@@ -306,7 +300,7 @@ extension MVClockView {
     if view == self.arrowView {
       return view
     }
-    if Self.clockFaceHitPath.contains(aPoint) && self.seconds > 0 {
+    if Self.clockFaceHitPath.contains(aPoint), self.seconds > 0 {
       return self
     }
     return nil

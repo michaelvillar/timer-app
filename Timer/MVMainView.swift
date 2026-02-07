@@ -9,11 +9,10 @@ final class MVMainView: NSView {
   weak var controller: MVTimerController?
   private let contextMenu = NSMenu(title: "Menu")
   private(set) var menuItem: NSMenuItem?
-  private var soundMenuItems: [NSMenuItem] = []
 
   override var menu: NSMenu? {
     get { self.contextMenu }
-    set {}
+    set { /* ignored */ }
   }
 
   override init(frame frameRect: NSRect) {
@@ -36,15 +35,12 @@ final class MVMainView: NSView {
       (title: "Sound 3", value: 2),
       (title: "No Sound", value: -1)
     ]
+    let savedSoundIndex = UserDefaults.standard.integer(forKey: MVUserDefaultsKeys.soundIndex)
     for option in soundOptions {
       let soundItem = NSMenuItem(title: option.title, action: #selector(self.pickSound), keyEquivalent: "")
       soundItem.tag = option.value
-      self.soundMenuItems.append(soundItem)
+      soundItem.state = option.value == savedSoundIndex ? .on : .off
       submenu.addItem(soundItem)
-    }
-    let savedSoundIndex = UserDefaults.standard.integer(forKey: MVUserDefaultsKeys.soundIndex)
-    for item in self.soundMenuItems {
-      item.state = item.tag == savedSoundIndex ? .on : .off
     }
     if let menuItem = self.menuItem {
       self.contextMenu.addItem(menuItem)
@@ -53,7 +49,7 @@ final class MVMainView: NSView {
     self.contextMenu.setSubmenu(submenu, for: menuItemSoundChoice)
   }
 
-  required init?(coder: NSCoder) {
+  required init?(coder _: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
 
@@ -69,13 +65,13 @@ final class MVMainView: NSView {
   }
 
   @objc func pickSound(_ sender: NSMenuItem) {
-    for item in self.soundMenuItems {
+    for item in sender.menu?.items ?? [] {
       item.state = item == sender ? .on : .off
     }
     self.controller?.pickSound(sender.tag)
   }
 
-  override func draw(_ dirtyRect: NSRect) {
+  override func draw(_: NSRect) {
     let radius: CGFloat = 4.53
     let path = NSBezierPath(roundedRect: self.bounds, xRadius: radius, yRadius: radius)
     Self.backgroundGradient?.draw(in: path, angle: -90)

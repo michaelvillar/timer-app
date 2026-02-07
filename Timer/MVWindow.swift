@@ -4,7 +4,7 @@ final class MVWindow: NSWindow {
   convenience init(mainView: NSView) {
     let styleMask: NSWindow.StyleMask = [.closable, .titled]
     let size: CGFloat = 150.0
-    let titleBarHeight = MVWindow.frameRect(
+    let titleBarHeight = Self.frameRect(
       forContentRect: NSRect(x: 0, y: 0, width: size, height: size),
       styleMask: styleMask
     ).size.height - size

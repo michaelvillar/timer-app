@@ -14,7 +14,7 @@ final class MVClockProgressView: NSView {
     self.init(frame: NSRect(x: 0, y: 0, width: 116, height: 116))
   }
 
-  override func draw(_ dirtyRect: NSRect) {
+  override func draw(_: NSRect) {
     Self.ringColor.setFill()
     NSBezierPath(ovalIn: self.bounds).fill()
 

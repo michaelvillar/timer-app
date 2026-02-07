@@ -238,4 +238,22 @@ final class TimerLogicTests: XCTestCase {
   func testSoundFilenameUnknownIndex() {
     XCTAssertEqual(TimerLogic.soundFilename(forIndex: 99), "alert-sound")
   }
+
+  // MARK: - accessibilityTimeDescription
+
+  func testAccessibilityTimeDescriptionMinutesAndSeconds() {
+    XCTAssertEqual(TimerLogic.accessibilityTimeDescription(minutes: 5, seconds: 30), "5 minutes 30 seconds")
+  }
+
+  func testAccessibilityTimeDescriptionMinutesOnly() {
+    XCTAssertEqual(TimerLogic.accessibilityTimeDescription(minutes: 3, seconds: 0), "3 minutes")
+  }
+
+  func testAccessibilityTimeDescriptionSecondsOnly() {
+    XCTAssertEqual(TimerLogic.accessibilityTimeDescription(minutes: 0, seconds: 45), "45 seconds")
+  }
+
+  func testAccessibilityTimeDescriptionZero() {
+    XCTAssertEqual(TimerLogic.accessibilityTimeDescription(minutes: 0, seconds: 0), "0 seconds")
+  }
 }

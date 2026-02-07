@@ -21,7 +21,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     self.registerDefaults()
   }
 
-  func applicationDidFinishLaunching(_ aNotification: Notification) {
+  func applicationDidFinishLaunching(_: Notification) {
     let controller = MVTimerController()
     self.controllers.append(controller)
     self.addBadgeToDock(controller: controller)
@@ -39,7 +39,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     self.staysOnTop = UserDefaults.standard.bool(forKey: MVUserDefaultsKeys.staysOnTop)
   }
 
-  func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+  func applicationShouldHandleReopen(_: NSApplication, hasVisibleWindows _: Bool) -> Bool {
     for window in NSApplication.shared.windows {
       window.makeKeyAndOrderFront(self)
     }
@@ -47,8 +47,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
   }
 
   nonisolated func userNotificationCenter(
-    _ center: UNUserNotificationCenter,
-    willPresent notification: UNNotification,
+    _: UNUserNotificationCenter,
+    willPresent _: UNNotification,
     withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
     completionHandler([.banner, .sound])
   }
@@ -65,7 +65,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     self.currentlyInDock?.showInDock(false)
   }
 
-  @objc func newDocument(_ sender: AnyObject?) {
+  @objc func newDocument(_: AnyObject?) {
     let controller = MVTimerController(closeToWindow: NSApplication.shared.keyWindow)
     controller.window?.level = self.windowLevel
     self.controllers.append(controller)

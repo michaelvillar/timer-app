@@ -24,7 +24,11 @@ final class MVTimerController: NSWindowController {
     self.windowFrameAutosaveName = "TimerWindowAutosaveFrame"
 
     let savedSound = UserDefaults.standard.integer(forKey: MVUserDefaultsKeys.soundIndex)
-    self.applySoundIndex(savedSound)
+    if let sound = TimerLogic.soundFilename(forIndex: savedSound) {
+      self.soundURL = Bundle.main.url(forResource: sound, withExtension: "caf")
+    } else {
+      self.soundURL = nil
+    }
 
     window.makeKeyAndOrderFront(self)
   }
@@ -83,21 +87,15 @@ final class MVTimerController: NSWindowController {
   }
 
   // Override required to suppress system beep on key press
-  override func keyDown(with event: NSEvent) {
+  override func keyDown(with _: NSEvent) {
+    // Intentionally empty
   }
 
-  func pickSound(_ index: Int, preview: Bool = true) {
+  func pickSound(_ index: Int) {
     UserDefaults.standard.set(index, forKey: MVUserDefaultsKeys.soundIndex)
-    self.applySoundIndex(index, preview: preview)
-  }
-
-  private func applySoundIndex(_ index: Int, preview: Bool = false) {
     if let sound = TimerLogic.soundFilename(forIndex: index) {
       self.soundURL = Bundle.main.url(forResource: sound, withExtension: "caf")
-
-      if preview {
-        self.playAlarmSound()
-      }
+      self.playAlarmSound()
     } else {
       self.soundURL = nil
     }

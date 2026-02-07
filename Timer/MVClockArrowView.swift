@@ -20,7 +20,7 @@ final class MVClockArrowView: NSView {
     self.center = center
   }
 
-  override func draw(_ dirtyRect: NSRect) {
+  override func draw(_: NSRect) {
     NSColor.clear.setFill()
     self.bounds.fill()
 
@@ -116,14 +116,6 @@ final class MVClockArrowView: NSView {
 
   override func accessibilityValue() -> Any? {
     let totalSeconds = Int(self.progress * 60 * 60)
-    let mins = totalSeconds / 60
-    let secs = totalSeconds % 60
-    if mins > 0 && secs > 0 {
-      return "\(mins) minutes \(secs) seconds"
-    } else if mins > 0 {
-      return "\(mins) minutes"
-    } else {
-      return "\(secs) seconds"
-    }
+    return TimerLogic.accessibilityTimeDescription(minutes: totalSeconds / 60, seconds: totalSeconds % 60)
   }
 }

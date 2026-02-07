@@ -1,7 +1,7 @@
 import XCTest
 
-class TimerUITestCase: XCTestCase {
-  var app: XCUIApplication!
+class TimerUITestCase: XCTestCase { // swiftlint:disable:this final_test_case
+  var app: XCUIApplication! // swiftlint:disable:this implicitly_unwrapped_optional
 
   override func setUpWithError() throws {
     continueAfterFailure = false
