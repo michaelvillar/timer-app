@@ -4,7 +4,7 @@ import UserNotifications
 
 final class MVTimerController: NSWindowController {
   private weak var dockMenuItem: NSMenuItem?
-  private let clockView = MVClockView()
+  let clockView = MVClockView()
 
   private var audioPlayer: AVAudioPlayer? // player must be kept in memory
   private var soundURL = Bundle.main.url(forResource: "alert-sound", withExtension: "caf")
