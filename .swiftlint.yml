@@ -1,44 +1,91 @@
-# rule identifiers to exclude from running
-disabled_rules:
-  - type_body_length
-  - function_body_length
-  - file_length
-  - unneeded_break_in_switch
-
 # some rules are only opt-in
 # Find all the available rules by running: swiftlint rules
 opt_in_rules:
-  - anyobject_protocol
+  - array_init
+  - balanced_xctest_lifecycle
   - closure_end_indentation
   - closure_spacing
   - collection_alignment
+  - comma_inheritance
+  - contains_over_filter_count
+  - contains_over_filter_is_empty
+  - contains_over_first_not_nil
+  - contains_over_range_nil_comparison
+  - convenience_type
+  - direct_return
+  - discarded_notification_center_observer
+  - discouraged_optional_boolean
+  - discouraged_optional_collection
+  - empty_collection_literal
   - empty_count
+  - empty_string
+  - empty_xctest_method
   - explicit_init
-  - explicit_self
+  - fatal_error_message
+  - final_test_case
+  - first_where
+  - flatmap_over_map_reduce
+  - force_unwrapping
+  - function_default_parameter_at_end
+  - identical_operands
   - implicit_return
+  - implicitly_unwrapped_optional
   - joined_default_parameter
+  - last_where
+  - legacy_multiple
   - literal_expression_end_indentation
+  - lower_acl_than_parent
   - modifier_order
-  # - number_separator
+  - no_empty_block
+  - non_overridable_class_declaration
+  - number_separator
   - operator_usage_whitespace
   - optional_enum_case_matching
+  - pattern_matching_keywords
+  - period_spacing
+  - prefer_condition_list
+  - prefer_key_path
+  - prefer_self_in_static_references
   - prefer_self_type_over_type_of_self
+  - prefer_zero_over_explicit_init
+  - private_over_fileprivate
+  - reduce_into
   - redundant_nil_coalescing
   - redundant_type_annotation
+  - return_value_from_void_function
+  - self_binding
+  - shorthand_argument
+  - shorthand_optional_binding
+  - sorted_enum_cases
+  - sorted_first_last
   - sorted_imports
+  - static_over_final_class
+  - superfluous_else
   - toggle_bool
+  - trailing_closure
+  - unhandled_throwing_task
   - unneeded_parentheses_in_closure_argument
+  - unowned_variable_capture
   - untyped_error_in_catch
-  - unused_import
+  - unused_parameter
+  - vertical_parameter_alignment_on_call
   - vertical_whitespace_between_cases
   - vertical_whitespace_closing_braces
   - vertical_whitespace_opening_braces
+  - weak_delegate
+  - xct_specific_matcher
+  - yoda_condition
+
+analyzer_rules:
+  - explicit_self
+  - unused_import
 
 included:
   - Timer
+  - TimerTests
+  - TimerUITests
 
-excluded:
-  - Timer/Keycodes.swift
+
 
 # reporter type (xcode, json, csv, checkstyle, junit, html, emoji, sonarqube, markdown)
 reporter: 'xcode'

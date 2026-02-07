@@ -1,7 +1,7 @@
-import Cocoa
+import AppKit
 
-class MVTitlebarAccessoryViewController: NSTitlebarAccessoryViewController {
+final class MVTitlebarAccessoryViewController: NSTitlebarAccessoryViewController {
   override func loadView() {
-    self.view = NSView(frame: NSRect.zero)
+    self.view = NSView(frame: .zero)
   }
 }

@@ -1,14 +1,17 @@
-import Cocoa
+import AppKit
+import UserNotifications
 
-@NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDelegate {
+@main
+@MainActor
+final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
   private var controllers: [MVTimerController] = []
   private var currentlyInDock: MVTimerController?
+  private var notificationTasks: [Task<Void, Never>] = []
 
   private var staysOnTop = false {
     didSet {
       for window in NSApplication.shared.windows {
-        window.level = self.windowLevel()
+        window.level = self.windowLevel
       }
     }
   }
@@ -18,97 +21,118 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     self.registerDefaults()
   }
 
-  func applicationDidFinishLaunching(_ aNotification: Notification) {
+  func applicationDidFinishLaunching(_: Notification) {
     let controller = MVTimerController()
-    controllers.append(controller)
+    self.controllers.append(controller)
     self.addBadgeToDock(controller: controller)
 
-    NSUserNotificationCenter.default.delegate = self
+    UNUserNotificationCenter.current().delegate = self
+    Task {
+      do {
+        try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound])
+      } catch {
+        NSLog("Notification authorization failed: %@", error.localizedDescription)
+      }
+    }
 
-    let notificationCenter = NotificationCenter.default
-
-    notificationCenter.addObserver(
-      self,
-      selector: #selector(handleClose),
-      name: NSWindow.willCloseNotification,
-      object: nil
-    )
-
-    notificationCenter.addObserver(
-      self,
-      selector: #selector(handleUserDefaultsChange),
-      name: UserDefaults.didChangeNotification,
-      object: nil
-    )
-
-    notificationCenter.addObserver(
-      self,
-      selector: #selector(handleOcclusionChange),
-      name: NSWindow.didChangeOcclusionStateNotification,
-      object: nil
-    )
-
-    staysOnTop = UserDefaults.standard.bool(forKey: MVUserDefaultsKeys.staysOnTop)
+    self.observeNotifications()
+    self.staysOnTop = UserDefaults.standard.bool(forKey: MVUserDefaultsKeys.staysOnTop)
   }
 
-  func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+  func applicationShouldHandleReopen(_: NSApplication, hasVisibleWindows _: Bool) -> Bool {
     for window in NSApplication.shared.windows {
       window.makeKeyAndOrderFront(self)
     }
     return true
   }
 
-  func userNotificationCenter(
-    _ center: NSUserNotificationCenter,
-    shouldPresent notification: NSUserNotification) -> Bool {
-    true
+  nonisolated func userNotificationCenter(
+    _: UNUserNotificationCenter,
+    willPresent _: UNNotification,
+    withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+    completionHandler([.banner, .sound])
   }
 
   func addBadgeToDock(controller: MVTimerController) {
-    if currentlyInDock != controller {
+    if self.currentlyInDock != controller {
       self.removeBadgeFromDock()
     }
-    currentlyInDock = controller
+    self.currentlyInDock = controller
     controller.showInDock(true)
   }
 
   func removeBadgeFromDock() {
-    if currentlyInDock != nil {
-      currentlyInDock!.showInDock(false)
-    }
+    self.currentlyInDock?.showInDock(false)
   }
 
-  @objc func newDocument(_ sender: AnyObject?) {
+  @objc func newDocument(_: AnyObject?) {
     let controller = MVTimerController(closeToWindow: NSApplication.shared.keyWindow)
-    controller.window?.level = self.windowLevel()
-    controllers.append(controller)
+    controller.window?.level = self.windowLevel
+    self.controllers.append(controller)
   }
 
-  @objc func handleClose(_ notification: Notification) {
+  private func handleClose(_ notification: Notification) {
     if let window = notification.object as? NSWindow,
       let controller = window.windowController as? MVTimerController,
-      controller != currentlyInDock,
-      let index = controllers.firstIndex(of: controller) {
-          controllers.remove(at: index)
+      controller != self.currentlyInDock,
+      let index = self.controllers.firstIndex(of: controller) {
+      self.controllers.remove(at: index)
     }
   }
 
-  @objc func handleOcclusionChange(_ notification: Notification) {
+  private func handleOcclusionChange(_ notification: Notification) {
     if let window = notification.object as? NSWindow,
       let controller = window.windowController as? MVTimerController {
-      controller.windowVisibilityChanged(window.isVisible)
+      controller.windowVisibilityChanged(window.occlusionState.contains(.visible))
     }
   }
 
-  @objc func handleUserDefaultsChange(_ notification: Notification) {
-    staysOnTop = UserDefaults.standard.bool(forKey: MVUserDefaultsKeys.staysOnTop)
+  private func handleUserDefaultsChange() {
+    self.staysOnTop = UserDefaults.standard.bool(forKey: MVUserDefaultsKeys.staysOnTop)
   }
 
-  func windowLevel() -> NSWindow.Level {
-    staysOnTop ? .floating : .normal
+  private func observeNotifications() {
+    self.notificationTasks.append(
+      Task { [weak self] in
+        for await notification in NotificationCenter.default.notifications(named: NSWindow.willCloseNotification) {
+          self?.handleClose(notification)
+        }
+      }
+    )
+
+    self.notificationTasks.append(
+      Task { [weak self] in
+        for await _ in NotificationCenter.default.notifications(named: UserDefaults.didChangeNotification) {
+          self?.handleUserDefaultsChange()
+        }
+      }
+    )
+
+    self.notificationTasks.append(
+      Task { [weak self] in
+        for await notification in NotificationCenter.default.notifications(
+          named: NSWindow.didChangeOcclusionStateNotification
+        ) {
+          self?.handleOcclusionChange(notification)
+        }
+      }
+    )
+  }
+
+  deinit {
+    MainActor.assumeIsolated {
+      self.notificationTasks.forEach { $0.cancel() }
+    }
+  }
+
+  private var windowLevel: NSWindow.Level {
+    self.staysOnTop ? .floating : .normal
   }
 
   private func registerDefaults() {
-    UserDefaults.standard.register(defaults: [MVUserDefaultsKeys.staysOnTop: false])
+    UserDefaults.standard.register(defaults: [
+      MVUserDefaultsKeys.staysOnTop: false,
+      MVUserDefaultsKeys.soundIndex: 0
+    ])
   }
 }
