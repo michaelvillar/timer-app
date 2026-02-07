@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-02-07
+
 ### Added
 
 - 43 unit tests and 38 UI tests
@@ -188,7 +190,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Fixed crash on launch
 
-[Unreleased]: https://github.com/karbassi/timer-app/compare/1.6.0...HEAD
+[Unreleased]: https://github.com/michaelvillar/timer-app/compare/2.0.0...HEAD
+[2.0.0]: https://github.com/michaelvillar/timer-app/compare/1.6.0...2.0.0
 [1.6.0]: https://github.com/michaelvillar/timer-app/compare/1.5.5...1.6.0
 [1.5.5]: https://github.com/michaelvillar/timer-app/compare/1.5.4...1.5.5
 [1.5.4]: https://github.com/michaelvillar/timer-app/compare/1.5.3...1.5.4
