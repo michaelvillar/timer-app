@@ -26,7 +26,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     self.addBadgeToDock(controller: controller)
 
     UNUserNotificationCenter.current().delegate = self
-    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
+    Task {
+      do {
+        try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound])
+      } catch {
+        NSLog("Notification authorization failed: %@", error.localizedDescription)
+      }
+    }
 
     let notificationCenter = NotificationCenter.default
 
