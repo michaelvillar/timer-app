@@ -16,6 +16,31 @@ extension MVClockView {
     }
   }
 
+  override func scrollWheel(with event: NSEvent) {
+    guard self.timerTask == nil, !self.paused else { return }
+
+    let delta: CGFloat
+    if event.hasPreciseScrollingDeltas {
+      delta = event.scrollingDeltaY * 3
+    } else {
+      delta = event.scrollingDeltaY * 30
+    }
+
+    guard delta != 0 else { return }
+
+    var newSeconds = self.seconds + delta
+    newSeconds = max(0, newSeconds)
+
+    if newSeconds <= 300 {
+      newSeconds -= newSeconds.truncatingRemainder(dividingBy: 10)
+    } else {
+      newSeconds -= newSeconds.truncatingRemainder(dividingBy: 60)
+    }
+
+    self.seconds = newSeconds
+    self.updateTimerTime()
+  }
+
   override func mouseUp(with event: NSEvent) {
     let point = self.convert(event.locationInWindow, from: nil)
     if self.hitTest(point) == self, !self.didDrag {

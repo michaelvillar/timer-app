@@ -213,7 +213,8 @@ extension MVClockView {
   }
 
   func handleClick() {
-    if self.timerTask == nil, self.seconds > 0 {
+    guard self.seconds > 0 else { return }
+    if self.timerTask == nil {
       self.updateTimerTime()
       self.start()
     } else {
@@ -293,14 +294,12 @@ extension MVClockView {
     }
   }
 
-  private static let clockFaceHitPath = NSBezierPath(ovalIn: NSRect(x: 21, y: 21, width: 108, height: 108))
-
   override func hitTest(_ aPoint: NSPoint) -> NSView? {
     let view = super.hitTest(aPoint)
     if view == self.arrowView {
       return view
     }
-    if Self.clockFaceHitPath.contains(aPoint), self.seconds > 0 {
+    if view != nil {
       return self
     }
     return nil
