@@ -1,6 +1,6 @@
 SWIFTLINT := $(shell command -v swiftlint 2>/dev/null || echo mise exec -- swiftlint)
 
-.PHONY: default clean build open test uitest lint analyze format
+.PHONY: default clean build open test uitest lint analyze format install-cli
 
 default: clean build open
 
@@ -28,3 +28,6 @@ analyze:
 
 format:
 	$(SWIFTLINT) --fix
+
+install-cli:
+	install -m 755 timer-cli /usr/local/bin/timer

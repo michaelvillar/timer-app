@@ -28,6 +28,8 @@
 		AA000002AAAA000100000002 /* TimerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000002AAAA000000000002 /* TimerTests.swift */; };
 		BB000001BBBB000100000001 /* TimerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000001BBBB000000000001 /* TimerUITests.swift */; };
 		CC000001CCCC000100000001 /* MVClockView+Behavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000001CCCC000100000000 /* MVClockView+Behavior.swift */; };
+		DD000001DDDD000100000001 /* TimerScriptCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD000001DDDD000100000000 /* TimerScriptCommand.swift */; };
+		DD000002DDDD000200000001 /* Timer.sdef in Resources */ = {isa = PBXBuildFile; fileRef = DD000002DDDD000200000000 /* Timer.sdef */; };
 		CC000010CCCC001000000001 /* TimerUITestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000010CCCC001000000000 /* TimerUITestCase.swift */; };
 		CC000011CCCC001100000001 /* TimerKeyboardInputTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000011CCCC001100000000 /* TimerKeyboardInputTests.swift */; };
 		CC000012CCCC001200000001 /* TimerInteractionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000012CCCC001200000000 /* TimerInteractionTests.swift */; };
@@ -85,6 +87,8 @@
 		CC000013CCCC001300000000 /* TimerDockAndCompletionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerDockAndCompletionTests.swift; sourceTree = "<group>"; };
 		CC000014CCCC001400000000 /* TimerStateTransitionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerStateTransitionTests.swift; sourceTree = "<group>"; };
 		CC000015CCCC001500000000 /* TimerInputEdgeCaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerInputEdgeCaseTests.swift; sourceTree = "<group>"; };
+		DD000001DDDD000100000000 /* TimerScriptCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerScriptCommand.swift; sourceTree = "<group>"; };
+		DD000002DDDD000200000000 /* Timer.sdef */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Timer.sdef; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,6 +152,8 @@
 				4C6F0F201CAA3D8600E9A6F7 /* MVLabel.swift */,
 				723C0C571E12211000E7AE1E /* MVUserDefaultsKeys.swift */,
 				AA000001AAAA000000000001 /* TimerLogic.swift */,
+				DD000001DDDD000100000000 /* TimerScriptCommand.swift */,
+				DD000002DDDD000200000000 /* Timer.sdef */,
 				4C30BBFD1CA7C56500C45EBF /* Assets.xcassets */,
 				4C30BC021CA7C56500C45EBF /* Info.plist */,
 				41A37D0624426E360078EA40 /* Credits.rtf */,
@@ -292,6 +298,7 @@
 				40A85EF925A64C3100DA10CC /* alert-sound-3.caf in Resources */,
 				40A85EFA25A64C3100DA10CC /* alert-sound-2.caf in Resources */,
 				41A37D0724426E360078EA40 /* Credits.rtf in Resources */,
+				DD000002DDDD000200000001 /* Timer.sdef in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -329,6 +336,7 @@
 				AA000011AAAA001100000001 /* MVClockArrowView.swift in Sources */,
 				AA000012AAAA001200000001 /* MVClockFaceView.swift in Sources */,
 				CC000001CCCC000100000001 /* MVClockView+Behavior.swift in Sources */,
+				DD000001DDDD000100000001 /* TimerScriptCommand.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

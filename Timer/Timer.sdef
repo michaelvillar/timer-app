@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+<dictionary title="Timer Terminology">
+  <suite name="Timer Suite" code="TMRs" description="Commands to control the timer.">
+
+    <command name="start timer" code="TMRsSTRT" description="Start a timer with the given duration.">
+      <direct-parameter type="text" description="Duration (e.g. '5' for 5 min, '2.5' for 2m30s, '2:30' for 2m30s)."/>
+      <parameter name="window" code="TMRw" type="integer" optional="yes" description="Window number (1-based, default 1).">
+        <cocoa key="window"/>
+      </parameter>
+      <cocoa class="TimerScriptCommand"/>
+    </command>
+
+    <command name="stop timer" code="TMRsSTPP" description="Stop the timer.">
+      <parameter name="window" code="TMRw" type="integer" optional="yes" description="Window number (1-based, default 1).">
+        <cocoa key="window"/>
+      </parameter>
+      <cocoa class="TimerScriptCommand"/>
+    </command>
+
+    <command name="pause timer" code="TMRsPAUS" description="Pause or unpause the timer.">
+      <parameter name="window" code="TMRw" type="integer" optional="yes" description="Window number (1-based, default 1).">
+        <cocoa key="window"/>
+      </parameter>
+      <cocoa class="TimerScriptCommand"/>
+    </command>
+
+    <command name="reset timer" code="TMRsRSET" description="Stop the timer and reset to zero.">
+      <parameter name="window" code="TMRw" type="integer" optional="yes" description="Window number (1-based, default 1).">
+        <cocoa key="window"/>
+      </parameter>
+      <cocoa class="TimerScriptCommand"/>
+    </command>
+
+    <command name="new timer" code="TMRsNEWT" description="Open a new timer window.">
+      <cocoa class="TimerScriptCommand"/>
+    </command>
+
+  </suite>
+</dictionary>

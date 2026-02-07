@@ -143,6 +143,14 @@ extension MVClockView {
     }
   }
 
+  func startTimer(seconds: CGFloat) {
+    self.paused = false
+    self.stop()
+    self.seconds = seconds
+    self.updateTimerTime()
+    self.start()
+  }
+
   private func tick() {
     guard let timerTime = self.timerTime else { return }
 
