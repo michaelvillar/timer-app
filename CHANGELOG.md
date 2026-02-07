@@ -9,85 +9,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- Unit test target (`TimerTests`) with 39 tests covering `TimerLogic`
-- UI test target (`TimerUITests`) with 38 XCUITest tests covering keyboard input, mouse interaction, arrow dragging, context menu, sound selection, dock badge, timer completion, and multiple windows
-- Shared Xcode scheme with test action; `TimerUITests.xcscheme` for running UI tests separately
-- `make test` and `make uitest` targets for running tests locally
+- 43 unit tests and 38 UI tests
+- Xcode schemes for running tests; `make test` and `make uitest` targets
 - `make lint`, `make analyze`, and `make format` targets
-- CI test step in `swift.yml` workflow
-- Sound choice persisted to UserDefaults across launches
-- Dark mode support: 5 asset catalog color sets with light/dark variants for timer time, minutes, seconds, arrow focused, and arrow unfocused colors
-- VoiceOver accessibility: `MVClockView` reports timer state ("Ready", "5 minutes 30 seconds remaining", "Paused at 3 minutes"), `MVClockArrowView` acts as a slider with duration value
+- CI test step in build workflow
+- Sound choice persists across launches
+- Dark mode color support
+- VoiceOver accessibility for timer state and arrow control
 
 ### Changed
 
+- Upgraded to Swift 6
 - Raised deployment target to macOS 14 (Sonoma)
-- Replaced deprecated `NSUserNotification` / `NSUserNotificationCenter` with `UNUserNotificationCenter`
-- Used `async`/`await` for notification authorization in `AppDelegate`, logging errors instead of silently ignoring
-- Replaced `NSTextView` with `NSTextField` in `MVLabel` (lightweight label rendering)
-- Cached `NSGradient` as static constant in `MVMainView.draw()` (was allocated every frame)
-- Cached `NSBezierPath` for clock face hit testing in `MVClockView` (was allocated every `hitTest` call)
-- Cached `NSImage` resources as static constants in `MVClockProgressView` and `MVClockFaceView`
-- Cached `DateFormatter` in `MVClockView.updateTimeLabel()` (was allocated every second)
-- Scoped `MVClockView` focus notifications to own window via `viewDidMoveToWindow()` (was `object: nil`, reacting to all windows)
-- Removed unnecessary window focus notification observers from `MVMainView` (gradient is focus-independent)
-- Replaced hard-coded `sRGB` colors with `NSColor(resource:)` in `MVClockView` and `MVClockArrowView`
-- Replaced `NSColor(named:)` with `NSColor(resource:)` and `NSImage(named:)` with `NSImage(resource:)` for compile-time safety
-- Modernized Xcode project settings: `objectVersion` 46→56, `compatibilityVersion` Xcode 3.2→14.0, `developmentRegion` English→en
-- Updated C/C++ language standards: `gnu99`→`gnu11`, `gnu++0x`→`gnu++14`
-- Removed deprecated build settings: `ALWAYS_SEARCH_USER_PATHS`, `GCC_DYNAMIC_NO_PIC`, `ENABLE_STRICT_OBJC_MSGSEND`
-- Set `CURRENT_PROJECT_VERSION = 1` (was unset, `CFBundleVersion` resolved to empty)
-- Added explicit `SWIFT_OPTIMIZATION_LEVEL = -O` for Release builds
-- Extracted pure logic from `MVClockView` and `MVTimerController` into new `TimerLogic` enum for unit testability
-- Extracted `MVClockProgressView`, `MVClockArrowView`, and `MVClockFaceView` into separate files from `MVClockView.swift`
-- Replaced `@NSApplicationMain` with `@main` in `AppDelegate`
-- Replaced `NSString(format:)` with native Swift string interpolation in `TimerLogic`
-- Replaced target/selector `Timer.scheduledTimer` with closure-based variant using `[weak self]`
-- Replaced `perform(_:with:)` / `NSNumber` boxing with typed closure callbacks
-- Replaced target/action pattern for timer completion with `onTimerComplete` closure
-- Converted all 11 selector-based `NotificationCenter` observers to closure-based `addObserver(forName:)` with token cleanup
-- Converted `MVUserDefaultsKeys` and `Keycode` from `struct` to caseless `enum`
-- Downgraded `MVClockArrowView` and `MVClockView` from `NSControl` to `NSView` (no longer use target/action)
-- Eliminated all force unwraps across `MVWindow`, `MVMainView`, `MVTimerController`, `AppDelegate`, and `MVClockView`
-- Reduced `@objc` annotations from 13 to 3 (only XIB/menu action targets remain)
-- Tightened access control across all view classes
-- Added `final` to all non-subclassed classes for compiler optimizations
-- Replaced `import Cocoa` with `import AppKit` in all view/controller files
-- Replaced `NSAffineTransform` Obj-C bridge with pure `CGAffineTransform` in `MVClockProgressView`
-- Replaced `representedObject` / `as? Int` casts with type-safe `NSMenuItem.tag` for sound selection
-- Normalized indentation to 2-space in `MVTimerController` and `MVMainView`
-- Added SwiftLint opt-in rules: `force_unwrapping`, `explicit_self`, `private_over_fileprivate`, `discouraged_optional_boolean`, `static_over_final_class`, `first_where`, `discouraged_optional_collection`, `prefer_zero_over_explicit_init`, `unneeded_break_in_switch`
-- Updated CI workflow (`swift.yml`) to trigger on `main` branch instead of `master`
-- Updated README deployment target from macOS 10.11 to macOS 14 (Sonoma)
-- `make build` now allows incremental builds (no longer forces clean)
-- `make` now opens `Timer.app` directly instead of the Release folder
-- Renamed `makefile` to `Makefile` (conventional capitalization)
+- Replaced deprecated `NSUserNotification` with `UNUserNotificationCenter`
+- Adopted `async`/`await` throughout (timers, notifications, authorization)
+- Improved keyboard input to use character-based matching (better international keyboard support)
+- Reduced per-frame allocations by caching gradients, images, paths, and formatters
+- Extracted reusable logic into `TimerLogic` for testability
+- Split large files to stay within default SwiftLint thresholds
+- Modernized Xcode project settings and build configuration
+- Expanded SwiftLint opt-in rules from 6 to 73
+- General code cleanup: tightened access control, removed force unwraps, reduced Obj-C surface
 
 ### Removed
 
-- Deprecated `CFBundleSignature` key from `Info.plist`
-- Empty `CFBundleIconFile` key from `Info.plist`
-- Commented-out dead code in `MVTimerController`
-- Dead code in `MVMainView.draw()` (hardcoded colors overwritten by named colors)
-- Hidden Edit, Format, View, and Help menus from `MainMenu.xib` (~500 lines of dead XML)
-- Hidden Preferences menu item and separator from Timer menu in `MainMenu.xib`
-- Unused `NSFontManager` custom object from `MainMenu.xib`
-- Unused `initialLocation` property in `MVWindow`
-- Unnecessary `mainView` stored property from `MVWindow`
-- Duplicate `enter` keycode constant (identical to `keypadEnter`, both `0x4C`)
+- `Keycodes.swift` (replaced by character-based key matching)
+- ~500 lines of unused XIB menus and dead code
+- Deprecated `Info.plist` keys
 
 ### Fixed
 
-- Fixed `handleOcclusionChange` to use `window.occlusionState.contains(.visible)` instead of `window.isVisible`, which only checked if the window was ordered in rather than actually visible on screen
-- Restored `mouseDownCanMoveWindow = false` on `MVClockArrowView` and `MVClockView`, lost when downgrading from `NSControl` to `NSView`
+- Window occlusion detection now checks actual visibility, not just window ordering
 - Secondary timer windows no longer overwrite the primary window's saved position
-- Resolved all SwiftLint warnings
 
 ### CI
 
-- Updated `actions/checkout` to `v4` across all workflows
-- Replaced deprecated `norio-nomura/action-swiftlint` with direct `brew install swiftlint` on `macos-latest`
-- Replaced deprecated `actions/create-release` and `actions/upload-release-asset` with `softprops/action-gh-release@v2`
+- Updated all GitHub Actions to current versions
+- Replaced deprecated SwiftLint and release actions
 
 ## [1.6.0] - 2021-01-08
 
