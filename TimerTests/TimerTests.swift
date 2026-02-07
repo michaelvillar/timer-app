@@ -92,7 +92,7 @@ final class TimerLogicTests: XCTestCase {
   }
 
   func testMinutesDisplayStringLargeValue() {
-    XCTAssertEqual(TimerLogic.minutesDisplayString(seconds: 3600), "60'")
+    XCTAssertEqual(TimerLogic.minutesDisplayString(seconds: 3_600), "60'")
   }
 
   // MARK: - secondsDisplayString
@@ -149,10 +149,10 @@ final class TimerLogicTests: XCTestCase {
   func testDigitInputMinutesModeRejectsOver999() {
     // 999 minutes = 59940 seconds; typing another digit would exceed limit
     let result = TimerLogic.processDigitInput(
-      digit: 1, currentSeconds: 0, currentMinutes: 999, totalSeconds: 59940, inputSeconds: false
+      digit: 1, currentSeconds: 0, currentMinutes: 999, totalSeconds: 59_940, inputSeconds: false
     )
     XCTAssertFalse(result.accepted)
-    XCTAssertEqual(result.seconds, 59940)
+    XCTAssertEqual(result.seconds, 59_940)
   }
 
   // MARK: - processDigitInput (seconds mode)

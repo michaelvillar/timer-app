@@ -35,32 +35,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
       }
     }
 
-    self.notificationTasks.append(
-      Task { [weak self] in
-        for await notification in NotificationCenter.default.notifications(named: NSWindow.willCloseNotification) {
-          self?.handleClose(notification)
-        }
-      }
-    )
-
-    self.notificationTasks.append(
-      Task { [weak self] in
-        for await _ in NotificationCenter.default.notifications(named: UserDefaults.didChangeNotification) {
-          self?.handleUserDefaultsChange()
-        }
-      }
-    )
-
-    self.notificationTasks.append(
-      Task { [weak self] in
-        for await notification in NotificationCenter.default.notifications(
-          named: NSWindow.didChangeOcclusionStateNotification
-        ) {
-          self?.handleOcclusionChange(notification)
-        }
-      }
-    )
-
+    self.observeNotifications()
     self.staysOnTop = UserDefaults.standard.bool(forKey: MVUserDefaultsKeys.staysOnTop)
   }
 
@@ -114,6 +89,34 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
 
   private func handleUserDefaultsChange() {
     self.staysOnTop = UserDefaults.standard.bool(forKey: MVUserDefaultsKeys.staysOnTop)
+  }
+
+  private func observeNotifications() {
+    self.notificationTasks.append(
+      Task { [weak self] in
+        for await notification in NotificationCenter.default.notifications(named: NSWindow.willCloseNotification) {
+          self?.handleClose(notification)
+        }
+      }
+    )
+
+    self.notificationTasks.append(
+      Task { [weak self] in
+        for await _ in NotificationCenter.default.notifications(named: UserDefaults.didChangeNotification) {
+          self?.handleUserDefaultsChange()
+        }
+      }
+    )
+
+    self.notificationTasks.append(
+      Task { [weak self] in
+        for await notification in NotificationCenter.default.notifications(
+          named: NSWindow.didChangeOcclusionStateNotification
+        ) {
+          self?.handleOcclusionChange(notification)
+        }
+      }
+    )
   }
 
   deinit {

@@ -51,8 +51,8 @@ final class MVClockView: NSView {
     formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "jj:mm", options: 0, locale: Locale.current)
     return formatter
   }()
-  private var inputSeconds: Bool = false
-  private var lastTimerSeconds: CGFloat?
+  var inputSeconds: Bool = false
+  var lastTimerSeconds: CGFloat?
   private let docktile: NSDockTile = NSApplication.shared.dockTile
   var inDock: Bool = false {
     didSet {
@@ -66,13 +66,13 @@ final class MVClockView: NSView {
     didSet {
       if self.windowIsVisible {
         self.startClockTimer()
-        self.updateAllViews() // Update the UI with any changes that may have happened while it was hidden
-      } else { // window is no longer visible
+        self.updateAllViews()
+      } else {
         self.stopClockTimer()
       }
     }
   }
-  private var timerTime: Date? {
+  var timerTime: Date? {
     didSet {
       if self.windowIsVisible {
         self.updateTimeLabel()
@@ -81,26 +81,26 @@ final class MVClockView: NSView {
   }
   var onTimerComplete: (() -> Void)?
   private var notificationTasks: [Task<Void, Never>] = []
-  private var currentTimeTask: Task<Void, Never>?
-  private var timerTask: Task<Void, Never>?
-  private var paused: Bool = false {
+  var currentTimeTask: Task<Void, Never>?
+  var timerTask: Task<Void, Never>?
+  var paused: Bool = false {
     didSet {
       self.layoutPauseViews()
     }
   }
 
-  private var seconds: CGFloat = 0.0 {
+  var seconds: CGFloat = 0.0 {
     didSet {
       self.minutes = floor(self.seconds / 60)
       self.progress = self.invertProgressToScale(self.seconds / 60.0 / 60.0)
     }
   }
-  private var minutes: CGFloat = 0.0 {
+  var minutes: CGFloat = 0.0 {
     didSet {
       if self.windowIsVisible {
         self.updateLabels()
       }
-      self.updateBadge() // Update the dock badge even when the window is hidden
+      self.updateBadge()
     }
   }
   private var progress: CGFloat = 0.0 {
@@ -110,6 +110,7 @@ final class MVClockView: NSView {
       }
     }
   }
+  var didDrag: Bool = false
 
   // MARK: -
 
@@ -137,7 +138,6 @@ final class MVClockView: NSView {
   override func viewDidMoveToWindow() {
     super.viewDidMoveToWindow()
 
-    // Cancel previous notification tasks when moving between windows
     self.notificationTasks.forEach { $0.cancel() }
     self.notificationTasks.removeAll()
 
@@ -163,8 +163,12 @@ final class MVClockView: NSView {
       self.currentTimeTask?.cancel()
     }
   }
+}
 
-  private func updateClockFaceView(highlighted: Bool = false) {
+// MARK: - Layout & Updates
+
+extension MVClockView {
+  func updateClockFaceView(highlighted: Bool = false) {
     self.clockFaceView.update(highlighted: highlighted)
   }
 
@@ -214,7 +218,7 @@ final class MVClockView: NSView {
     self.start()
   }
 
-  private func handleClick() {
+  func handleClick() {
     if self.timerTask == nil && self.seconds > 0 {
       self.updateTimerTime()
       self.start()
@@ -235,108 +239,13 @@ final class MVClockView: NSView {
     }
   }
 
-  private var didDrag: Bool = false
-
-  override func mouseDown(with event: NSEvent) {
-    self.didDrag = false
-    self.updateClockFaceView(highlighted: true)
-
-    self.nextResponder?.mouseDown(with: event) // Allow window to also track the event (so user can drag window)
-  }
-
-  override func mouseDragged(with event: NSEvent) {
-    if !self.didDrag {
-      self.didDrag = true
-      self.updateClockFaceView()
-    }
-  }
-
-  override func mouseUp(with event: NSEvent) {
-    let point = self.convert(event.locationInWindow, from: nil)
-    if self.hitTest(point) == self && !self.didDrag {
-      self.handleClick()
-    }
-    self.updateClockFaceView()
-  }
-
-  override func keyUp(with event: NSEvent) {
-    let key = event.keyCode
-    let currentSeconds = self.seconds.truncatingRemainder(dividingBy: 60)
-    let currentMinutes = floor(self.seconds / 60)
-
-    // Period or Decimal
-    if key == Keycode.period || key == Keycode.keypadDecimal {
-      self.inputSeconds.toggle()
-      return
-    }
-
-    // Escape
-    if key == Keycode.escape {
-      self.paused = false
-      self.stop()
-      self.seconds = 0
-      self.updateTimerTime()
-      self.inputSeconds = false
-
-      return
-    }
-
-    // Backspace
-    if key == Keycode.delete || key == Keycode.forwardDelete {
-      self.paused = false
-      self.stop()
-
-      self.seconds = TimerLogic.processBackspace(
-        currentSeconds: currentSeconds,
-        currentMinutes: currentMinutes,
-        inputSeconds: self.inputSeconds
-      )
-
-      self.updateTimerTime()
-
-      return
-    }
-
-    // "Enter" or "Space" or "Keypad Enter"
-    if key == Keycode.returnKey || key == Keycode.space || key == Keycode.keypadEnter {
-      self.handleClick()
-
-      return
-    }
-
-    // "r" for restarting with the last timer
-    if key == Keycode.r && self.timerTask == nil && !self.paused, let seconds = self.lastTimerSeconds {
-      self.seconds = seconds
-      self.handleClick()
-
-      return
-    }
-
-    if let characters = event.characters, let number = Int(characters) {
-      let result = TimerLogic.processDigitInput(
-        digit: number,
-        currentSeconds: currentSeconds,
-        currentMinutes: currentMinutes,
-        totalSeconds: self.seconds,
-        inputSeconds: self.inputSeconds
-      )
-
-      if result.accepted {
-        self.paused = false
-        self.stop()
-        self.seconds = result.seconds
-        self.updateTimerTime()
-      }
-    }
-  }
-
   private func updateAllViews() {
     self.updateLabels()
     self.updateTimeLabel()
     self.layoutSubviews()
   }
 
-  private func updateTimerTime() {
+  func updateTimerTime() {
     self.timerTime = Date(timeIntervalSinceNow: Double(self.seconds))
   }
 
@@ -371,7 +280,7 @@ final class MVClockView: NSView {
     }
   }
 
-  private func removeBadge() {
+  func removeBadge() {
     self.docktile.badgeLabel = ""
   }
 
@@ -379,7 +288,6 @@ final class MVClockView: NSView {
     let timeString = self.timerTimeLabelFormatter.string(from: self.timerTime ?? Date())
     self.timerTimeLabel.string = timeString
 
-    // If the local time format includes an " AM" or " PM" suffix, show the suffix with a smaller font
     if let ampmRange = (
       timeString.range(of: " AM", options: [.caseInsensitive]) ??
       timeString.range(of: " PM", options: [.caseInsensitive])
@@ -388,75 +296,6 @@ final class MVClockView: NSView {
         NSFont.systemFont(ofSize: self.timerTimeLabelFontSize - 3, weight: .medium),
         range: NSRange(ampmRange, in: timeString)
       )
-    }
-  }
-
-  private func start() {
-    guard self.seconds > 0 else { return }
-    self.lastTimerSeconds = self.seconds
-
-    self.paused = false
-    self.stop()
-
-    self.timerTask = Task { [weak self] in
-      while !Task.isCancelled {
-        try? await Task.sleep(for: .seconds(1), tolerance: .milliseconds(30))
-        self?.tick()
-      }
-    }
-  }
-
-  func stop() {
-    self.timerTask?.cancel()
-    self.timerTask = nil
-
-    if self.inDock && !self.paused {
-      self.removeBadge()
-    }
-  }
-
-  private func tick() {
-    guard let timerTime = self.timerTime else { return }
-
-    let secondsRemaining = CGFloat(timerTime.timeIntervalSinceNow)
-
-    // Round the seconds displayed on the clock face
-    self.seconds = max(0, round(secondsRemaining))
-
-    if self.seconds <= 0 { // Timer is done!
-      self.stop()
-      self.postAccessibilityValueChanged()
-      self.onTimerComplete?()
-    }
-  }
-
-  private func startClockTimer() {
-    guard self.currentTimeTask == nil else { return }
-
-    // Set the current time right away, unless a timer is running
-    if self.timerTask == nil {
-      self.timerTime = Date()
-    }
-
-    self.currentTimeTask = Task { [weak self] in
-      while !Task.isCancelled {
-        try? await Task.sleep(for: .seconds(1), tolerance: .milliseconds(500))
-        self?.maintainCurrentTime()
-      }
-    }
-  }
-
-  private func stopClockTimer() {
-    self.currentTimeTask?.cancel()
-    self.currentTimeTask = nil
-  }
-
-  private func maintainCurrentTime() {
-    guard self.timerTask == nil else { return } // don't set if the main timer is counting down
-
-    let time = Date()
-    if Calendar.current.component(.second, from: time) == 0 { // only need to set when minute changes
-      self.timerTime = time
     }
   }
 
@@ -479,42 +318,5 @@ final class MVClockView: NSView {
 
   private func invertProgressToScale(_ progress: CGFloat) -> CGFloat {
     TimerLogic.invertProgressToScale(progress, minutes: self.minutes)
-  }
-
-  // MARK: - Accessibility
-
-  override func isAccessibilityElement() -> Bool { true }
-  override func accessibilityRole() -> NSAccessibility.Role? { .group }
-  override func accessibilityLabel() -> String? { "Timer" }
-  override func accessibilityValue() -> Any? { self.accessibilityTimerDescription }
-
-  private var accessibilityTimerDescription: String {
-    let mins = Int(self.minutes)
-    let secs = Int(self.seconds.truncatingRemainder(dividingBy: 60))
-
-    if self.seconds <= 0 && self.timerTask == nil {
-      return "Ready"
-    }
-
-    let timeDescription: String
-    if mins > 0 && secs > 0 {
-      timeDescription = "\(mins) minutes \(secs) seconds"
-    } else if mins > 0 {
-      timeDescription = "\(mins) minutes"
-    } else {
-      timeDescription = "\(secs) seconds"
-    }
-
-    if self.paused {
-      return "Paused at \(timeDescription)"
-    }
-    if self.timerTask != nil {
-      return "\(timeDescription) remaining"
-    }
-    return timeDescription
-  }
-
-  private func postAccessibilityValueChanged() {
-    NSAccessibility.post(element: self, notification: .valueChanged)
   }
 }

@@ -10,7 +10,6 @@
 		40A85EF925A64C3100DA10CC /* alert-sound-3.caf in Resources */ = {isa = PBXBuildFile; fileRef = 40A85EF725A64C3100DA10CC /* alert-sound-3.caf */; };
 		40A85EFA25A64C3100DA10CC /* alert-sound-2.caf in Resources */ = {isa = PBXBuildFile; fileRef = 40A85EF825A64C3100DA10CC /* alert-sound-2.caf */; };
 		41A37D0724426E360078EA40 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 41A37D0624426E360078EA40 /* Credits.rtf */; };
-		41B080C62114CE2700EEE7E8 /* Keycodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B080C52114CE2700EEE7E8 /* Keycodes.swift */; };
 		4C30BBFC1CA7C56500C45EBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C30BBFB1CA7C56500C45EBF /* AppDelegate.swift */; };
 		4C30BBFE1CA7C56500C45EBF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C30BBFD1CA7C56500C45EBF /* Assets.xcassets */; };
 		4C30BC091CA7C81C00C45EBF /* MVWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C30BC081CA7C81C00C45EBF /* MVWindow.swift */; };
@@ -28,6 +27,13 @@
 		AA000012AAAA001200000001 /* MVClockFaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000012AAAA001200000000 /* MVClockFaceView.swift */; };
 		AA000002AAAA000100000002 /* TimerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000002AAAA000000000002 /* TimerTests.swift */; };
 		BB000001BBBB000100000001 /* TimerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000001BBBB000000000001 /* TimerUITests.swift */; };
+		CC000001CCCC000100000001 /* MVClockView+Behavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000001CCCC000100000000 /* MVClockView+Behavior.swift */; };
+		CC000010CCCC001000000001 /* TimerUITestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000010CCCC001000000000 /* TimerUITestCase.swift */; };
+		CC000011CCCC001100000001 /* TimerKeyboardInputTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000011CCCC001100000000 /* TimerKeyboardInputTests.swift */; };
+		CC000012CCCC001200000001 /* TimerInteractionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000012CCCC001200000000 /* TimerInteractionTests.swift */; };
+		CC000013CCCC001300000001 /* TimerDockAndCompletionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000013CCCC001300000000 /* TimerDockAndCompletionTests.swift */; };
+		CC000014CCCC001400000001 /* TimerStateTransitionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000014CCCC001400000000 /* TimerStateTransitionTests.swift */; };
+		CC000015CCCC001500000001 /* TimerInputEdgeCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000015CCCC001500000000 /* TimerInputEdgeCaseTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,7 +57,6 @@
 		40A85EF725A64C3100DA10CC /* alert-sound-3.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "alert-sound-3.caf"; sourceTree = "<group>"; };
 		40A85EF825A64C3100DA10CC /* alert-sound-2.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "alert-sound-2.caf"; sourceTree = "<group>"; };
 		41A37D0624426E360078EA40 /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
-		41B080C52114CE2700EEE7E8 /* Keycodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keycodes.swift; sourceTree = "<group>"; };
 		4C30BBF81CA7C56500C45EBF /* Timer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Timer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C30BBFB1CA7C56500C45EBF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4C30BBFD1CA7C56500C45EBF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -73,6 +78,13 @@
 		AA000004AAAA000400000001 /* TimerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TimerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB000001BBBB000000000001 /* TimerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerUITests.swift; sourceTree = "<group>"; };
 		BB000003BBBB000300000001 /* TimerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TimerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CC000001CCCC000100000000 /* MVClockView+Behavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MVClockView+Behavior.swift"; sourceTree = "<group>"; };
+		CC000010CCCC001000000000 /* TimerUITestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerUITestCase.swift; sourceTree = "<group>"; };
+		CC000011CCCC001100000000 /* TimerKeyboardInputTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerKeyboardInputTests.swift; sourceTree = "<group>"; };
+		CC000012CCCC001200000000 /* TimerInteractionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerInteractionTests.swift; sourceTree = "<group>"; };
+		CC000013CCCC001300000000 /* TimerDockAndCompletionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerDockAndCompletionTests.swift; sourceTree = "<group>"; };
+		CC000014CCCC001400000000 /* TimerStateTransitionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerStateTransitionTests.swift; sourceTree = "<group>"; };
+		CC000015CCCC001500000000 /* TimerInputEdgeCaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerInputEdgeCaseTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +141,7 @@
 				4C30BC0A1CA7C96700C45EBF /* MVMainView.swift */,
 				4C30BC0E1CA7CFBB00C45EBF /* MVTitlebarAccessoryViewController.swift */,
 				4C30BC151CA7D94500C45EBF /* MVClockView.swift */,
+				CC000001CCCC000100000000 /* MVClockView+Behavior.swift */,
 				AA000010AAAA001000000000 /* MVClockProgressView.swift */,
 				AA000011AAAA001100000000 /* MVClockArrowView.swift */,
 				AA000012AAAA001200000000 /* MVClockFaceView.swift */,
@@ -142,7 +155,6 @@
 				4C6F0F291CAA79EB00E9A6F7 /* alert-sound.caf */,
 				40A85EF825A64C3100DA10CC /* alert-sound-2.caf */,
 				40A85EF725A64C3100DA10CC /* alert-sound-3.caf */,
-				41B080C52114CE2700EEE7E8 /* Keycodes.swift */,
 			);
 			path = Timer;
 			sourceTree = "<group>";
@@ -158,7 +170,13 @@
 		BB000005BBBB000500000001 /* TimerUITests */ = {
 			isa = PBXGroup;
 			children = (
+				CC000010CCCC001000000000 /* TimerUITestCase.swift */,
 				BB000001BBBB000000000001 /* TimerUITests.swift */,
+				CC000011CCCC001100000000 /* TimerKeyboardInputTests.swift */,
+				CC000012CCCC001200000000 /* TimerInteractionTests.swift */,
+				CC000013CCCC001300000000 /* TimerDockAndCompletionTests.swift */,
+				CC000014CCCC001400000000 /* TimerStateTransitionTests.swift */,
+				CC000015CCCC001500000000 /* TimerInputEdgeCaseTests.swift */,
 			);
 			path = TimerUITests;
 			sourceTree = "<group>";
@@ -303,7 +321,6 @@
 				4C6F0F211CAA3D8600E9A6F7 /* MVLabel.swift in Sources */,
 				4C6F0F2C1CACF4B500E9A6F7 /* MVTimerController.swift in Sources */,
 				4C30BC091CA7C81C00C45EBF /* MVWindow.swift in Sources */,
-				41B080C62114CE2700EEE7E8 /* Keycodes.swift in Sources */,
 				4C30BBFC1CA7C56500C45EBF /* AppDelegate.swift in Sources */,
 				4C30BC161CA7D94500C45EBF /* MVClockView.swift in Sources */,
 				4C30BC101CA7CFBB00C45EBF /* MVTitlebarAccessoryViewController.swift in Sources */,
@@ -311,6 +328,7 @@
 				AA000010AAAA001000000001 /* MVClockProgressView.swift in Sources */,
 				AA000011AAAA001100000001 /* MVClockArrowView.swift in Sources */,
 				AA000012AAAA001200000001 /* MVClockFaceView.swift in Sources */,
+				CC000001CCCC000100000001 /* MVClockView+Behavior.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -326,7 +344,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CC000010CCCC001000000001 /* TimerUITestCase.swift in Sources */,
 				BB000001BBBB000100000001 /* TimerUITests.swift in Sources */,
+				CC000011CCCC001100000001 /* TimerKeyboardInputTests.swift in Sources */,
+				CC000012CCCC001200000001 /* TimerInteractionTests.swift in Sources */,
+				CC000013CCCC001300000001 /* TimerDockAndCompletionTests.swift in Sources */,
+				CC000014CCCC001400000001 /* TimerStateTransitionTests.swift in Sources */,
+				CC000015CCCC001500000001 /* TimerInputEdgeCaseTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
