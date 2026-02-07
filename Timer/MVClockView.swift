@@ -80,9 +80,9 @@ final class MVClockView: NSView {
     }
   }
   var onTimerComplete: (() -> Void)?
-  private var notificationObservers: [NSObjectProtocol] = []
-  private var currentTimeTimer: Timer?
-  private var timer: Timer?
+  private var notificationTasks: [Task<Void, Never>] = []
+  private var currentTimeTask: Task<Void, Never>?
+  private var timerTask: Task<Void, Never>?
   private var paused: Bool = false {
     didSet {
       self.layoutPauseViews()
@@ -137,36 +137,31 @@ final class MVClockView: NSView {
   override func viewDidMoveToWindow() {
     super.viewDidMoveToWindow()
 
-    // Remove previous observers when moving between windows
-    self.notificationObservers.forEach { NotificationCenter.default.removeObserver($0) }
-    self.notificationObservers.removeAll()
+    // Cancel previous notification tasks when moving between windows
+    self.notificationTasks.forEach { $0.cancel() }
+    self.notificationTasks.removeAll()
 
     guard let window = self.window else { return }
 
-    let notificationCenter = NotificationCenter.default
-    self.notificationObservers.append(
-      notificationCenter.addObserver(
-        forName: NSWindow.didBecomeKeyNotification, object: window, queue: nil
-      ) { [weak self] _ in
-        self?.updateClockFaceView()
-        self?.arrowView.needsDisplay = true
-        self?.progressView.needsDisplay = true
-      }
-    )
-
-    self.notificationObservers.append(
-      notificationCenter.addObserver(
-        forName: NSWindow.didResignKeyNotification, object: window, queue: nil
-      ) { [weak self] _ in
-        self?.updateClockFaceView()
-        self?.arrowView.needsDisplay = true
-        self?.progressView.needsDisplay = true
-      }
-    )
+    for name in [NSWindow.didBecomeKeyNotification, NSWindow.didResignKeyNotification] {
+      self.notificationTasks.append(
+        Task { [weak self] in
+          for await _ in NotificationCenter.default.notifications(named: name, object: window) {
+            self?.updateClockFaceView()
+            self?.arrowView.needsDisplay = true
+            self?.progressView.needsDisplay = true
+          }
+        }
+      )
+    }
   }
 
   deinit {
-    self.notificationObservers.forEach { NotificationCenter.default.removeObserver($0) }
+    MainActor.assumeIsolated {
+      self.notificationTasks.forEach { $0.cancel() }
+      self.timerTask?.cancel()
+      self.currentTimeTask?.cancel()
+    }
   }
 
   private func updateClockFaceView(highlighted: Bool = false) {
@@ -220,7 +215,7 @@ final class MVClockView: NSView {
   }
 
   private func handleClick() {
-    if self.timer == nil && self.seconds > 0 {
+    if self.timerTask == nil && self.seconds > 0 {
       self.updateTimerTime()
       self.start()
     } else {
@@ -231,7 +226,7 @@ final class MVClockView: NSView {
   }
 
   private func layoutPauseViews() {
-    let showPauseIcon = self.paused && self.timer != nil
+    let showPauseIcon = self.paused && self.timerTask != nil
     NSAnimationContext.runAnimationGroup { ctx in
       ctx.duration = 0.2
       ctx.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
@@ -310,7 +305,7 @@ final class MVClockView: NSView {
     }
 
     // "r" for restarting with the last timer
-    if key == Keycode.r && self.timer == nil && !self.paused, let seconds = self.lastTimerSeconds {
+    if key == Keycode.r && self.timerTask == nil && !self.paused, let seconds = self.lastTimerSeconds {
       self.seconds = seconds
       self.handleClick()
 
@@ -366,7 +361,7 @@ final class MVClockView: NSView {
 
   private func updateBadge() {
     if self.inDock {
-      if self.timer != nil || self.paused {
+      if self.timerTask != nil || self.paused {
         let badgeSeconds = Int(self.seconds.truncatingRemainder(dividingBy: 60))
         let badgeMinutes = Int(self.minutes)
         self.docktile.badgeLabel = TimerLogic.badgeString(minutes: badgeMinutes, seconds: badgeSeconds)
@@ -403,20 +398,17 @@ final class MVClockView: NSView {
     self.paused = false
     self.stop()
 
-    // Since the UI only allows timers to be set in multiples of 1 second, each tick
-    // will fire _near_ an integer seconds-remaining boundary.
-    self.timer = Foundation.Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
-      self?.tick()
+    self.timerTask = Task { [weak self] in
+      while !Task.isCancelled {
+        try? await Task.sleep(for: .seconds(1), tolerance: .milliseconds(30))
+        self?.tick()
+      }
     }
-
-    // Improves the system's ability to optimize for increased power savings by allowing
-    // the timer a small amount of variance in when it can fire (without drifting over time).
-    self.timer?.tolerance = 0.03 // (seconds)
   }
 
   func stop() {
-    self.timer?.invalidate()
-    self.timer = nil
+    self.timerTask?.cancel()
+    self.timerTask = nil
 
     if self.inDock && !self.paused {
       self.removeBadge()
@@ -439,29 +431,28 @@ final class MVClockView: NSView {
   }
 
   private func startClockTimer() {
-    guard self.currentTimeTimer == nil else { return }
+    guard self.currentTimeTask == nil else { return }
 
     // Set the current time right away, unless a timer is running
-    if self.timer == nil {
+    if self.timerTask == nil {
       self.timerTime = Date()
     }
 
-    self.currentTimeTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
-      self?.maintainCurrentTime()
+    self.currentTimeTask = Task { [weak self] in
+      while !Task.isCancelled {
+        try? await Task.sleep(for: .seconds(1), tolerance: .milliseconds(500))
+        self?.maintainCurrentTime()
+      }
     }
-
-    // Improves the system's ability to optimize for increased power savings and responsiveness
-    // A general rule, set the tolerance to at least 10% of the interval, for a repeating timer.
-    self.currentTimeTimer?.tolerance = 0.5
   }
 
   private func stopClockTimer() {
-    self.currentTimeTimer?.invalidate()
-    self.currentTimeTimer = nil
+    self.currentTimeTask?.cancel()
+    self.currentTimeTask = nil
   }
 
   private func maintainCurrentTime() {
-    guard self.timer == nil else { return } // don't set if the main timer is counting down
+    guard self.timerTask == nil else { return } // don't set if the main timer is counting down
 
     let time = Date()
     if Calendar.current.component(.second, from: time) == 0 { // only need to set when minute changes
@@ -501,7 +492,7 @@ final class MVClockView: NSView {
     let mins = Int(self.minutes)
     let secs = Int(self.seconds.truncatingRemainder(dividingBy: 60))
 
-    if self.seconds <= 0 && self.timer == nil {
+    if self.seconds <= 0 && self.timerTask == nil {
       return "Ready"
     }
 
@@ -517,7 +508,7 @@ final class MVClockView: NSView {
     if self.paused {
       return "Paused at \(timeDescription)"
     }
-    if self.timer != nil {
+    if self.timerTask != nil {
       return "\(timeDescription) remaining"
     }
     return timeDescription

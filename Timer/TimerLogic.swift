@@ -53,7 +53,7 @@ enum TimerLogic {
 
   // MARK: - Keyboard Input
 
-  struct DigitInputResult {
+  struct DigitInputResult: Sendable {
     let seconds: CGFloat
     let accepted: Bool
   }

@@ -2,10 +2,11 @@ import AppKit
 import UserNotifications
 
 @main
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
   private var controllers: [MVTimerController] = []
   private var currentlyInDock: MVTimerController?
-  private var notificationObservers: [NSObjectProtocol] = []
+  private var notificationTasks: [Task<Void, Never>] = []
 
   private var staysOnTop = false {
     didSet {
@@ -34,24 +35,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
       }
     }
 
-    let notificationCenter = NotificationCenter.default
-
-    self.notificationObservers.append(
-      notificationCenter.addObserver(
-        forName: NSWindow.willCloseNotification, object: nil, queue: nil
-      ) { [weak self] notification in self?.handleClose(notification) }
+    self.notificationTasks.append(
+      Task { [weak self] in
+        for await notification in NotificationCenter.default.notifications(named: NSWindow.willCloseNotification) {
+          self?.handleClose(notification)
+        }
+      }
     )
 
-    self.notificationObservers.append(
-      notificationCenter.addObserver(
-        forName: UserDefaults.didChangeNotification, object: nil, queue: nil
-      ) { [weak self] _ in self?.handleUserDefaultsChange() }
+    self.notificationTasks.append(
+      Task { [weak self] in
+        for await _ in NotificationCenter.default.notifications(named: UserDefaults.didChangeNotification) {
+          self?.handleUserDefaultsChange()
+        }
+      }
     )
 
-    self.notificationObservers.append(
-      notificationCenter.addObserver(
-        forName: NSWindow.didChangeOcclusionStateNotification, object: nil, queue: nil
-      ) { [weak self] notification in self?.handleOcclusionChange(notification) }
+    self.notificationTasks.append(
+      Task { [weak self] in
+        for await notification in NotificationCenter.default.notifications(
+          named: NSWindow.didChangeOcclusionStateNotification
+        ) {
+          self?.handleOcclusionChange(notification)
+        }
+      }
     )
 
     self.staysOnTop = UserDefaults.standard.bool(forKey: MVUserDefaultsKeys.staysOnTop)
@@ -64,7 +71,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     return true
   }
 
-  func userNotificationCenter(
+  nonisolated func userNotificationCenter(
     _ center: UNUserNotificationCenter,
     willPresent notification: UNNotification,
     withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
@@ -110,7 +117,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
   }
 
   deinit {
-    self.notificationObservers.forEach { NotificationCenter.default.removeObserver($0) }
+    MainActor.assumeIsolated {
+      self.notificationTasks.forEach { $0.cancel() }
+    }
   }
 
   private var windowLevel: NSWindow.Level {

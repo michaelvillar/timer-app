@@ -45,7 +45,9 @@ final class MVTimerController: NSWindowController {
   }
 
   deinit {
-    self.clockView.stop()
+    MainActor.assumeIsolated {
+      self.clockView.stop()
+    }
   }
 
   func showInDock(_ state: Bool) {
