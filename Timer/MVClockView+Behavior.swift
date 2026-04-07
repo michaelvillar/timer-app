@@ -50,7 +50,23 @@ extension MVClockView {
   }
 
   override func keyUp(with event: NSEvent) {
-    switch event.charactersIgnoringModifiers {
+    let modifiers = event.modifierFlags
+    let chars = event.charactersIgnoringModifiers
+    let minuteAmount = modifiers.contains(.option) ? 10 : 1
+
+    // Use the physical key ("=" is the +/= key; shift state isn't reliable on keyUp)
+    let isAdd = chars == "\u{F700}" || chars == "=" // up arrow or +/= key
+    let isSubtract = chars == "\u{F701}" || chars == "-" // down arrow or -/_ key
+
+    if isAdd {
+      self.adjustMinutes(by: minuteAmount)
+      return
+    } else if isSubtract {
+      self.adjustMinutes(by: -minuteAmount)
+      return
+    }
+
+    switch chars {
     case ".":
       self.inputSeconds.toggle()
 
@@ -72,6 +88,11 @@ extension MVClockView {
     default:
       self.handleDigitInput(event)
     }
+  }
+
+  private func adjustMinutes(by minutes: Int) {
+    self.seconds = max(0, self.seconds + CGFloat(minutes * 60))
+    self.updateTimerTime()
   }
 
   private func resetTimer() {
