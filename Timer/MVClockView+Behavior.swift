@@ -60,33 +60,31 @@ extension MVClockView {
 
     if isAdd {
       self.adjustMinutes(by: minuteAmount)
-      return
     } else if isSubtract {
       self.adjustMinutes(by: -minuteAmount)
-      return
-    }
+    } else {
+      switch chars {
+      case ".":
+        self.inputSeconds.toggle()
 
-    switch chars {
-    case ".":
-      self.inputSeconds.toggle()
+      case "\u{1B}": // escape
+        self.resetTimer()
 
-    case "\u{1B}": // escape
-      self.resetTimer()
+      case "\u{7F}", "\u{F728}": // delete, forward delete
+        self.handleBackspace()
 
-    case "\u{7F}", "\u{F728}": // delete, forward delete
-      self.handleBackspace()
-
-    case "\r", " ", "\u{03}": // return, space, keypad enter
-      self.handleClick()
-
-    case "r":
-      if self.timerTask == nil, !self.paused, let seconds = self.lastTimerSeconds {
-        self.seconds = seconds
+      case "\r", " ", "\u{03}": // return, space, keypad enter
         self.handleClick()
-      }
 
-    default:
-      self.handleDigitInput(event)
+      case "r":
+        if self.timerTask == nil, !self.paused, let seconds = self.lastTimerSeconds {
+          self.seconds = seconds
+          self.handleClick()
+        }
+
+      default:
+        self.handleDigitInput(event)
+      }
     }
   }
 

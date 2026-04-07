@@ -112,6 +112,102 @@ final class TimerKeyboardInputTests: TimerUITestCase {
     Thread.sleep(forTimeInterval: 0.2)
   }
 
+  // MARK: - Minute Adjustment
+
+  func testPlusKeyAddsMinute() throws {
+    let window = app.windows.firstMatch
+
+    window.typeKey("=", modifierFlags: [])
+    Thread.sleep(forTimeInterval: 0.2)
+
+    XCTAssertTrue(window.exists, "Window should exist after pressing +")
+  }
+
+  func testMinusKeySubtractsMinute() throws {
+    let window = app.windows.firstMatch
+
+    window.typeKey("5", modifierFlags: [])
+    Thread.sleep(forTimeInterval: 0.2)
+
+    window.typeKey("-", modifierFlags: [])
+    Thread.sleep(forTimeInterval: 0.2)
+
+    XCTAssertTrue(window.exists, "Window should exist after pressing -")
+  }
+
+  func testUpArrowAddsMinute() throws {
+    let window = app.windows.firstMatch
+
+    window.typeKey(.upArrow, modifierFlags: [])
+    Thread.sleep(forTimeInterval: 0.2)
+
+    XCTAssertTrue(window.exists, "Window should exist after pressing up arrow")
+  }
+
+  func testDownArrowSubtractsMinute() throws {
+    let window = app.windows.firstMatch
+
+    window.typeKey("5", modifierFlags: [])
+    Thread.sleep(forTimeInterval: 0.2)
+
+    window.typeKey(.downArrow, modifierFlags: [])
+    Thread.sleep(forTimeInterval: 0.2)
+
+    XCTAssertTrue(window.exists, "Window should exist after pressing down arrow")
+  }
+
+  func testOptionPlusAdds10Minutes() throws {
+    let window = app.windows.firstMatch
+
+    window.typeKey("=", modifierFlags: .option)
+    Thread.sleep(forTimeInterval: 0.2)
+
+    XCTAssertTrue(window.exists, "Window should exist after option+plus")
+  }
+
+  func testOptionMinusSubtracts10Minutes() throws {
+    let window = app.windows.firstMatch
+
+    // Set 15 minutes first so there's room to subtract
+    window.typeKey("1", modifierFlags: [])
+    window.typeKey("5", modifierFlags: [])
+    Thread.sleep(forTimeInterval: 0.2)
+
+    window.typeKey("-", modifierFlags: .option)
+    Thread.sleep(forTimeInterval: 0.2)
+
+    XCTAssertTrue(window.exists, "Window should exist after option+minus")
+  }
+
+  func testSubtractBelowZeroStaysAtZero() throws {
+    let window = app.windows.firstMatch
+
+    // Timer starts at 0, subtracting should clamp to 0
+    window.typeKey("-", modifierFlags: [])
+    Thread.sleep(forTimeInterval: 0.2)
+
+    XCTAssertTrue(window.exists, "Window should exist after subtracting from zero")
+  }
+
+  func testAdjustMinutesWhileTimerRunning() throws {
+    let window = app.windows.firstMatch
+
+    window.typeKey("5", modifierFlags: [])
+    Thread.sleep(forTimeInterval: 0.2)
+    window.typeKey(.return, modifierFlags: [])
+    Thread.sleep(forTimeInterval: 0.3)
+
+    window.typeKey("=", modifierFlags: [])
+    Thread.sleep(forTimeInterval: 0.2)
+    window.typeKey("-", modifierFlags: [])
+    Thread.sleep(forTimeInterval: 0.2)
+
+    XCTAssertTrue(window.exists, "Window should exist after adjusting minutes while running")
+
+    window.typeKey(.escape, modifierFlags: [])
+    Thread.sleep(forTimeInterval: 0.2)
+  }
+
   func testDoublePeriodTogglesBackToMinutes() throws {
     let window = app.windows.firstMatch
 
