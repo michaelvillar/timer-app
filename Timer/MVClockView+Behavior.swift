@@ -52,7 +52,7 @@ extension MVClockView {
   override func keyUp(with event: NSEvent) {
     let modifiers = event.modifierFlags
     let chars = event.charactersIgnoringModifiers
-    let minuteAmount = modifiers.contains(.option) ? 10 : 1
+    let minuteAmount = modifiers.contains(.shift) ? 10 : 1
 
     // Use the physical key ("=" is the +/= key; shift state isn't reliable on keyUp)
     let isAdd = chars == "\u{F700}" || chars == "=" // up arrow or +/= key

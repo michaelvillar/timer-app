@@ -40,5 +40,5 @@ Enter digits to set minutes. A decimal point specifies seconds so `2.34` is 2 mi
 | <kbd>r</kbd> | Restart with last timer |
 | <kbd>+</kbd> or <kbd>↑</kbd> | Add a minute |
 | <kbd>-</kbd> or <kbd>↓</kbd> | Subtract a minute |
-| <kbd>option</kbd>+<kbd>+</kbd> or <kbd>option</kbd>+<kbd>↑</kbd> | Add 10 minutes |
-| <kbd>option</kbd>+<kbd>-</kbd> or <kbd>option</kbd>+<kbd>↓</kbd> | Subtract 10 minutes |
+| <kbd>shift</kbd>+<kbd>+</kbd> or <kbd>shift</kbd>+<kbd>↑</kbd> | Add 10 minutes |
+| <kbd>shift</kbd>+<kbd>-</kbd> or <kbd>shift</kbd>+<kbd>↓</kbd> | Subtract 10 minutes |

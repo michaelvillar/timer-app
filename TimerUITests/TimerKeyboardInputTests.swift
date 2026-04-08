@@ -156,16 +156,16 @@ final class TimerKeyboardInputTests: TimerUITestCase {
     XCTAssertTrue(window.exists, "Window should exist after pressing down arrow")
   }
 
-  func testOptionPlusAdds10Minutes() throws {
+  func testShiftPlusAdds10Minutes() throws {
     let window = app.windows.firstMatch
 
-    window.typeKey("=", modifierFlags: .option)
+    window.typeKey("=", modifierFlags: .shift)
     Thread.sleep(forTimeInterval: 0.2)
 
-    XCTAssertTrue(window.exists, "Window should exist after option+plus")
+    XCTAssertTrue(window.exists, "Window should exist after shift+plus")
   }
 
-  func testOptionMinusSubtracts10Minutes() throws {
+  func testShiftMinusSubtracts10Minutes() throws {
     let window = app.windows.firstMatch
 
     // Set 15 minutes first so there's room to subtract
@@ -173,10 +173,10 @@ final class TimerKeyboardInputTests: TimerUITestCase {
     window.typeKey("5", modifierFlags: [])
     Thread.sleep(forTimeInterval: 0.2)
 
-    window.typeKey("-", modifierFlags: .option)
+    window.typeKey("-", modifierFlags: .shift)
     Thread.sleep(forTimeInterval: 0.2)
 
-    XCTAssertTrue(window.exists, "Window should exist after option+minus")
+    XCTAssertTrue(window.exists, "Window should exist after shift+minus")
   }
 
   func testSubtractBelowZeroStaysAtZero() throws {
