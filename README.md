@@ -32,7 +32,13 @@ make
 
 Enter digits to set minutes. A decimal point specifies seconds so `2.34` is 2 minutes and 34 seconds.
 
-<kbd>backspace</kbd> or <kbd>escape</kbd> to edit.
-<kbd>enter</kbd> to start or pause the timer.
-<kbd>cmd</kbd>+<kbd>n</kbd> to create a new timer.
-<kbd>r</kbd> to restart with the last timer.
+| Key | Action |
+|-----|--------|
+| <kbd>backspace</kbd> or <kbd>escape</kbd> | Edit timer |
+| <kbd>enter</kbd> | Start or pause |
+| <kbd>cmd</kbd>+<kbd>n</kbd> | New timer |
+| <kbd>r</kbd> | Restart with last timer |
+| <kbd>+</kbd> or <kbd>↑</kbd> | Add a minute |
+| <kbd>-</kbd> or <kbd>↓</kbd> | Subtract a minute |
+| <kbd>shift</kbd>+<kbd>+</kbd> or <kbd>shift</kbd>+<kbd>↑</kbd> | Add 10 minutes |
+| <kbd>shift</kbd>+<kbd>-</kbd> or <kbd>shift</kbd>+<kbd>↓</kbd> | Subtract 10 minutes |

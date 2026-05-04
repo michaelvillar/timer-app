@@ -50,28 +50,47 @@ extension MVClockView {
   }
 
   override func keyUp(with event: NSEvent) {
-    switch event.charactersIgnoringModifiers {
-    case ".":
-      self.inputSeconds.toggle()
+    let modifiers = event.modifierFlags
+    let chars = event.charactersIgnoringModifiers
+    let minuteAmount = modifiers.contains(.shift) ? 10 : 1
 
-    case "\u{1B}": // escape
-      self.resetTimer()
+    // Use the physical key ("=" is the +/= key; shift state isn't reliable on keyUp)
+    let isAdd = chars == "\u{F700}" || chars == "=" // up arrow or +/= key
+    let isSubtract = chars == "\u{F701}" || chars == "-" // down arrow or -/_ key
 
-    case "\u{7F}", "\u{F728}": // delete, forward delete
-      self.handleBackspace()
+    if isAdd {
+      self.adjustMinutes(by: minuteAmount)
+    } else if isSubtract {
+      self.adjustMinutes(by: -minuteAmount)
+    } else {
+      switch chars {
+      case ".":
+        self.inputSeconds.toggle()
 
-    case "\r", " ", "\u{03}": // return, space, keypad enter
-      self.handleClick()
+      case "\u{1B}": // escape
+        self.resetTimer()
 
-    case "r":
-      if self.timerTask == nil, !self.paused, let seconds = self.lastTimerSeconds {
-        self.seconds = seconds
+      case "\u{7F}", "\u{F728}": // delete, forward delete
+        self.handleBackspace()
+
+      case "\r", " ", "\u{03}": // return, space, keypad enter
         self.handleClick()
-      }
 
-    default:
-      self.handleDigitInput(event)
+      case "r":
+        if self.timerTask == nil, !self.paused, let seconds = self.lastTimerSeconds {
+          self.seconds = seconds
+          self.handleClick()
+        }
+
+      default:
+        self.handleDigitInput(event)
+      }
     }
+  }
+
+  private func adjustMinutes(by minutes: Int) {
+    self.seconds = max(0, self.seconds + CGFloat(minutes * 60))
+    self.updateTimerTime()
   }
 
   private func resetTimer() {
